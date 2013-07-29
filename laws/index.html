@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Massachusetts Laws</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+   
+    <style>
+    html,
+body {
+  height: 100%;
+  /* The html and body elements cannot have any padding or margin. */
+}
+
+/* Wrapper for page content to push down footer */
+#wrap {
+  min-height: 100%;
+  height: auto !important;
+  height: 100%;
+  /* Negative indent footer by its height */
+  margin: 0 auto -60px;
+  /* Pad bottom by footer height */
+  padding: 0 0 60px;
+}
+#wrap > .container {
+  padding: 60px 15px 0;
+}
+    </style> <script src="js/respond.min.js"></script>
+  </head>
+  <body><div id='wrap'>
+     <div class="navbar navbar-fixed-top">
+      <div class="container">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <div class="nav-collapse collapse" id="navBar">
+          <ul class="nav navbar-nav">
+          <li>
+          <a href='/'>Home</a>
+          </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="container" id='mainContent'>
+    </div></div>
+    <script src="js/jquery.js"></script>
+    <script src="js/bootstrap.js"></script>
+    <script src="js/lodash.backbone.js"></script>
+    <script src="js/backbone.js"></script>
+    <script src="js/mustache.js"></script>
+    <script src="js/pouchdb.js"></script>
+    <script src="js/script.js"></script>
+  </body>
+</html>
