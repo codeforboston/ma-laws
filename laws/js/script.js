@@ -63,6 +63,8 @@
         };
         return db.query("laws/all", opts, function(err, resp) {
           resp.chap = loc.chapter;
+          resp.tit = loc.title;
+          resp.pat = loc.part;
           return body.$el.html(body.template(resp));
         });
       } else if (loc.chapter === 'all' && loc.title !== 'all') {
@@ -88,7 +90,8 @@
           });
           return body.$el.html(body.template({
             row: rows,
-            t: loc.title
+            t: loc.title,
+            tp: loc.part
           }));
         });
       } else if (loc.title === 'all' && loc.part !== 'all') {
@@ -138,7 +141,7 @@
         });
       }
     },
-    template: "<div class=\"row\">\n{{#desc}}<h1>{{desc}}</h1>{{/desc}}\n{{#text}}<p>{{text}}</p>{{/text}}\n{{#chap}}\n<h1>Chapter {{chap}}</h1>\n<dl>{{/chap}}\n{{#rows}}\n{{#doc.desc}}<dt><a class='bodyLink' href='Chapter{{doc.chapter}}/Section{{doc.section}}' id='GeneralLaws/Part{{doc.part}}/Title{{doc.title}}/Chapter{{doc.chapter}}/Section{{doc.section}}'>{{doc.desc}}</a></dt>{{/doc.desc}}\n{{#doc.text}}<dd>{{doc.text}}</dd>{{/doc.text}}\n{{/rows}}\n{{#chap}}</dl>{{/chap}}\n{{#t}}\n<h1>title {{t}}</h1>\n<ul>{{/t}}\n{{#row}}\n	<li>\n	<a class='bodyLink' href='Title{{title}}/Chapter{{chapter}}' id=\"GeneralLaws/Part{{part}}/Title{{title}}/Chapter{{chapter}}\">\n		Chapter {{chapter}}\n	</a>\n	</li>\n{{/row}}\n{{#t}}</ul>{{/t}}\n{{#p}}\n<h1>Part {{p}}</h1>\n<ul>{{/p}}\n{{#rowp}}\n	<li>\n	<a class='bodyLink' href='Part{{part}}/Title{{title}}' id=\"GeneralLaws/Part{{part}}/Title{{title}}\">\n		Title {{title}}\n	</a>\n	</li>\n{{/rowp}}\n{{#p}}</ul>{{/p}}\n{{#g}}\n<h1>General Laws</h1>\n<ul>{{/g}}\n{{#rowg}}\n	<li>\n	<a class='bodyLink' href='GeneralLaws/Part{{part}}' id=\"GeneralLaws/Part{{part}}\">\n		Part {{part}}\n	</a>\n	</li>\n{{/rowg}}\n{{#g}}</ul>{{/g}}\n</div>",
+    template: "<div class=\"row\">\n{{#desc}}\n<ul class=\"breadcrumb\">\n  			<li><a class='bodyLink' href=\"../../../../GeneralLaws\" id=\"GeneralLaws\">General Laws</a></li>\n  			<li><a class='bodyLink' href='../../../Part{{part}}' id=\"/GeneralLaws/Part{{part}}\">Part {{part}}</a></li>\n  			<li><a class='bodyLink' href='../../Title{{title}}' id=\"/GeneralLaws/Part{{part}}/Title{{title}}\">Title {{title}}</a></li>\n  			<li><a class='bodyLink' href='../Chapter{{chapter}}' id=\"/GeneralLaws/Part{{part}}/Title{{title}}/Chapter{{chapter}}\">Chapter {{chapter}}</a></li>\n  			<li class=\"active\">Section {{section}}</li>\n</ul>\n<h1>Section {{section}}</h1>\n<h2>{{desc}}</h2>{{/desc}}\n{{#text}}<p>{{text}}</p>{{/text}}\n{{#chap}}\n<ul class=\"breadcrumb\">\n  			<li><a class='bodyLink' href=\"../../../GeneralLaws\" id=\"GeneralLaws\">General Laws</a></li>\n  			<li><a class='bodyLink' href='../../Part{{doc.part}}' id=\"/GeneralLaws/Part{{pat}}\">Part {{pat}}</a></li>\n  			<li><a class='bodyLink' href='../Title{{doc.title}}' id=\"/GeneralLaws/Part{{pat}}/Title{{tit}}\">Title {{tit}}</a></li>\n  			<li class=\"active\">Chapter {{chap}}</li>\n</ul>\n<h1>Chapter {{chap}}</h1>\n<dl>{{/chap}}\n{{#rows}}\n{{#doc.desc}}<dt><strong>Section {{doc.section}}:</strong> <a class='bodyLink' href='Chapter{{doc.chapter}}/Section{{doc.section}}' id='GeneralLaws/Part{{doc.part}}/Title{{doc.title}}/Chapter{{doc.chapter}}/Section{{doc.section}}'>{{doc.desc}}</a></dt>{{/doc.desc}}\n{{#doc.text}}<dd>{{doc.text}}</dd>{{/doc.text}}\n{{/rows}}\n{{#chap}}</dl>{{/chap}}\n{{#t}}\n<ul class=\"breadcrumb\">\n  			<li><a class='bodyLink' href=\"../../GeneralLaws\" id=\"GeneralLaws\">General Laws</a></li>\n  			<li><a class='bodyLink' href='../Part{{tp}}' id=\"/GeneralLaws/Part{{tp}}\">Part {{tp}}</a></li>\n  			\n  			<li class=\"active\">Title {{t}}</li>\n</ul>\n<h1>title {{t}}</h1>\n<ul>{{/t}}\n{{#row}}\n	<li>\n	<a class='bodyLink' href='Title{{title}}/Chapter{{chapter}}' id=\"GeneralLaws/Part{{part}}/Title{{title}}/Chapter{{chapter}}\">\n		Chapter {{chapter}}\n	</a>\n	</li>\n{{/row}}\n{{#t}}</ul>{{/t}}\n{{#p}}\n<ul class=\"breadcrumb\">\n  			<li><a class='bodyLink' href=\"../GeneralLaws\" id=\"GeneralLaws\">General Laws</a></li>\n  			\n  			\n  			<li class=\"active\">Part {{p}}</li>\n</ul>\n<h1>Part {{p}}</h1>\n<ul>{{/p}}\n{{#rowp}}\n	<li>\n	<a class='bodyLink' href='Part{{part}}/Title{{title}}' id=\"GeneralLaws/Part{{part}}/Title{{title}}\">\n		Title {{title}}\n	</a>\n	</li>\n{{/rowp}}\n{{#p}}</ul>{{/p}}\n{{#g}}\n<h1>General Laws</h1>\n<ul>{{/g}}\n{{#rowg}}\n	<li>\n	<a class='bodyLink' href='GeneralLaws/Part{{part}}' id=\"GeneralLaws/Part{{part}}\">\n		Part {{part}}\n	</a>\n	</li>\n{{/rowg}}\n{{#g}}</ul>{{/g}}\n</div>",
     el: $('#mainContent')
   });
 

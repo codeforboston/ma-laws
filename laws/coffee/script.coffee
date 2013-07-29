@@ -34,6 +34,8 @@ body = new View
 				include_docs:true
 			db.query """laws/all""",opts,(err,resp)->
 				resp.chap = loc.chapter
+				resp.tit=loc.title
+				resp.pat = loc.part
 				body.$el.html(body.template(resp))
 		else if loc.chapter is 'all' and loc.title isnt 'all'
 			if loc.type = 'GeneralLaws'
@@ -51,7 +53,7 @@ body = new View
 					out.title= row.key.pop()
 					out.part = row.key.pop()
 					out
-				body.$el.html(body.template({row:rows,t:loc.title}))
+				body.$el.html(body.template({row:rows,t:loc.title,tp:loc.part}))
 		else if loc.title is 'all' and loc.part isnt 'all'
 			if loc.type = 'GeneralLaws'
 				type = 'general'
@@ -82,17 +84,38 @@ body = new View
 				body.$el.html(body.template({rowg:rows,g:true}))
 	template:"""
 		<div class="row">
-		{{#desc}}<h1>{{desc}}</h1>{{/desc}}
+		{{#desc}}
+		<ul class="breadcrumb">
+  			<li><a class='bodyLink' href="../../../../GeneralLaws" id="GeneralLaws">General Laws</a></li>
+  			<li><a class='bodyLink' href='../../../Part{{part}}' id="/GeneralLaws/Part{{part}}">Part {{part}}</a></li>
+  			<li><a class='bodyLink' href='../../Title{{title}}' id="/GeneralLaws/Part{{part}}/Title{{title}}">Title {{title}}</a></li>
+  			<li><a class='bodyLink' href='../Chapter{{chapter}}' id="/GeneralLaws/Part{{part}}/Title{{title}}/Chapter{{chapter}}">Chapter {{chapter}}</a></li>
+  			<li class="active">Section {{section}}</li>
+		</ul>
+		<h1>Section {{section}}</h1>
+		<h2>{{desc}}</h2>{{/desc}}
 		{{#text}}<p>{{text}}</p>{{/text}}
 		{{#chap}}
+		<ul class="breadcrumb">
+  			<li><a class='bodyLink' href="../../../GeneralLaws" id="GeneralLaws">General Laws</a></li>
+  			<li><a class='bodyLink' href='../../Part{{doc.part}}' id="/GeneralLaws/Part{{pat}}">Part {{pat}}</a></li>
+  			<li><a class='bodyLink' href='../Title{{doc.title}}' id="/GeneralLaws/Part{{pat}}/Title{{tit}}">Title {{tit}}</a></li>
+  			<li class="active">Chapter {{chap}}</li>
+		</ul>
 		<h1>Chapter {{chap}}</h1>
 		<dl>{{/chap}}
 		{{#rows}}
-		{{#doc.desc}}<dt><a class='bodyLink' href='Chapter{{doc.chapter}}/Section{{doc.section}}' id='GeneralLaws/Part{{doc.part}}/Title{{doc.title}}/Chapter{{doc.chapter}}/Section{{doc.section}}'>{{doc.desc}}</a></dt>{{/doc.desc}}
+		{{#doc.desc}}<dt><strong>Section {{doc.section}}:</strong> <a class='bodyLink' href='Chapter{{doc.chapter}}/Section{{doc.section}}' id='GeneralLaws/Part{{doc.part}}/Title{{doc.title}}/Chapter{{doc.chapter}}/Section{{doc.section}}'>{{doc.desc}}</a></dt>{{/doc.desc}}
 		{{#doc.text}}<dd>{{doc.text}}</dd>{{/doc.text}}
 		{{/rows}}
 		{{#chap}}</dl>{{/chap}}
 		{{#t}}
+		<ul class="breadcrumb">
+  			<li><a class='bodyLink' href="../../GeneralLaws" id="GeneralLaws">General Laws</a></li>
+  			<li><a class='bodyLink' href='../Part{{tp}}' id="/GeneralLaws/Part{{tp}}">Part {{tp}}</a></li>
+  			
+  			<li class="active">Title {{t}}</li>
+		</ul>
 		<h1>title {{t}}</h1>
 		<ul>{{/t}}
 		{{#row}}
@@ -104,6 +127,12 @@ body = new View
 		{{/row}}
 		{{#t}}</ul>{{/t}}
 		{{#p}}
+		<ul class="breadcrumb">
+  			<li><a class='bodyLink' href="../GeneralLaws" id="GeneralLaws">General Laws</a></li>
+  			
+  			
+  			<li class="active">Part {{p}}</li>
+		</ul>
 		<h1>Part {{p}}</h1>
 		<ul>{{/p}}
 		{{#rowp}}
