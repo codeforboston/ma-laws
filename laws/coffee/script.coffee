@@ -12,12 +12,36 @@ class View extends Backbone.View
 		opts = 
 			q:q
 			include_docs:true
-		$.ajax path,{data:opts,dataType:'json'}
+			limit:200
+		$.ajax path,
+			data:opts
+			dataType:'json'
 	movePage:(a)->
 		a.preventDefault()
 		routes.navigate a.target.id,
 			trigger:true
 	template:
+		search:Mustache.compile """
+		<div class="row">
+		<h1>"{{q}}"</h1>
+		<p>{{total_rows}} results</p><dl>
+		{{#rows}}<dt>
+		<a class='bodyLink' href="../GeneralLaws" id="GeneralLaws">General Laws</a>/
+		<a class='bodyLink' href='../GeneralLaws/Part{{doc.part}}' id="/GeneralLaws/Part{{doc.part}}">Part {{doc.part}}</a>/
+  		<a class='bodyLink' href='../GeneralLaws/Part{{doc.part}}/Title{{doc.title}}' id="/GeneralLaws/Part{{doc.part}}/Title{{doc.title}}">Title {{doc.title}}</a>/
+  		<a class='bodyLink' href='../GeneralLaws/Part{{doc.part}}/Title{{doc.title}}/Chapter{{doc.chapter}}' id="/GeneralLaws/Part{{doc.part}}/Title{{doc.title}}/Chapter{{doc.chapter}}">Chapter {{doc.chapter}}</a>/
+  		<a class='bodyLink' href='../GeneralLaws/Part{{doc.part}}/Title{{doc.title}}/Chapter{{doc.chapter}}/Section{{doc.section}}' id="/GeneralLaws/Part{{doc.part}}/Title{{doc.title}}/Chapter{{doc.chapter}}/Section{{doc.section}}">Section {{doc.section}}</a>
+  		</dt>
+		{{#doc.desc}}<dd><strong>{{doc.desc}}</strong></dd>{{/doc.desc}}
+		{{#doc.text}}<dd>{{doc.text}}</dd>{{/doc.text}}
+		{{/rows}}
+		</dl>
+		<ul class="pager">
+
+  <li class="next"><a href="#">Next &rarr;</a></li>
+</ul>
+		</div>
+		"""
 		section:Mustache.compile """
 		<div class="row">
 		<ul class="breadcrumb">
@@ -109,7 +133,12 @@ class View extends Backbone.View
 
 body = new View
 	render:(loc)->
-		if loc.section isnt 'all'
+		if 'q' of loc
+			@search(loc.q).then (resp)->
+				console.log resp
+				resp.q=loc.q
+				body.$el.html(body.template.search(resp))
+		else if loc.section isnt 'all'
 			id = """#{loc.type}/Part#{loc.part}/Title#{loc.title}/Chapter#{loc.chapter}/Section#{loc.section}"""
 			db.get id,(err,doc)->
 				if err
@@ -186,7 +215,7 @@ class Routes extends Backbone.Router
 		':type/Part:part/Title:title': 'roo'
 		':type/Part:part/Title:title/Chapter:chapter': 'roo'
 		':type/Part:part/Title:title/Chapter:chapter/Section:section': 'roo'
-		'q/:querry':'qoo'
+		'q/:query':'qoo'
 		'*spat':'roo'
 	roo:(type='home',part='all',title='all',chapter='all',section='all')->
 		parts = 
@@ -198,6 +227,8 @@ class Routes extends Backbone.Router
 		parts.chapter = parseInt(parts.chapter,10) unless parts.chapter is 'all'
 		parts.section = parseInt(parts.section,10) unless parts.section is 'all'
 		body.render parts
+	qoo:(query)->
+		body.render {q:query}
 
 routes = new Routes
 
@@ -222,4 +253,8 @@ start = (dbname)=>
 			root: "#{dbname}/_design/laws/_rewrite/"
 			hashChange: false
 		window.db = db
+	$('#searchForm').on 'submit', (e)->
+		e.preventDefault()
+		routes.navigate 'q/'+$('#searchBox').val(),
+			trigger:true
 start('law')

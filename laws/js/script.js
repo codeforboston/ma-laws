@@ -25,6 +25,20 @@
       'click .bodyLink': 'movePage'
     };
 
+    View.prototype.search = function(q) {
+      var opts, path;
+      path = "" + (db.id()) + "_design/laws/_search/sections";
+      opts = {
+        q: q,
+        include_docs: true,
+        limit: 200
+      };
+      return $.ajax(path, {
+        data: opts,
+        dataType: 'json'
+      });
+    };
+
     View.prototype.movePage = function(a) {
       a.preventDefault();
       return routes.navigate(a.target.id, {
@@ -33,6 +47,7 @@
     };
 
     View.prototype.template = {
+      search: Mustache.compile("<div class=\"row\">\n<h1>\"{{q}}\"</h1>\n<p>{{total_rows}} results</p><dl>\n{{#rows}}<dt>\n<a class='bodyLink' href=\"../GeneralLaws\" id=\"GeneralLaws\">General Laws</a>/\n<a class='bodyLink' href='../GeneralLaws/Part{{doc.part}}' id=\"/GeneralLaws/Part{{doc.part}}\">Part {{doc.part}}</a>/\n  		<a class='bodyLink' href='../GeneralLaws/Part{{doc.part}}/Title{{doc.title}}' id=\"/GeneralLaws/Part{{doc.part}}/Title{{doc.title}}\">Title {{doc.title}}</a>/\n  		<a class='bodyLink' href='../GeneralLaws/Part{{doc.part}}/Title{{doc.title}}/Chapter{{doc.chapter}}' id=\"/GeneralLaws/Part{{doc.part}}/Title{{doc.title}}/Chapter{{doc.chapter}}\">Chapter {{doc.chapter}}</a>/\n  		<a class='bodyLink' href='../GeneralLaws/Part{{doc.part}}/Title{{doc.title}}/Chapter{{doc.chapter}}/Section{{doc.section}}' id=\"/GeneralLaws/Part{{doc.part}}/Title{{doc.title}}/Chapter{{doc.chapter}}/Section{{doc.section}}\">Section {{doc.section}}</a>\n  		</dt>\n{{#doc.desc}}<dd><strong>{{doc.desc}}</strong></dd>{{/doc.desc}}\n{{#doc.text}}<dd>{{doc.text}}</dd>{{/doc.text}}\n{{/rows}}\n</dl>\n<ul class=\"pager\">\n\n  <li class=\"next\"><a href=\"#\">Next &rarr;</a></li>\n</ul>\n</div>"),
       section: Mustache.compile("<div class=\"row\">\n<ul class=\"breadcrumb\">\n  			<li><a class='bodyLink' href=\"../../../../GeneralLaws\" id=\"GeneralLaws\">General Laws</a></li>\n  			<li><a class='bodyLink' href='../../../Part{{part}}' id=\"/GeneralLaws/Part{{part}}\">Part {{part}}</a></li>\n  			<li><a class='bodyLink' href='../../Title{{title}}' id=\"/GeneralLaws/Part{{part}}/Title{{title}}\">Title {{title}}</a></li>\n  			<li><a class='bodyLink' href='../Chapter{{chapter}}' id=\"/GeneralLaws/Part{{part}}/Title{{title}}/Chapter{{chapter}}\">Chapter {{chapter}}</a></li>\n  			<li class=\"active\">Section {{section}}</li>\n</ul>\n<h1>Section {{section}}</h1>\n{{#desc}}<h2>{{desc}}</h2>{{/desc}}\n{{#text}}<p>{{text}}</p>{{/text}}\n</div>"),
       chapter: Mustache.compile("<div class=\"row\">\n<ul class=\"breadcrumb\">\n  			<li><a class='bodyLink' href=\"../../../GeneralLaws\" id=\"GeneralLaws\">General Laws</a></li>\n  			<li><a class='bodyLink' href='../../Part{{doc.part}}' id=\"/GeneralLaws/Part{{pat}}\">Part {{pat}}</a></li>\n  			<li><a class='bodyLink' href='../Title{{doc.title}}' id=\"/GeneralLaws/Part{{pat}}/Title{{tit}}\">Title {{tit}}</a></li>\n  			<li class=\"active\">Chapter {{chap}}</li>\n</ul>\n<h1>Chapter {{chap}}</h1>\n<dl>\n{{#rows}}\n{{#doc.desc}}<dt><strong>Section {{doc.section}}:</strong> <a class='bodyLink' href='Chapter{{doc.chapter}}/Section{{doc.section}}' id='GeneralLaws/Part{{doc.part}}/Title{{doc.title}}/Chapter{{doc.chapter}}/Section{{doc.section}}'>{{doc.desc}}</a></dt>{{/doc.desc}}\n{{#doc.text}}<dd>{{doc.text}}</dd>{{/doc.text}}\n{{/rows}}\n</dl>\n</div>"),
       title: Mustache.compile("<div class=\"row\">\n<ul class=\"breadcrumb\">\n  			<li><a class='bodyLink' href=\"../../GeneralLaws\" id=\"GeneralLaws\">General Laws</a></li>\n  			<li><a class='bodyLink' href='../Part{{tp}}' id=\"/GeneralLaws/Part{{tp}}\">Part {{tp}}</a></li>\n  			\n  			<li class=\"active\">Title {{t}}</li>\n</ul>\n<h1>Title {{t}}</h1>\n<ul>\n{{#row}}\n	<li>\n	<a class='bodyLink' href='Title{{title}}/Chapter{{chapter}}' id=\"GeneralLaws/Part{{part}}/Title{{title}}/Chapter{{chapter}}\">\n		Chapter {{chapter}}\n	</a>\n	</li>\n{{/row}}\n</ul>\n</div>"),
@@ -47,7 +62,13 @@
   body = new View({
     render: function(loc) {
       var id, opts, type;
-      if (loc.section !== 'all') {
+      if ('q' in loc) {
+        return this.search(loc.q).then(function(resp) {
+          console.log(resp);
+          resp.q = loc.q;
+          return body.$el.html(body.template.search(resp));
+        });
+      } else if (loc.section !== 'all') {
         id = "" + loc.type + "/Part" + loc.part + "/Title" + loc.title + "/Chapter" + loc.chapter + "/Section" + loc.section;
         return db.get(id, function(err, doc) {
           if (err) {
@@ -167,7 +188,7 @@
       ':type/Part:part/Title:title': 'roo',
       ':type/Part:part/Title:title/Chapter:chapter': 'roo',
       ':type/Part:part/Title:title/Chapter:chapter/Section:section': 'roo',
-      'q/:querry': 'qoo',
+      'q/:query': 'qoo',
       '*spat': 'roo'
     };
 
@@ -204,6 +225,12 @@
       return body.render(parts);
     };
 
+    Routes.prototype.qoo = function(query) {
+      return body.render({
+        q: query
+      });
+    };
+
     return Routes;
 
   })(Backbone.Router);
@@ -225,13 +252,19 @@
 
 
   start = function(dbname) {
-    return db = Pouch("" + location.protocol + "//" + location.host + "/" + dbname, function(err, rslt) {
+    db = Pouch("" + location.protocol + "//" + location.host + "/" + dbname, function(err, rslt) {
       Backbone.history.start({
         pushState: true,
         root: "" + dbname + "/_design/laws/_rewrite/",
         hashChange: false
       });
       return window.db = db;
+    });
+    return $('#searchForm').on('submit', function(e) {
+      e.preventDefault();
+      return routes.navigate('q/' + $('#searchBox').val(), {
+        trigger: true
+      });
     });
   };
 
