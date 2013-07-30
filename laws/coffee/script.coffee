@@ -36,10 +36,6 @@ class View extends Backbone.View
 		{{#doc.text}}<dd>{{doc.text}}</dd>{{/doc.text}}
 		{{/rows}}
 		</dl>
-		<ul class="pager">
-
-  <li class="next"><a href="#">Next &rarr;</a></li>
-</ul>
 		</div>
 		"""
 		section:Mustache.compile """
