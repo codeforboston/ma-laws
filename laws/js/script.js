@@ -17,7 +17,6 @@
 
     View.prototype.initialize = function() {
       this.render = this.options.render;
-      this.template = Mustache.compile(this.options.template);
       this.routes = this.options.routes;
       return true;
     };
@@ -33,6 +32,14 @@
       });
     };
 
+    View.prototype.template = {
+      section: Mustache.compile("<div class=\"row\">\n<ul class=\"breadcrumb\">\n  			<li><a class='bodyLink' href=\"../../../../GeneralLaws\" id=\"GeneralLaws\">General Laws</a></li>\n  			<li><a class='bodyLink' href='../../../Part{{part}}' id=\"/GeneralLaws/Part{{part}}\">Part {{part}}</a></li>\n  			<li><a class='bodyLink' href='../../Title{{title}}' id=\"/GeneralLaws/Part{{part}}/Title{{title}}\">Title {{title}}</a></li>\n  			<li><a class='bodyLink' href='../Chapter{{chapter}}' id=\"/GeneralLaws/Part{{part}}/Title{{title}}/Chapter{{chapter}}\">Chapter {{chapter}}</a></li>\n  			<li class=\"active\">Section {{section}}</li>\n</ul>\n<h1>Section {{section}}</h1>\n{{#desc}}<h2>{{desc}}</h2>{{/desc}}\n{{#text}}<p>{{text}}</p>{{/text}}\n</div>"),
+      chapter: Mustache.compile("<div class=\"row\">\n<ul class=\"breadcrumb\">\n  			<li><a class='bodyLink' href=\"../../../GeneralLaws\" id=\"GeneralLaws\">General Laws</a></li>\n  			<li><a class='bodyLink' href='../../Part{{doc.part}}' id=\"/GeneralLaws/Part{{pat}}\">Part {{pat}}</a></li>\n  			<li><a class='bodyLink' href='../Title{{doc.title}}' id=\"/GeneralLaws/Part{{pat}}/Title{{tit}}\">Title {{tit}}</a></li>\n  			<li class=\"active\">Chapter {{chap}}</li>\n</ul>\n<h1>Chapter {{chap}}</h1>\n<dl>\n{{#rows}}\n{{#doc.desc}}<dt><strong>Section {{doc.section}}:</strong> <a class='bodyLink' href='Chapter{{doc.chapter}}/Section{{doc.section}}' id='GeneralLaws/Part{{doc.part}}/Title{{doc.title}}/Chapter{{doc.chapter}}/Section{{doc.section}}'>{{doc.desc}}</a></dt>{{/doc.desc}}\n{{#doc.text}}<dd>{{doc.text}}</dd>{{/doc.text}}\n{{/rows}}\n</dl>\n</div>"),
+      title: Mustache.compile("<div class=\"row\">\n<ul class=\"breadcrumb\">\n  			<li><a class='bodyLink' href=\"../../GeneralLaws\" id=\"GeneralLaws\">General Laws</a></li>\n  			<li><a class='bodyLink' href='../Part{{tp}}' id=\"/GeneralLaws/Part{{tp}}\">Part {{tp}}</a></li>\n  			\n  			<li class=\"active\">Title {{t}}</li>\n</ul>\n<h1>Title {{t}}</h1>\n<ul>\n{{#row}}\n	<li>\n	<a class='bodyLink' href='Title{{title}}/Chapter{{chapter}}' id=\"GeneralLaws/Part{{part}}/Title{{title}}/Chapter{{chapter}}\">\n		Chapter {{chapter}}\n	</a>\n	</li>\n{{/row}}\n</ul>\n</div>"),
+      part: Mustache.compile("<div class=\"row\">\n<ul class=\"breadcrumb\">\n  			<li><a class='bodyLink' href=\"../GeneralLaws\" id=\"GeneralLaws\">General Laws</a></li>\n  			\n  			\n  			<li class=\"active\">Part {{p}}</li>\n</ul>\n<h1>Part {{p}}</h1>\n<ul>\n{{#rowp}}\n	<li>\n	<a class='bodyLink' href='Part{{part}}/Title{{title}}' id=\"GeneralLaws/Part{{part}}/Title{{title}}\">\n		Title {{title}}\n	</a>\n	</li>\n{{/rowp}}\n</ul>\n</div>"),
+      general: Mustache.compile("<div class=\"row\">\n<ul class=\"breadcrumb\">\n  			<li class=\"active\">General Laws</li>\n</ul>\n<h1>General Laws</h1>\n<ul>\n{{#rowg}}\n	<li>\n	<a class='bodyLink' href='GeneralLaws/Part{{part}}' id=\"GeneralLaws/Part{{part}}\">\n		Part {{part}}\n	</a>\n	</li>\n{{/rowg}}\n</ul>\n</div>")
+    };
+
     return View;
 
   })(Backbone.View);
@@ -46,7 +53,7 @@
           if (err) {
 
           } else {
-            return body.$el.html(body.template(doc));
+            return body.$el.html(body.template.section(doc));
           }
         });
       } else if (loc.section === 'all' && loc.chapter !== 'all') {
@@ -65,7 +72,7 @@
           resp.chap = loc.chapter;
           resp.tit = loc.title;
           resp.pat = loc.part;
-          return body.$el.html(body.template(resp));
+          return body.$el.html(body.template.chapter(resp));
         });
       } else if (loc.chapter === 'all' && loc.title !== 'all') {
         if (loc.type = 'GeneralLaws') {
@@ -88,7 +95,7 @@
             out.part = row.key.pop();
             return out;
           });
-          return body.$el.html(body.template({
+          return body.$el.html(body.template.title({
             row: rows,
             t: loc.title,
             tp: loc.part
@@ -114,7 +121,7 @@
             out.part = row.key.pop();
             return out;
           });
-          return body.$el.html(body.template({
+          return body.$el.html(body.template.part({
             rowp: rows,
             p: loc.part
           }));
@@ -134,14 +141,13 @@
             out.part = row.key.pop();
             return out;
           });
-          return body.$el.html(body.template({
+          return body.$el.html(body.template.general({
             rowg: rows,
             g: true
           }));
         });
       }
     },
-    template: "<div class=\"row\">\n{{#desc}}\n<ul class=\"breadcrumb\">\n  			<li><a class='bodyLink' href=\"../../../../GeneralLaws\" id=\"GeneralLaws\">General Laws</a></li>\n  			<li><a class='bodyLink' href='../../../Part{{part}}' id=\"/GeneralLaws/Part{{part}}\">Part {{part}}</a></li>\n  			<li><a class='bodyLink' href='../../Title{{title}}' id=\"/GeneralLaws/Part{{part}}/Title{{title}}\">Title {{title}}</a></li>\n  			<li><a class='bodyLink' href='../Chapter{{chapter}}' id=\"/GeneralLaws/Part{{part}}/Title{{title}}/Chapter{{chapter}}\">Chapter {{chapter}}</a></li>\n  			<li class=\"active\">Section {{section}}</li>\n</ul>\n<h1>Section {{section}}</h1>\n<h2>{{desc}}</h2>{{/desc}}\n{{#text}}<p>{{text}}</p>{{/text}}\n{{#chap}}\n<ul class=\"breadcrumb\">\n  			<li><a class='bodyLink' href=\"../../../GeneralLaws\" id=\"GeneralLaws\">General Laws</a></li>\n  			<li><a class='bodyLink' href='../../Part{{doc.part}}' id=\"/GeneralLaws/Part{{pat}}\">Part {{pat}}</a></li>\n  			<li><a class='bodyLink' href='../Title{{doc.title}}' id=\"/GeneralLaws/Part{{pat}}/Title{{tit}}\">Title {{tit}}</a></li>\n  			<li class=\"active\">Chapter {{chap}}</li>\n</ul>\n<h1>Chapter {{chap}}</h1>\n<dl>{{/chap}}\n{{#rows}}\n{{#doc.desc}}<dt><strong>Section {{doc.section}}:</strong> <a class='bodyLink' href='Chapter{{doc.chapter}}/Section{{doc.section}}' id='GeneralLaws/Part{{doc.part}}/Title{{doc.title}}/Chapter{{doc.chapter}}/Section{{doc.section}}'>{{doc.desc}}</a></dt>{{/doc.desc}}\n{{#doc.text}}<dd>{{doc.text}}</dd>{{/doc.text}}\n{{/rows}}\n{{#chap}}</dl>{{/chap}}\n{{#t}}\n<ul class=\"breadcrumb\">\n  			<li><a class='bodyLink' href=\"../../GeneralLaws\" id=\"GeneralLaws\">General Laws</a></li>\n  			<li><a class='bodyLink' href='../Part{{tp}}' id=\"/GeneralLaws/Part{{tp}}\">Part {{tp}}</a></li>\n  			\n  			<li class=\"active\">Title {{t}}</li>\n</ul>\n<h1>title {{t}}</h1>\n<ul>{{/t}}\n{{#row}}\n	<li>\n	<a class='bodyLink' href='Title{{title}}/Chapter{{chapter}}' id=\"GeneralLaws/Part{{part}}/Title{{title}}/Chapter{{chapter}}\">\n		Chapter {{chapter}}\n	</a>\n	</li>\n{{/row}}\n{{#t}}</ul>{{/t}}\n{{#p}}\n<ul class=\"breadcrumb\">\n  			<li><a class='bodyLink' href=\"../GeneralLaws\" id=\"GeneralLaws\">General Laws</a></li>\n  			\n  			\n  			<li class=\"active\">Part {{p}}</li>\n</ul>\n<h1>Part {{p}}</h1>\n<ul>{{/p}}\n{{#rowp}}\n	<li>\n	<a class='bodyLink' href='Part{{part}}/Title{{title}}' id=\"GeneralLaws/Part{{part}}/Title{{title}}\">\n		Title {{title}}\n	</a>\n	</li>\n{{/rowp}}\n{{#p}}</ul>{{/p}}\n{{#g}}\n<h1>General Laws</h1>\n<ul>{{/g}}\n{{#rowg}}\n	<li>\n	<a class='bodyLink' href='GeneralLaws/Part{{part}}' id=\"GeneralLaws/Part{{part}}\">\n		Part {{part}}\n	</a>\n	</li>\n{{/rowg}}\n{{#g}}</ul>{{/g}}\n</div>",
     el: $('#mainContent')
   });
 
@@ -161,6 +167,7 @@
       ':type/Part:part/Title:title': 'roo',
       ':type/Part:part/Title:title/Chapter:chapter': 'roo',
       ':type/Part:part/Title:title/Chapter:chapter/Section:section': 'roo',
+      'q/:querry': 'qoo',
       '*spat': 'roo'
     };
 
@@ -217,8 +224,8 @@
   */
 
 
-  start = function(base, dbname) {
-    return db = Pouch("" + base + "/" + dbname, function(err, rslt) {
+  start = function(dbname) {
+    return db = Pouch("" + location.protocol + "//" + location.host + "/" + dbname, function(err, rslt) {
       Backbone.history.start({
         pushState: true,
         root: "" + dbname + "/_design/laws/_rewrite/",
@@ -228,7 +235,7 @@
     });
   };
 
-  start('https://kublai.cloudant.com', 'law');
+  start('law');
 
 }).call(this);
 

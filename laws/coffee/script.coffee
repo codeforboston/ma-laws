@@ -3,15 +3,109 @@ db = false
 class View extends Backbone.View
 	initialize:()->
 		@render = @options.render
-		@template = Mustache.compile @options.template
 		@routes = @options.routes
 		true
 	events:
 		'click .bodyLink': 'movePage'
+	search:(q)->
+		path = "#{db.id()}_design/laws/_search/sections"
+		opts = 
+			q:q
+			include_docs:true
+		$.ajax path,{data:opts,dataType:'json'}
 	movePage:(a)->
 		a.preventDefault()
 		routes.navigate a.target.id,
 			trigger:true
+	template:
+		section:Mustache.compile """
+		<div class="row">
+		<ul class="breadcrumb">
+  			<li><a class='bodyLink' href="../../../../GeneralLaws" id="GeneralLaws">General Laws</a></li>
+  			<li><a class='bodyLink' href='../../../Part{{part}}' id="/GeneralLaws/Part{{part}}">Part {{part}}</a></li>
+  			<li><a class='bodyLink' href='../../Title{{title}}' id="/GeneralLaws/Part{{part}}/Title{{title}}">Title {{title}}</a></li>
+  			<li><a class='bodyLink' href='../Chapter{{chapter}}' id="/GeneralLaws/Part{{part}}/Title{{title}}/Chapter{{chapter}}">Chapter {{chapter}}</a></li>
+  			<li class="active">Section {{section}}</li>
+		</ul>
+		<h1>Section {{section}}</h1>
+		{{#desc}}<h2>{{desc}}</h2>{{/desc}}
+		{{#text}}<p>{{text}}</p>{{/text}}
+		</div>
+		"""
+		chapter:Mustache.compile """
+		<div class="row">
+		<ul class="breadcrumb">
+  			<li><a class='bodyLink' href="../../../GeneralLaws" id="GeneralLaws">General Laws</a></li>
+  			<li><a class='bodyLink' href='../../Part{{doc.part}}' id="/GeneralLaws/Part{{pat}}">Part {{pat}}</a></li>
+  			<li><a class='bodyLink' href='../Title{{doc.title}}' id="/GeneralLaws/Part{{pat}}/Title{{tit}}">Title {{tit}}</a></li>
+  			<li class="active">Chapter {{chap}}</li>
+		</ul>
+		<h1>Chapter {{chap}}</h1>
+		<dl>
+		{{#rows}}
+		{{#doc.desc}}<dt><strong>Section {{doc.section}}:</strong> <a class='bodyLink' href='Chapter{{doc.chapter}}/Section{{doc.section}}' id='GeneralLaws/Part{{doc.part}}/Title{{doc.title}}/Chapter{{doc.chapter}}/Section{{doc.section}}'>{{doc.desc}}</a></dt>{{/doc.desc}}
+		{{#doc.text}}<dd>{{doc.text}}</dd>{{/doc.text}}
+		{{/rows}}
+		</dl>
+		</div>
+		"""
+		title:Mustache.compile """
+		<div class="row">
+		<ul class="breadcrumb">
+  			<li><a class='bodyLink' href="../../GeneralLaws" id="GeneralLaws">General Laws</a></li>
+  			<li><a class='bodyLink' href='../Part{{tp}}' id="/GeneralLaws/Part{{tp}}">Part {{tp}}</a></li>
+  			
+  			<li class="active">Title {{t}}</li>
+		</ul>
+		<h1>Title {{t}}</h1>
+		<ul>
+		{{#row}}
+			<li>
+			<a class='bodyLink' href='Title{{title}}/Chapter{{chapter}}' id="GeneralLaws/Part{{part}}/Title{{title}}/Chapter{{chapter}}">
+				Chapter {{chapter}}
+			</a>
+			</li>
+		{{/row}}
+		</ul>
+		</div>
+		"""
+		part:Mustache.compile """
+		<div class="row">
+		<ul class="breadcrumb">
+  			<li><a class='bodyLink' href="../GeneralLaws" id="GeneralLaws">General Laws</a></li>
+  			
+  			
+  			<li class="active">Part {{p}}</li>
+		</ul>
+		<h1>Part {{p}}</h1>
+		<ul>
+		{{#rowp}}
+			<li>
+			<a class='bodyLink' href='Part{{part}}/Title{{title}}' id="GeneralLaws/Part{{part}}/Title{{title}}">
+				Title {{title}}
+			</a>
+			</li>
+		{{/rowp}}
+		</ul>
+		</div>
+		"""
+		general:Mustache.compile """
+		<div class="row">
+		<ul class="breadcrumb">
+  			<li class="active">General Laws</li>
+		</ul>
+		<h1>General Laws</h1>
+		<ul>
+		{{#rowg}}
+			<li>
+			<a class='bodyLink' href='GeneralLaws/Part{{part}}' id="GeneralLaws/Part{{part}}">
+				Part {{part}}
+			</a>
+			</li>
+		{{/rowg}}
+		</ul>
+		</div>
+	"""
 
 body = new View
 	render:(loc)->
@@ -21,7 +115,7 @@ body = new View
 				if err
 					return
 				else
-					body.$el.html(body.template(doc))
+					body.$el.html(body.template.section(doc))
 		else if loc.section is 'all' and loc.chapter isnt 'all'
 			if loc.type = 'GeneralLaws'
 				type = 'general'
@@ -36,7 +130,7 @@ body = new View
 				resp.chap = loc.chapter
 				resp.tit=loc.title
 				resp.pat = loc.part
-				body.$el.html(body.template(resp))
+				body.$el.html(body.template.chapter(resp))
 		else if loc.chapter is 'all' and loc.title isnt 'all'
 			if loc.type = 'GeneralLaws'
 				type = 'general'
@@ -53,7 +147,7 @@ body = new View
 					out.title= row.key.pop()
 					out.part = row.key.pop()
 					out
-				body.$el.html(body.template({row:rows,t:loc.title,tp:loc.part}))
+				body.$el.html(body.template.title({row:rows,t:loc.title,tp:loc.part}))
 		else if loc.title is 'all' and loc.part isnt 'all'
 			if loc.type = 'GeneralLaws'
 				type = 'general'
@@ -69,7 +163,7 @@ body = new View
 					out.title = row.key.pop()
 					out.part= row.key.pop()
 					out
-				body.$el.html(body.template({rowp:rows,p:loc.part}))
+				body.$el.html(body.template.part({rowp:rows,p:loc.part}))
 		else
 			type = 'general'
 			opts=
@@ -81,81 +175,8 @@ body = new View
 					out = {}
 					out.part= row.key.pop()
 					out
-				body.$el.html(body.template({rowg:rows,g:true}))
-	template:"""
-		<div class="row">
-		{{#desc}}
-		<ul class="breadcrumb">
-  			<li><a class='bodyLink' href="../../../../GeneralLaws" id="GeneralLaws">General Laws</a></li>
-  			<li><a class='bodyLink' href='../../../Part{{part}}' id="/GeneralLaws/Part{{part}}">Part {{part}}</a></li>
-  			<li><a class='bodyLink' href='../../Title{{title}}' id="/GeneralLaws/Part{{part}}/Title{{title}}">Title {{title}}</a></li>
-  			<li><a class='bodyLink' href='../Chapter{{chapter}}' id="/GeneralLaws/Part{{part}}/Title{{title}}/Chapter{{chapter}}">Chapter {{chapter}}</a></li>
-  			<li class="active">Section {{section}}</li>
-		</ul>
-		<h1>Section {{section}}</h1>
-		<h2>{{desc}}</h2>{{/desc}}
-		{{#text}}<p>{{text}}</p>{{/text}}
-		{{#chap}}
-		<ul class="breadcrumb">
-  			<li><a class='bodyLink' href="../../../GeneralLaws" id="GeneralLaws">General Laws</a></li>
-  			<li><a class='bodyLink' href='../../Part{{doc.part}}' id="/GeneralLaws/Part{{pat}}">Part {{pat}}</a></li>
-  			<li><a class='bodyLink' href='../Title{{doc.title}}' id="/GeneralLaws/Part{{pat}}/Title{{tit}}">Title {{tit}}</a></li>
-  			<li class="active">Chapter {{chap}}</li>
-		</ul>
-		<h1>Chapter {{chap}}</h1>
-		<dl>{{/chap}}
-		{{#rows}}
-		{{#doc.desc}}<dt><strong>Section {{doc.section}}:</strong> <a class='bodyLink' href='Chapter{{doc.chapter}}/Section{{doc.section}}' id='GeneralLaws/Part{{doc.part}}/Title{{doc.title}}/Chapter{{doc.chapter}}/Section{{doc.section}}'>{{doc.desc}}</a></dt>{{/doc.desc}}
-		{{#doc.text}}<dd>{{doc.text}}</dd>{{/doc.text}}
-		{{/rows}}
-		{{#chap}}</dl>{{/chap}}
-		{{#t}}
-		<ul class="breadcrumb">
-  			<li><a class='bodyLink' href="../../GeneralLaws" id="GeneralLaws">General Laws</a></li>
-  			<li><a class='bodyLink' href='../Part{{tp}}' id="/GeneralLaws/Part{{tp}}">Part {{tp}}</a></li>
-  			
-  			<li class="active">Title {{t}}</li>
-		</ul>
-		<h1>title {{t}}</h1>
-		<ul>{{/t}}
-		{{#row}}
-			<li>
-			<a class='bodyLink' href='Title{{title}}/Chapter{{chapter}}' id="GeneralLaws/Part{{part}}/Title{{title}}/Chapter{{chapter}}">
-				Chapter {{chapter}}
-			</a>
-			</li>
-		{{/row}}
-		{{#t}}</ul>{{/t}}
-		{{#p}}
-		<ul class="breadcrumb">
-  			<li><a class='bodyLink' href="../GeneralLaws" id="GeneralLaws">General Laws</a></li>
-  			
-  			
-  			<li class="active">Part {{p}}</li>
-		</ul>
-		<h1>Part {{p}}</h1>
-		<ul>{{/p}}
-		{{#rowp}}
-			<li>
-			<a class='bodyLink' href='Part{{part}}/Title{{title}}' id="GeneralLaws/Part{{part}}/Title{{title}}">
-				Title {{title}}
-			</a>
-			</li>
-		{{/rowp}}
-		{{#p}}</ul>{{/p}}
-		{{#g}}
-		<h1>General Laws</h1>
-		<ul>{{/g}}
-		{{#rowg}}
-			<li>
-			<a class='bodyLink' href='GeneralLaws/Part{{part}}' id="GeneralLaws/Part{{part}}">
-				Part {{part}}
-			</a>
-			</li>
-		{{/rowg}}
-		{{#g}}</ul>{{/g}}
-		</div>
-	"""
+				body.$el.html(body.template.general({rowg:rows,g:true}))
+	
 	el:$ '#mainContent'
 window.body = body
 class Routes extends Backbone.Router
@@ -165,6 +186,7 @@ class Routes extends Backbone.Router
 		':type/Part:part/Title:title': 'roo'
 		':type/Part:part/Title:title/Chapter:chapter': 'roo'
 		':type/Part:part/Title:title/Chapter:chapter/Section:section': 'roo'
+		'q/:querry':'qoo'
 		'*spat':'roo'
 	roo:(type='home',part='all',title='all',chapter='all',section='all')->
 		parts = 
@@ -193,11 +215,11 @@ routes = new Routes
 	###
 
 
-start = (base,dbname)=>
-	db = Pouch "#{base}/#{dbname}",(err,rslt)->
+start = (dbname)=>
+	db = Pouch "#{location.protocol}//#{location.host}/#{dbname}",(err,rslt)->
 		Backbone.history.start
 			pushState: true
 			root: "#{dbname}/_design/laws/_rewrite/"
 			hashChange: false
 		window.db = db
-start('https://kublai.cloudant.com','law')
+start('law')
