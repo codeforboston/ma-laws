@@ -26,11 +26,7 @@ class View extends Backbone.View
 		<h1>"{{q}}"</h1>
 		<p>{{total_rows}} results</p><dl>
 		{{#rows}}<dt>
-		<a class='bodyLink' href="../GeneralLaws" id="GeneralLaws">General Laws</a>/
-		<a class='bodyLink' href='../GeneralLaws/Part{{doc.part}}' id="/GeneralLaws/Part{{doc.part}}">Part {{doc.part}}</a>/
-  		<a class='bodyLink' href='../GeneralLaws/Part{{doc.part}}/Title{{doc.title}}' id="/GeneralLaws/Part{{doc.part}}/Title{{doc.title}}">Title {{doc.title}}</a>/
-  		<a class='bodyLink' href='../GeneralLaws/Part{{doc.part}}/Title{{doc.title}}/Chapter{{doc.chapter}}' id="/GeneralLaws/Part{{doc.part}}/Title{{doc.title}}/Chapter{{doc.chapter}}">Chapter {{doc.chapter}}</a>/
-  		<a class='bodyLink' href='../GeneralLaws/Part{{doc.part}}/Title{{doc.title}}/Chapter{{doc.chapter}}/Section{{doc.section}}' id="/GeneralLaws/Part{{doc.part}}/Title{{doc.title}}/Chapter{{doc.chapter}}/Section{{doc.section}}">Section {{doc.section}}</a>
+		<a class='bodyLink' href='../c{{doc.chapter}}s{{doc.section}}' id="/c{{doc.chapter}}s{{doc.section}}">Chapter {{doc.chapter}} Section {{doc.section}}</a>
   		</dt>
 		{{#doc.desc}}<dd><strong>{{doc.desc}}</strong></dd>{{/doc.desc}}
 		{{#doc.text}}<dd>{{doc.text}}</dd>{{/doc.text}}
@@ -47,7 +43,7 @@ class View extends Backbone.View
   			<li><a class='bodyLink' href='../Chapter{{chapter}}' id="/GeneralLaws/Part{{part}}/Title{{title}}/Chapter{{chapter}}">Chapter {{chapter}}</a></li>
   			<li class="active">Section {{section}}</li>
 		</ul>
-		<h1>Section {{section}}</h1>
+		<h1>Chapter {{chapter}} Section {{section}}</h1>
 		{{#desc}}<h2>{{desc}}</h2>{{/desc}}
 		{{#text}}<p>{{text}}</p>{{/text}}
 		</div>
@@ -63,7 +59,7 @@ class View extends Backbone.View
 		<h1>Chapter {{chap}}</h1>
 		<dl>
 		{{#rows}}
-		{{#doc.desc}}<dt><strong>Section {{doc.section}}:</strong> <a class='bodyLink' href='Chapter{{doc.chapter}}/Section{{doc.section}}' id='GeneralLaws/Part{{doc.part}}/Title{{doc.title}}/Chapter{{doc.chapter}}/Section{{doc.section}}'>{{doc.desc}}</a></dt>{{/doc.desc}}
+		{{#doc.desc}}<dt><strong>Section {{doc.section}}:</strong> <a class='bodyLink' href='../../../c{{doc.chapter}}s{{doc.section}}' id='c{{doc.chapter}}s{{doc.section}}'>{{doc.desc}}</a></dt>{{/doc.desc}}
 		{{#doc.text}}<dd>{{doc.text}}</dd>{{/doc.text}}
 		{{/rows}}
 		</dl>
@@ -129,13 +125,21 @@ class View extends Backbone.View
 
 body = new View
 	render:(loc)->
+		console.log(loc)
 		if 'q' of loc
 			@search(loc.q).then (resp)->
 				console.log resp
 				resp.q=loc.q
 				body.$el.html(body.template.search(resp))
+		else if 'newStyleName' of loc
+			id = """c#{loc.c}s#{loc.s}"""
+			db.get id,(err,doc)->
+				if err
+					return
+				else
+					body.$el.html(body.template.section(doc))
 		else if loc.section isnt 'all'
-			id = """#{loc.type}/Part#{loc.part}/Title#{loc.title}/Chapter#{loc.chapter}/Section#{loc.section}"""
+			id = """c#{loc.chapter}s#{loc.section}"""
 			db.get id,(err,doc)->
 				if err
 					return
@@ -206,6 +210,7 @@ body = new View
 window.body = body
 class Routes extends Backbone.Router
 	routes:
+		'c:type':'nStyle'
 		':type': 'roo'
 		':type/Part:part': 'roo'
 		':type/Part:part/Title:title': 'roo'
@@ -225,6 +230,14 @@ class Routes extends Backbone.Router
 		body.render parts
 	qoo:(query)->
 		body.render {q:query}
+	nStyle:(path)->
+		split = path.split('s')
+		parts=
+			newStyleName:true
+			c:split[0]
+			s:split[1]
+		body.render parts
+			
 
 routes = new Routes
 
