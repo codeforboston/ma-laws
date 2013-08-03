@@ -3,6 +3,7 @@
   var Routes, View, body, db, routes, start, _ref, _ref1,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     _this = this;
 
   db = false;
@@ -47,11 +48,15 @@
     };
 
     View.prototype.template = {
-      search: Mustache.compile("<div class=\"row\">\n<h1>\"{{q}}\"</h1>\n<p>{{total_rows}} results</p><dl>\n{{#rows}}<dt>\n<a class='bodyLink' href='../c{{doc.chapter}}s{{doc.section}}' id=\"/c{{doc.chapter}}s{{doc.section}}\">Chapter {{doc.chapter}} Section {{doc.section}}</a>\n  		</dt>\n{{#doc.desc}}<dd><strong>{{doc.desc}}</strong></dd>{{/doc.desc}}\n{{#doc.text}}<dd>{{doc.text}}</dd>{{/doc.text}}\n{{/rows}}\n</dl>\n</div>"),
-      section: Mustache.compile("<div class=\"row\">\n<ul class=\"breadcrumb\">\n  			<li><a class='bodyLink' href=\"../../../../GeneralLaws\" id=\"GeneralLaws\">General Laws</a></li>\n  			<li><a class='bodyLink' href='../../../Part{{part}}' id=\"/GeneralLaws/Part{{part}}\">Part {{part}}</a></li>\n  			<li><a class='bodyLink' href='../../Title{{title}}' id=\"/GeneralLaws/Part{{part}}/Title{{title}}\">Title {{title}}</a></li>\n  			<li><a class='bodyLink' href='../Chapter{{chapter}}' id=\"/GeneralLaws/Part{{part}}/Title{{title}}/Chapter{{chapter}}\">Chapter {{chapter}}</a></li>\n  			<li class=\"active\">Section {{section}}</li>\n</ul>\n<h1>Chapter {{chapter}} Section {{section}}</h1>\n{{#desc}}<h2>{{desc}}</h2>{{/desc}}\n{{#text}}<p>{{text}}</p>{{/text}}\n</div>"),
-      chapter: Mustache.compile("<div class=\"row\">\n<ul class=\"breadcrumb\">\n  			<li><a class='bodyLink' href=\"../../../GeneralLaws\" id=\"GeneralLaws\">General Laws</a></li>\n  			<li><a class='bodyLink' href='../../Part{{doc.part}}' id=\"/GeneralLaws/Part{{pat}}\">Part {{pat}}</a></li>\n  			<li><a class='bodyLink' href='../Title{{doc.title}}' id=\"/GeneralLaws/Part{{pat}}/Title{{tit}}\">Title {{tit}}</a></li>\n  			<li class=\"active\">Chapter {{chap}}</li>\n</ul>\n<h1>Chapter {{chap}}</h1>\n<dl>\n{{#rows}}\n{{#doc.desc}}<dt><strong>Section {{doc.section}}:</strong> <a class='bodyLink' href='../../../c{{doc.chapter}}s{{doc.section}}' id='c{{doc.chapter}}s{{doc.section}}'>{{doc.desc}}</a></dt>{{/doc.desc}}\n{{#doc.text}}<dd>{{doc.text}}</dd>{{/doc.text}}\n{{/rows}}\n</dl>\n</div>"),
-      title: Mustache.compile("<div class=\"row\">\n<ul class=\"breadcrumb\">\n  			<li><a class='bodyLink' href=\"../../GeneralLaws\" id=\"GeneralLaws\">General Laws</a></li>\n  			<li><a class='bodyLink' href='../Part{{tp}}' id=\"/GeneralLaws/Part{{tp}}\">Part {{tp}}</a></li>\n  			\n  			<li class=\"active\">Title {{t}}</li>\n</ul>\n<h1>Title {{t}}</h1>\n<ul>\n{{#row}}\n	<li>\n	<a class='bodyLink' href='Title{{title}}/Chapter{{chapter}}' id=\"GeneralLaws/Part{{part}}/Title{{title}}/Chapter{{chapter}}\">\n		Chapter {{chapter}}\n	</a>\n	</li>\n{{/row}}\n</ul>\n</div>"),
-      part: Mustache.compile("<div class=\"row\">\n<ul class=\"breadcrumb\">\n  			<li><a class='bodyLink' href=\"../GeneralLaws\" id=\"GeneralLaws\">General Laws</a></li>\n  			\n  			\n  			<li class=\"active\">Part {{p}}</li>\n</ul>\n<h1>Part {{p}}</h1>\n<ul>\n{{#rowp}}\n	<li>\n	<a class='bodyLink' href='Part{{part}}/Title{{title}}' id=\"GeneralLaws/Part{{part}}/Title{{title}}\">\n		Title {{title}}\n	</a>\n	</li>\n{{/rowp}}\n</ul>\n</div>"),
+      search: Mustache.compile("<div class=\"row\">\n<h1>\"{{q}}\"</h1>\n<p>{{total_rows}} results</p><dl>\n{{#rows}}\n{{#doc.section}}<dt>\n<a class='bodyLink' href='/c{{doc.chapter}}s{{doc.section}}' id=\"/c{{doc.chapter}}s{{doc.section}}\">Chapter {{doc.chapter}} Section {{doc.section}}</a>\n  		</dt>\n{{#doc.desc}}<dd><strong>{{doc.desc}}</strong></dd>{{/doc.desc}}\n{{#doc.text}}<dd>{{doc.text}}</dd>{{/doc.text}}\n{{/doc.section}}\n{{#doc.article}}<dt>\n<a class='bodyLink' href='/c{{doc.chapter}}a{{doc.article}}' id=\"/c{{doc.chapter}}a{{doc.article}}\">Chapter {{doc.chapter}} Article {{doc.article}}</a>\n  		</dt>\n{{#doc.desc}}<dd><strong>{{doc.desc}}</strong></dd>{{/doc.desc}}\n{{#doc.text}}<dd>{{doc.text}}</dd>{{/doc.text}}\n{{/doc.article}}\n{{#doc.year}}<dt>\n<a class='bodyLink' href='../y{{doc.year}}c{{doc.chapter}}' id=\"/y{{doc.year}}c{{doc.chapter}}\">Session {{doc.year}} Chapter {{doc.chapter}}</a>\n  		</dt>\n{{#doc.desc}}<dd>{{doc.desc}}</dd>{{/doc.desc}}\n{{/doc.year}}\n{{/rows}}\n</dl>\n</div>"),
+      section: Mustache.compile("<div class=\"row\">\n<ul class=\"breadcrumb\">\n  			<li><a class='bodyLink' href=\"GeneralLaws\" id=\"GeneralLaws\">General Laws</a></li>\n  			<li><a class='bodyLink' href='GeneralLaws/Part{{part}}' id=\"/GeneralLaws/Part{{part}}\">Part {{part}}</a></li>\n  			<li><a class='bodyLink' href='GeneralLaws/Part{{part}}/Title{{title}}' id=\"/GeneralLaws/Part{{part}}/Title{{title}}\">Title {{title}}</a></li>\n  			<li><a class='bodyLink' href='GeneralLaws/Part{{part}}/Title{{title}}/Chapter{{chapter}}' id=\"/GeneralLaws/Part{{part}}/Title{{title}}/Chapter{{chapter}}\">Chapter {{chapter}}</a></li>\n  			<li class=\"active\">Section {{section}}</li>\n</ul>\n<h1>Chapter {{chapter}} Section {{section}}</h1>\n{{#desc}}<h2>{{desc}}</h2>{{/desc}}\n{{#text}}<p>{{text}}</p>{{/text}}\n</div>"),
+      article: Mustache.compile("<div class=\"row\">\n<ul class=\"breadcrumb\">\n  			<li><a class='bodyLink' href=\"GeneralLaws\" id=\"GeneralLaws\">General Laws</a></li>\n  			<li><a class='bodyLink' href='GeneralLaws/Part{{part}}' id=\"/GeneralLaws/Part{{part}}\">Part {{part}}</a></li>\n  			<li><a class='bodyLink' href='GeneralLaws/Part{{part}}/Title{{title}}' id=\"/GeneralLaws/Part{{part}}/Title{{title}}\">Title {{title}}</a></li>\n  			<li><a class='bodyLink' href='GeneralLaws/Part{{part}}/Title{{title}}/Chapter{{chapter}}' id=\"/GeneralLaws/Part{{part}}/Title{{title}}/Chapter{{chapter}}\">Chapter {{chapter}}</a></li>\n  			<li class=\"active\">Article {{article}}</li>\n</ul>\n<h1>Chapter {{chapter}} Article {{article}}</h1>\n{{#desc}}<h2>{{desc}}</h2>{{/desc}}\n{{#text}}<p>{{text}}</p>{{/text}}\n</div>"),
+      session: Mustache.compile("<div class=\"row\">\n<ul class=\"breadcrumb\">\n  			<li><a class='bodyLink' href=\"SessionLaw\" id=\"SessionLaw\">Session Laws</a></li>\n  			<li><a class='bodyLink' href=\"SessionLaw/Year{{year}}\" id=\"SessionLaw/Year{{year}}\">Year {{year}}</a></li>\n  			\n  			<li class=\"active\">Chapter {{chapter}}</li>\n</ul>\n<h1>Session {{year}} Chapter {{chapter}}</h1>\n{{#desc}}<h4>{{desc}}</h4>{{/desc}}\n{{#text}}{{{text}}}{{/text}}\n</div>"),
+      chapter: Mustache.compile("<div class=\"row\">\n<ul class=\"breadcrumb\">\n  			<li><a class='bodyLink' href=\"/GeneralLaws\" id=\"GeneralLaws\">General Laws</a></li>\n  			<li><a class='bodyLink' href='/GeneralLaws/Part{{doc.part}}' id=\"GeneralLaws/Part{{pat}}\">Part {{pat}}</a></li>\n  			<li><a class='bodyLink' href='/GeneralLaws/Part{{doc.part}}/Title{{doc.title}}' id=\"GeneralLaws/Part{{pat}}/Title{{tit}}\">Title {{tit}}</a></li>\n  			<li class=\"active\">Chapter {{chap}}</li>\n</ul>\n<h1>Chapter {{chap}}</h1>\n<dl>\n{{#rows}}\n{{#doc.desc}}<dt><strong>{{doc.longCode}} {{doc.sub}}:</strong> <a class='bodyLink' href='../../../c{{doc.chapter}}{{doc.shortCode}}{{doc.sub}}' id='c{{doc.chapter}}{{doc.shortCode}}{{doc.sub}}'>{{doc.desc}}</a></dt>{{/doc.desc}}\n{{#doc.text}}<dd>{{doc.text}}</dd>{{/doc.text}}\n{{/rows}}\n</dl>\n</div>"),
+      title: Mustache.compile("<div class=\"row\">\n<ul class=\"breadcrumb\">\n  			<li><a class='bodyLink' href=\"/GeneralLaws\" id=\"GeneralLaws\">General Laws</a></li>\n  			<li><a class='bodyLink' href='/GeneralLaws/Part{{tp}}' id=\"/GeneralLaws/Part{{tp}}\">Part {{tp}}</a></li>\n  			\n  			<li class=\"active\">Title {{t}}</li>\n</ul>\n<h1>Title {{t}}</h1>\n<ul>\n{{#row}}\n	<li>\n	<a class='bodyLink' href='Title{{title}}/Chapter{{chapter}}' id=\"GeneralLaws/Part{{part}}/Title{{title}}/Chapter{{chapter}}\">\n		Chapter {{chapter}}\n	</a>\n	</li>\n{{/row}}\n</ul>\n</div>"),
+      year: Mustache.compile("<div class=\"row\">\n<ul class=\"breadcrumb\">\n  			<li><a class='bodyLink' href=\"/SessionLaw\" id=\"SessionLaw\">Session Laws</a></li>\n  			\n  			\n  			<li class=\"active\">Year {{year}}</li>\n</ul>\n<h1>Year {{year}}</h1>\n<ul>\n{{#rows}}{{#doc.desc}}\n	<li><h3>\n	<a class='bodyLink' href='/{{doc._id}}' id=\"{{doc._id}}\">\n		Chapter {{doc.chapter}}\n	</a></h3>\n	{{doc.desc}}\n	</li>\n	{{/doc.desc}}\n{{/rows}}\n</ul>\n</div>"),
+      part: Mustache.compile("<div class=\"row\">\n<ul class=\"breadcrumb\">\n  			<li><a class='bodyLink' href=\"/GeneralLaws\" id=\"GeneralLaws\">General Laws</a></li>\n  			\n  			\n  			<li class=\"active\">Part {{p}}</li>\n</ul>\n<h1>Part {{p}}</h1>\n<ul>\n{{#rowp}}\n	<li>\n	<a class='bodyLink' href='Part{{part}}/Title{{title}}' id=\"GeneralLaws/Part{{part}}/Title{{title}}\">\n		Title {{title}}\n	</a>\n	</li>\n{{/rowp}}\n</ul>\n</div>"),
+      sess: Mustache.compile("<div class=\"row\">\n<ul class=\"breadcrumb\">\n  			<li class=\"active\">Session Laws</li>\n</ul>\n<h1>Session Laws</h1>\n<ul>\n{{#rows}}\n	<li>\n	<a class='bodyLink' href='SessionLaw/Year{{year}}' id=\"SessionLaw/Year{{year}}\">\n		Year {{year}}\n	</a>\n	</li>\n{{/rows}}\n</ul>\n</div>"),
       general: Mustache.compile("<div class=\"row\">\n<ul class=\"breadcrumb\">\n  			<li class=\"active\">General Laws</li>\n</ul>\n<h1>General Laws</h1>\n<ul>\n{{#rowg}}\n	<li>\n	<a class='bodyLink' href='GeneralLaws/Part{{part}}' id=\"GeneralLaws/Part{{part}}\">\n		Part {{part}}\n	</a>\n	</li>\n{{/rowg}}\n</ul>\n</div>")
     };
 
@@ -78,6 +83,55 @@
             return body.$el.html(body.template.section(doc));
           }
         });
+      } else if ('a' in loc) {
+        id = "c" + loc.c + "a" + loc.a;
+        return db.get(id, function(err, doc) {
+          if (err) {
+
+          } else {
+            return body.$el.html(body.template.article(doc));
+          }
+        });
+      } else if ('y' in loc) {
+        id = "y" + loc.y + "c" + loc.c;
+        return db.get(id, function(err, doc) {
+          if (err) {
+
+          } else {
+            return body.$el.html(body.template.session(doc));
+          }
+        });
+      } else if (loc.type && loc.type === 'session') {
+        if (loc.year === 'all') {
+          opts = {
+            startkey: [loc.type],
+            endkey: [loc.type, {}],
+            group_level: 2
+          };
+          return db.query("laws/sessions", opts, function(err, resp) {
+            resp.rows = resp.rows.map(function(row) {
+              var out;
+              out = {};
+              out.year = row.key.pop();
+              return out;
+            });
+            return body.$el.html(body.template.sess(resp));
+          });
+        } else {
+          opts = {
+            startkey: [loc.type, loc.year],
+            endkey: [loc.type, loc.year, {}],
+            reduce: false,
+            include_docs: true
+          };
+          return db.query("laws/sessions", opts, function(err, resp) {
+            resp.rows.sort(function(a, b) {
+              return a.doc.chapter - b.doc.chapter;
+            });
+            resp.year = loc.year;
+            return body.$el.html(body.template.year(resp));
+          });
+        }
       } else if (loc.section !== 'all') {
         id = "c" + loc.chapter + "s" + loc.section;
         return db.get(id, function(err, doc) {
@@ -100,9 +154,22 @@
           include_docs: true
         };
         return db.query("laws/all", opts, function(err, resp) {
+          resp.rows = resp.rows.map(function(item) {
+            if (item.doc.section) {
+              item.doc.sub = item.doc.section;
+              item.doc.shortCode = "s";
+              item.doc.longCode = "Section";
+            } else if (item.doc.article) {
+              item.doc.sub = item.doc.article;
+              item.doc.shortCode = "a";
+              item.doc.longCode = "Article";
+            }
+            return item;
+          });
           resp.chap = loc.chapter;
           resp.tit = loc.title;
           resp.pat = loc.part;
+          console.log(resp);
           return body.$el.html(body.template.chapter(resp));
         });
       } else if (loc.chapter === 'all' && loc.title !== 'all') {
@@ -194,6 +261,9 @@
 
     Routes.prototype.routes = {
       'c:type': 'nStyle',
+      'y:type': 'session',
+      'SessionLaw': 'years',
+      'SessionLaw/Year:year': 'years',
       ':type': 'roo',
       ':type/Part:part': 'roo',
       ':type/Part:part/Title:title': 'roo',
@@ -244,13 +314,44 @@
 
     Routes.prototype.nStyle = function(path) {
       var parts, split;
-      split = path.split('s');
-      parts = {
-        newStyleName: true,
-        c: split[0],
-        s: split[1]
-      };
-      return body.render(parts);
+      if (__indexOf.call(path, 's') >= 0) {
+        split = path.split('s');
+        parts = {
+          newStyleName: true,
+          c: split[0],
+          s: split[1]
+        };
+        return body.render(parts);
+      } else if (__indexOf.call(path, 'a') >= 0) {
+        split = path.split('a');
+        parts = {
+          c: split[0],
+          a: split[1]
+        };
+        return body.render(parts);
+      }
+    };
+
+    Routes.prototype.session = function(path) {
+      var parts, split;
+      if (__indexOf.call(path, 'c') >= 0) {
+        split = path.split('c');
+        parts = {
+          y: split[0],
+          c: split[1]
+        };
+        return body.render(parts);
+      }
+    };
+
+    Routes.prototype.years = function(year) {
+      if (year == null) {
+        year = 'all';
+      }
+      return body.render({
+        type: 'session',
+        year: year
+      });
     };
 
     return Routes;
@@ -274,10 +375,9 @@
 
 
   start = function(dbname) {
-    db = Pouch("" + location.protocol + "//" + location.host + "/" + dbname, function(err, rslt) {
+    db = Pouch("" + location.protocol + "//" + location.host + "//law", function(err, rslt) {
       Backbone.history.start({
         pushState: true,
-        root: "" + dbname + "/_design/laws/_rewrite/",
         hashChange: false
       });
       return window.db = db;

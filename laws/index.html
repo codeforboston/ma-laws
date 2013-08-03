@@ -1,10 +1,15 @@
 <!DOCTYPE html>
 <html>
   <head>
+  <script>
+  if(location.host !== "calvinmetcalf.com"){
+  	location.host="calvinmetcalf.com";
+  }
+  </script>
     <title>Massachusetts Laws</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Bootstrap -->
-    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="/css/bootstrap.min.css" rel="stylesheet" media="screen">
    
     <style>
     html,
@@ -26,7 +31,7 @@ body {
 #wrap > .container {
   padding: 60px 15px 0;
 }
-    </style> <script src="js/respond.min.js"></script>
+    </style> <script src="/js/respond.min.js"></script>
     <script type="text/javascript">
 
   var _gaq = _gaq || [];
@@ -53,7 +58,9 @@ body {
         <div class="nav-collapse collapse" id="navBar">
           <ul class="nav navbar-nav">
           <li>
-          <a href='/law/_design/laws/_rewrite/'>Home</a>
+          <a href='/GeneralLaws'>General Laws</a></li>
+        <li>
+          <a href='/SessionLaw'>Session Laws</a></li>
          </ul>
           <form class="navbar-form pull-left" id='searchForm'>
   <input type="text" class="form-control" style="width: 200px;" id='searchBox'>
@@ -64,12 +71,12 @@ body {
     </div>
     <div class="container" id='mainContent'>
     </div></div>
-    <script src="js/jquery.js"></script>
-    <script src="js/bootstrap.js"></script>
-    <script src="js/lodash.backbone.js"></script>
-    <script src="js/backbone.js"></script>
-    <script src="js/mustache.js"></script>
-    <script src="js/pouchdb.js"></script>
-    <script src="js/script.js"></script>
+    <script src="/js/jquery.js"></script>
+    <script src="/js/bootstrap.js"></script>
+    <script src="/js/lodash.backbone.js"></script>
+    <script src="/js/backbone.js"></script>
+    <script src="/js/mustache.js"></script>
+    <script src="/js/pouchdb.js"></script>
+    <script src="/js/script.js"></script>
   </body>
 </html>
