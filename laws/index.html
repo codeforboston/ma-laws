@@ -31,7 +31,14 @@ body {
 #wrap > .container {
   padding: 60px 15px 0;
 }
-    </style> <script src="/js/respond.min.js"></script>
+    </style> 
+ <!--from https://github.com/simonwhitaker/github-fork-ribbon-css -->
+    <link rel="stylesheet" href="css/gh-fork-ribbon.css" />
+    <!--[if IE]>
+        <link rel="stylesheet" href="css/gh-fork-ribbon.ie.css" />
+    <![endif]-->
+    <!-- END COPYING HERE -->
+    <script src="/js/respond.min.js"></script>
     <script type="text/javascript">
 
   var _gaq = _gaq || [];
@@ -47,7 +54,11 @@ body {
 
 </script>
   </head>
-  <body><div id='wrap'>
+  <body><div class="github-fork-ribbon-wrapper right">
+        <div class="github-fork-ribbon">
+            <a href="https://github.com/codeforboston/ma-laws">Fork me on GitHub</a>
+        </div>
+    </div><div id='wrap'>
      <div class="navbar navbar-fixed-top">
       <div class="container">
         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
