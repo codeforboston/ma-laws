@@ -20,6 +20,8 @@ class View extends Backbone.View
 		a.preventDefault()
 		routes.navigate a.target.id,
 			trigger:true
+	spin:(a)->
+		@$el.spin(a)
 	template:
 		search:Mustache.compile """
 		<div class="row">
@@ -204,32 +206,39 @@ class View extends Backbone.View
 
 body = new View
 	render:(loc)->
-		console.log(loc)
+		#console.log(loc)
 		if 'q' of loc
 			@search(loc.q).then (resp)->
 				console.log resp
 				resp.q=loc.q
+				body.spin(false)
 				body.$el.html(body.template.search(resp))
 		else if 'newStyleName' of loc
 			id = """c#{loc.c}s#{loc.s}"""
 			db.get id,(err,doc)->
 				if err
+					body.spin(false)
 					return
 				else
+					body.spin(false)
 					body.$el.html(body.template.section(doc))
 		else if 'a' of loc
 			id = """c#{loc.c}a#{loc.a}"""
 			db.get id,(err,doc)->
 				if err
+					body.spin(false)
 					return
 				else
+					body.spin(false)
 					body.$el.html(body.template.article(doc))
 		else if 'y' of loc
 			id = """y#{loc.y}c#{loc.c}"""
 			db.get id,(err,doc)->
 				if err
+					body.spin(false)
 					return
 				else
+					body.spin(false)
 					body.$el.html(body.template.session(doc))
 		else if loc.type and loc.type == 'session'
 			if loc.year=='all'
@@ -242,6 +251,7 @@ body = new View
 						out = {}
 						out.year= row.key.pop()
 						out
+					body.spin(false)
 					body.$el.html(body.template.sess(resp))
 			else
 				opts=
@@ -253,13 +263,16 @@ body = new View
 					resp.rows.sort (a,b)->
 						a.doc.chapter-b.doc.chapter
 					resp.year = loc.year
+					body.spin(false)
 					body.$el.html(body.template.year(resp))
 		else if loc.section isnt 'all'
 			id = """c#{loc.chapter}s#{loc.section}"""
 			db.get id,(err,doc)->
 				if err
+					body.spin(false)
 					return
 				else
+					body.spin(false)
 					body.$el.html(body.template.section(doc))
 		else if loc.section is 'all' and loc.chapter isnt 'all'
 			if loc.type = 'GeneralLaws'
@@ -285,7 +298,8 @@ body = new View
 				resp.chap = loc.chapter
 				resp.tit=loc.title
 				resp.pat = loc.part
-				console.log resp
+				#console.log resp
+				body.spin(false)
 				body.$el.html(body.template.chapter(resp))
 		else if loc.chapter is 'all' and loc.title isnt 'all'
 			if loc.type = 'GeneralLaws'
@@ -303,6 +317,7 @@ body = new View
 					out.title= row.key.pop()
 					out.part = row.key.pop()
 					out
+				body.spin(false)
 				body.$el.html(body.template.title({row:rows,t:loc.title,tp:loc.part}))
 		else if loc.title is 'all' and loc.part isnt 'all'
 			if loc.type = 'GeneralLaws'
@@ -319,6 +334,7 @@ body = new View
 					out.title = row.key.pop()
 					out.part= row.key.pop()
 					out
+				body.spin(false)
 				body.$el.html(body.template.part({rowp:rows,p:loc.part}))
 		else
 			type = 'general'
@@ -331,6 +347,7 @@ body = new View
 					out = {}
 					out.part= row.key.pop()
 					out
+				body.spin(false)
 				body.$el.html(body.template.general({rowg:rows,g:true}))
 	
 	el:$ '#mainContent'
@@ -349,6 +366,7 @@ class Routes extends Backbone.Router
 		'q/:query':'qoo'
 		'*spat':'roo'
 	roo:(type='home',part='all',title='all',chapter='all',section='all')->
+		body.spin()
 		parts = 
 			type:type
 			part:part
@@ -359,8 +377,10 @@ class Routes extends Backbone.Router
 		parts.section = parseInt(parts.section,10) unless parts.section is 'all'
 		body.render parts
 	qoo:(query)->
+		body.spin()
 		body.render {q:query}
 	nStyle:(path)->
+		body.spin()
 		if 's' in path
 			split = path.split('s')
 			parts=
@@ -375,6 +395,7 @@ class Routes extends Backbone.Router
 				a:split[1]
 			body.render parts
 	session:(path)->
+		body.spin()
 		if 'c' in path
 			split = path.split('c')
 			parts = 
@@ -382,6 +403,7 @@ class Routes extends Backbone.Router
 				c:split[1]
 			body.render parts
 	years:(year='all')->
+		body.spin()
 		body.render
 			type:'session'
 			year:year

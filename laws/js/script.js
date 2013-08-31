@@ -47,6 +47,10 @@
       });
     };
 
+    View.prototype.spin = function(a) {
+      return this.$el.spin(a);
+    };
+
     View.prototype.template = {
       search: Mustache.compile("<div class=\"row\">\n<h1>\"{{q}}\"</h1>\n<p>{{total_rows}} results</p><dl>\n{{#rows}}\n{{#doc.section}}<dt>\n<a class='bodyLink' href='/c{{doc.chapter}}s{{doc.section}}' id=\"/c{{doc.chapter}}s{{doc.section}}\">Chapter {{doc.chapter}} Section {{doc.section}}</a>\n  		</dt>\n{{#doc.desc}}<dd><strong>{{doc.desc}}</strong></dd>{{/doc.desc}}\n{{#doc.text}}<dd>{{doc.text}}</dd>{{/doc.text}}\n{{/doc.section}}\n{{#doc.article}}<dt>\n<a class='bodyLink' href='/c{{doc.chapter}}a{{doc.article}}' id=\"/c{{doc.chapter}}a{{doc.article}}\">Chapter {{doc.chapter}} Article {{doc.article}}</a>\n  		</dt>\n{{#doc.desc}}<dd><strong>{{doc.desc}}</strong></dd>{{/doc.desc}}\n{{#doc.text}}<dd>{{doc.text}}</dd>{{/doc.text}}\n{{/doc.article}}\n{{#doc.year}}<dt>\n<a class='bodyLink' href='../y{{doc.year}}c{{doc.chapter}}' id=\"/y{{doc.year}}c{{doc.chapter}}\">Session {{doc.year}} Chapter {{doc.chapter}}</a>\n  		</dt>\n{{#doc.desc}}<dd>{{doc.desc}}</dd>{{/doc.desc}}\n{{/doc.year}}\n{{/rows}}\n</dl>\n</div>"),
       section: Mustache.compile("<div class=\"row\">\n<ul class=\"breadcrumb\">\n  			<li><a class='bodyLink' href=\"GeneralLaws\" id=\"GeneralLaws\">General Laws</a></li>\n  			<li><a class='bodyLink' href='GeneralLaws/Part{{part}}' id=\"/GeneralLaws/Part{{part}}\">Part {{part}}</a></li>\n  			<li><a class='bodyLink' href='GeneralLaws/Part{{part}}/Title{{title}}' id=\"/GeneralLaws/Part{{part}}/Title{{title}}\">Title {{title}}</a></li>\n  			<li><a class='bodyLink' href='GeneralLaws/Part{{part}}/Title{{title}}/Chapter{{chapter}}' id=\"/GeneralLaws/Part{{part}}/Title{{title}}/Chapter{{chapter}}\">Chapter {{chapter}}</a></li>\n  			<li class=\"active\">Section {{section}}</li>\n</ul>\n<h1>Chapter {{chapter}} Section {{section}}</h1>\n{{#desc}}<h2>{{desc}}</h2>{{/desc}}\n{{#text}}<p>{{text}}</p>{{/text}}\n</div>"),
@@ -67,19 +71,20 @@
   body = new View({
     render: function(loc) {
       var id, opts, type;
-      console.log(loc);
       if ('q' in loc) {
         return this.search(loc.q).then(function(resp) {
           console.log(resp);
           resp.q = loc.q;
+          body.spin(false);
           return body.$el.html(body.template.search(resp));
         });
       } else if ('newStyleName' in loc) {
         id = "c" + loc.c + "s" + loc.s;
         return db.get(id, function(err, doc) {
           if (err) {
-
+            body.spin(false);
           } else {
+            body.spin(false);
             return body.$el.html(body.template.section(doc));
           }
         });
@@ -87,8 +92,9 @@
         id = "c" + loc.c + "a" + loc.a;
         return db.get(id, function(err, doc) {
           if (err) {
-
+            body.spin(false);
           } else {
+            body.spin(false);
             return body.$el.html(body.template.article(doc));
           }
         });
@@ -96,8 +102,9 @@
         id = "y" + loc.y + "c" + loc.c;
         return db.get(id, function(err, doc) {
           if (err) {
-
+            body.spin(false);
           } else {
+            body.spin(false);
             return body.$el.html(body.template.session(doc));
           }
         });
@@ -115,6 +122,7 @@
               out.year = row.key.pop();
               return out;
             });
+            body.spin(false);
             return body.$el.html(body.template.sess(resp));
           });
         } else {
@@ -129,6 +137,7 @@
               return a.doc.chapter - b.doc.chapter;
             });
             resp.year = loc.year;
+            body.spin(false);
             return body.$el.html(body.template.year(resp));
           });
         }
@@ -136,8 +145,9 @@
         id = "c" + loc.chapter + "s" + loc.section;
         return db.get(id, function(err, doc) {
           if (err) {
-
+            body.spin(false);
           } else {
+            body.spin(false);
             return body.$el.html(body.template.section(doc));
           }
         });
@@ -169,7 +179,7 @@
           resp.chap = loc.chapter;
           resp.tit = loc.title;
           resp.pat = loc.part;
-          console.log(resp);
+          body.spin(false);
           return body.$el.html(body.template.chapter(resp));
         });
       } else if (loc.chapter === 'all' && loc.title !== 'all') {
@@ -193,6 +203,7 @@
             out.part = row.key.pop();
             return out;
           });
+          body.spin(false);
           return body.$el.html(body.template.title({
             row: rows,
             t: loc.title,
@@ -219,6 +230,7 @@
             out.part = row.key.pop();
             return out;
           });
+          body.spin(false);
           return body.$el.html(body.template.part({
             rowp: rows,
             p: loc.part
@@ -239,6 +251,7 @@
             out.part = row.key.pop();
             return out;
           });
+          body.spin(false);
           return body.$el.html(body.template.general({
             rowg: rows,
             g: true
@@ -290,6 +303,7 @@
       if (section == null) {
         section = 'all';
       }
+      body.spin();
       parts = {
         type: type,
         part: part,
@@ -307,6 +321,7 @@
     };
 
     Routes.prototype.qoo = function(query) {
+      body.spin();
       return body.render({
         q: query
       });
@@ -314,6 +329,7 @@
 
     Routes.prototype.nStyle = function(path) {
       var parts, split;
+      body.spin();
       if (__indexOf.call(path, 's') >= 0) {
         split = path.split('s');
         parts = {
@@ -334,6 +350,7 @@
 
     Routes.prototype.session = function(path) {
       var parts, split;
+      body.spin();
       if (__indexOf.call(path, 'c') >= 0) {
         split = path.split('c');
         parts = {
@@ -348,6 +365,7 @@
       if (year == null) {
         year = 'all';
       }
+      body.spin();
       return body.render({
         type: 'session',
         year: year
