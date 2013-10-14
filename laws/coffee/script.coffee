@@ -255,8 +255,8 @@ body = new View
 					body.$el.html(body.template.sess(resp))
 			else
 				opts=
-					startkey:[loc.type,loc.year]
-					endkey:[loc.type,loc.year,{}]
+					startkey:[loc.type,parseInt(loc.year,10)]
+					endkey:[loc.type,parseInt(loc.year,10),{}]
 					reduce:false
 					include_docs:true
 				db.query """laws/sessions""",opts,(err,resp)->

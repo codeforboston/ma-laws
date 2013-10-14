@@ -127,8 +127,8 @@
           });
         } else {
           opts = {
-            startkey: [loc.type, loc.year],
-            endkey: [loc.type, loc.year, {}],
+            startkey: [loc.type, parseInt(loc.year, 10)],
+            endkey: [loc.type, parseInt(loc.year, 10), {}],
             reduce: false,
             include_docs: true
           };
