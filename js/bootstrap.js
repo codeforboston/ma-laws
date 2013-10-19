@@ -3,6 +3,7 @@
 * Copyright 2013 Twitter Inc.
 * http://www.apache.org/licenses/LICENSE-2.0
 */
+var jQuery = require('jquery');
 if (!jQuery) { throw new Error("Bootstrap requires jQuery") }
 
 /* ========================================================================
@@ -1961,4 +1962,4 @@ if (!jQuery) { throw new Error("Bootstrap requires jQuery") }
     })
   })
 
-}(window.jQuery);
+}(jQuery);

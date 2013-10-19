@@ -1,0 +1,21 @@
+{
+  "name": "laws",
+  "version": "0.0.0",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/codeforboston/ma-laws.git"
+  },
+  "author": "",
+  "license": "mit",
+  "bugs": {
+    "url": "https://github.com/codeforboston/ma-laws/issues"
+  },
+  "private": true,
+  "devDependencies": {
+    "mustache": "~0.7.2",
+    "lodash": "~2.2.1",
+    "backbone": "~1.1.0",
+    "pouchdb": "git://github.com/daleharvey/pouchdb.git"
+  }
+}

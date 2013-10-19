@@ -1,15 +1,11 @@
 <!DOCTYPE html>
 <html>
   <head>
-  <script>
-  if(location.host !== "macode.org"){
-  	location.host="macode.org";
-  }
-  </script>
+  
     <title>Massachusetts Laws</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Bootstrap -->
-    <link href="/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
    
     <style>
     html,
@@ -37,10 +33,10 @@ body {
     <!--[if IE]>
         <link rel="stylesheet" href="css/gh-fork-ribbon.ie.css" />
     <![endif]-->
-    <!-- END COPYING HERE -->
-    <script src="/js/respond.min.js"></script>
+    <!-- END COPYING HERE 
+    <script src="js/respond.min.js"></script>-->
     <script type="text/javascript">
-
+/*
   var _gaq = _gaq || [];
   _gaq.push(['_setAccount', 'UA-37834896-1']);
   _gaq.push(['_setDomainName', 'cloudant.com']);
@@ -51,7 +47,7 @@ body {
     ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
   })();
-
+*/
 </script>
   </head>
   <body><div class="github-fork-ribbon-wrapper right">
@@ -69,9 +65,9 @@ body {
         <div class="nav-collapse collapse" id="navBar">
           <ul class="nav navbar-nav">
           <li>
-          <a href='/GeneralLaws'>General Laws</a></li>
+          <a href='/law/_design/laws/_rewrite/GeneralLaws'>General Laws</a></li>
         <li>
-          <a href='/SessionLaw'>Session Laws</a></li>
+          <a href='/law/_design/laws/_rewrite/SessionLaw'>Session Laws</a></li>
          </ul>
           <form class="navbar-form pull-left" id='searchForm'>
   <input type="text" class="form-control" style="width: 200px;" id='searchBox'>
@@ -82,13 +78,6 @@ body {
     </div>
     <div class="container" id='mainContent'>
     </div></div>
-    <script src="/js/jquery.js"></script>
-    <script src="/js/bootstrap.js"></script>
-    <script src="/js/lodash.backbone.js"></script>
-    <script src="/js/backbone.js"></script>
-    <script src="/js/mustache.js"></script>
-    <script src="/js/pouchdb.js"></script>
-    <script src="/js/spin.min.js"></script>
-    <script src="/js/script.js"></script>
+    <script src="js/bundle.js"></script>
   </body>
 </html>
