@@ -16,6 +16,8 @@
     "mustache": "~0.7.2",
     "lodash": "~2.2.1",
     "backbone": "~1.1.0",
-    "pouchdb": "git://github.com/daleharvey/pouchdb.git"
+    "pouchdb": "git://github.com/daleharvey/pouchdb.git",
+    "handlebars-runtime": "~1.0.12",
+    "hbsfy": "~0.1.5"
   }
 }

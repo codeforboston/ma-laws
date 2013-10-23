@@ -10943,7 +10943,7 @@ session : function(path) {
   };
 
   start('law');
-},{"./view":6,"backbone":7,"bootstrap":"/lrkCq","jquery":"9XoxEL","pouchdb":21,"spin":"8wbCjN"}],"8wbCjN":[function(require,module,exports){
+},{"./view":5,"backbone":6,"bootstrap":"/lrkCq","jquery":"9XoxEL","pouchdb":21,"spin":"8wbCjN"}],"8wbCjN":[function(require,module,exports){
 (function(t,e){if(typeof exports=="object")module.exports=e();else if(typeof define=="function"&&define.amd)define(e);else t.Spinner=e()})(this,function(){"use strict";var t=["webkit","Moz","ms","O"],e={},i;function o(t,e){var i=document.createElement(t||"div"),o;for(o in e)i[o]=e[o];return i}function n(t){for(var e=1,i=arguments.length;e<i;e++)t.appendChild(arguments[e]);return t}var r=function(){var t=o("style",{type:"text/css"});n(document.getElementsByTagName("head")[0],t);return t.sheet||t.styleSheet}();function s(t,o,n,s){var a=["opacity",o,~~(t*100),n,s].join("-"),f=.01+n/s*100,l=Math.max(1-(1-t)/o*(100-f),t),u=i.substring(0,i.indexOf("Animation")).toLowerCase(),d=u&&"-"+u+"-"||"";if(!e[a]){r.insertRule("@"+d+"keyframes "+a+"{"+"0%{opacity:"+l+"}"+f+"%{opacity:"+t+"}"+(f+.01)+"%{opacity:1}"+(f+o)%100+"%{opacity:"+t+"}"+"100%{opacity:"+l+"}"+"}",r.cssRules.length);e[a]=1}return a}function a(e,i){var o=e.style,n,r;if(o[i]!==undefined)return i;i=i.charAt(0).toUpperCase()+i.slice(1);for(r=0;r<t.length;r++){n=t[r]+i;if(o[n]!==undefined)return n}}function f(t,e){for(var i in e)t.style[a(t,i)||i]=e[i];return t}function l(t){for(var e=1;e<arguments.length;e++){var i=arguments[e];for(var o in i)if(t[o]===undefined)t[o]=i[o]}return t}function u(t){var e={x:t.offsetLeft,y:t.offsetTop};while(t=t.offsetParent)e.x+=t.offsetLeft,e.y+=t.offsetTop;return e}function d(t,e){return typeof t=="string"?t:t[e%t.length]}var p={lines:12,length:7,width:5,radius:10,rotate:0,corners:1,color:"#000",direction:1,speed:1,trail:100,opacity:1/4,fps:20,zIndex:2e9,className:"spinner",top:"auto",left:"auto",position:"relative"};function c(t){if(typeof this=="undefined")return new c(t);this.opts=l(t||{},c.defaults,p)}c.defaults={};l(c.prototype,{spin:function(t){this.stop();var e=this,n=e.opts,r=e.el=f(o(0,{className:n.className}),{position:n.position,width:0,zIndex:n.zIndex}),s=n.radius+n.length+n.width,a,l;if(t){t.insertBefore(r,t.firstChild||null);l=u(t);a=u(r);f(r,{left:(n.left=="auto"?l.x-a.x+(t.offsetWidth>>1):parseInt(n.left,10)+s)+"px",top:(n.top=="auto"?l.y-a.y+(t.offsetHeight>>1):parseInt(n.top,10)+s)+"px"})}r.setAttribute("role","progressbar");e.lines(r,e.opts);if(!i){var d=0,p=(n.lines-1)*(1-n.direction)/2,c,h=n.fps,m=h/n.speed,y=(1-n.opacity)/(m*n.trail/100),g=m/n.lines;(function v(){d++;for(var t=0;t<n.lines;t++){c=Math.max(1-(d+(n.lines-t)*g)%m*y,n.opacity);e.opacity(r,t*n.direction+p,c,n)}e.timeout=e.el&&setTimeout(v,~~(1e3/h))})()}return e},stop:function(){var t=this.el;if(t){clearTimeout(this.timeout);if(t.parentNode)t.parentNode.removeChild(t);this.el=undefined}return this},lines:function(t,e){var r=0,a=(e.lines-1)*(1-e.direction)/2,l;function u(t,i){return f(o(),{position:"absolute",width:e.length+e.width+"px",height:e.width+"px",background:t,boxShadow:i,transformOrigin:"left",transform:"rotate("+~~(360/e.lines*r+e.rotate)+"deg) translate("+e.radius+"px"+",0)",borderRadius:(e.corners*e.width>>1)+"px"})}for(;r<e.lines;r++){l=f(o(),{position:"absolute",top:1+~(e.width/2)+"px",transform:e.hwaccel?"translate3d(0,0,0)":"",opacity:e.opacity,animation:i&&s(e.opacity,e.trail,a+r*e.direction,e.lines)+" "+1/e.speed+"s linear infinite"});if(e.shadow)n(l,f(u("#000","0 0 4px "+"#000"),{top:2+"px"}));n(t,n(l,u(d(e.color,r),"0 0 1px rgba(0,0,0,.1)")))}return t},opacity:function(t,e,i){if(e<t.childNodes.length)t.childNodes[e].style.opacity=i}});function h(){function t(t,e){return o("<"+t+' xmlns="urn:schemas-microsoft.com:vml" class="spin-vml">',e)}r.addRule(".spin-vml","behavior:url(#default#VML)");c.prototype.lines=function(e,i){var o=i.length+i.width,r=2*o;function s(){return f(t("group",{coordsize:r+" "+r,coordorigin:-o+" "+-o}),{width:r,height:r})}var a=-(i.width+i.length)*2+"px",l=f(s(),{position:"absolute",top:a,left:a}),u;function p(e,r,a){n(l,n(f(s(),{rotation:360/i.lines*e+"deg",left:~~r}),n(f(t("roundrect",{arcsize:i.corners}),{width:o,height:i.width,left:i.radius,top:-i.width>>1,filter:a}),t("fill",{color:d(i.color,e),opacity:i.opacity}),t("stroke",{opacity:0}))))}if(i.shadow)for(u=1;u<=i.lines;u++)p(u,-2,"progid:DXImageTransform.Microsoft.Blur(pixelradius=2,makeshadow=1,shadowopacity=.3)");for(u=1;u<=i.lines;u++)p(u);return n(e,l)};c.prototype.opacity=function(t,e,i,o){var n=t.firstChild;o=o.shadow&&o.lines||0;if(n&&e+o<n.childNodes.length){n=n.childNodes[e+o];n=n&&n.firstChild;n=n&&n.firstChild;if(n)n.opacity=i}}}var m=f(o("group"),{behavior:"url(#default#VML)"});if(!a(m,"transform")&&m.adj)h();else i=a(m,"animation");return c});
 
 /**
@@ -11028,35 +11028,13 @@ $('#el').spin('flower', 'red');
 }));
 
 },{"jquery":"9XoxEL","spin":"8wbCjN"}],5:[function(require,module,exports){
-// Generated by CoffeeScript 1.6.3
-(function() {
-  var Mustache;
-
-  Mustache = require('mustache');
-
-  module.exports = {
-    search: Mustache.compile("<div class=\"row\">\n<h1>\"{{q}}\"</h1>\n<p>{{total_rows}} results</p><dl>\n{{#rows}}\n{{#doc.section}}<dt>\n<a class='bodyLink' href='/c{{doc.chapter}}s{{doc.section}}' id=\"/c{{doc.chapter}}s{{doc.section}}\">Chapter {{doc.chapter}} Section {{doc.section}}</a>\n  		</dt>\n{{#doc.desc}}<dd><strong>{{doc.desc}}</strong></dd>{{/doc.desc}}\n{{#doc.text}}<dd>{{doc.text}}</dd>{{/doc.text}}\n{{/doc.section}}\n{{#doc.article}}<dt>\n<a class='bodyLink' href='/c{{doc.chapter}}a{{doc.article}}' id=\"/c{{doc.chapter}}a{{doc.article}}\">Chapter {{doc.chapter}} Article {{doc.article}}</a>\n  		</dt>\n{{#doc.desc}}<dd><strong>{{doc.desc}}</strong></dd>{{/doc.desc}}\n{{#doc.text}}<dd>{{doc.text}}</dd>{{/doc.text}}\n{{/doc.article}}\n{{#doc.year}}<dt>\n<a class='bodyLink' href='../y{{doc.year}}c{{doc.chapter}}' id=\"/y{{doc.year}}c{{doc.chapter}}\">Session {{doc.year}} Chapter {{doc.chapter}}</a>\n  		</dt>\n{{#doc.desc}}<dd>{{doc.desc}}</dd>{{/doc.desc}}\n{{/doc.year}}\n{{/rows}}\n</dl>\n</div>"),
-    section: Mustache.compile("<div class=\"row\">\n<ul class=\"breadcrumb\">\n  			<li><a class='bodyLink' href=\"GeneralLaws\" id=\"GeneralLaws\">General Laws</a></li>\n  			<li><a class='bodyLink' href='GeneralLaws/Part{{part}}' id=\"/GeneralLaws/Part{{part}}\">Part {{part}}</a></li>\n  			<li><a class='bodyLink' href='GeneralLaws/Part{{part}}/Title{{title}}' id=\"/GeneralLaws/Part{{part}}/Title{{title}}\">Title {{title}}</a></li>\n  			<li><a class='bodyLink' href='GeneralLaws/Part{{part}}/Title{{title}}/Chapter{{chapter}}' id=\"/GeneralLaws/Part{{part}}/Title{{title}}/Chapter{{chapter}}\">Chapter {{chapter}}</a></li>\n  			<li class=\"active\">Section {{section}}</li>\n</ul>\n<h1>Chapter {{chapter}} Section {{section}}</h1>\n{{#desc}}<h2>{{desc}}</h2>{{/desc}}\n{{#text}}<p>{{text}}</p>{{/text}}\n</div>"),
-    article: Mustache.compile("<div class=\"row\">\n<ul class=\"breadcrumb\">\n  			<li><a class='bodyLink' href=\"GeneralLaws\" id=\"GeneralLaws\">General Laws</a></li>\n  			<li><a class='bodyLink' href='GeneralLaws/Part{{part}}' id=\"/GeneralLaws/Part{{part}}\">Part {{part}}</a></li>\n  			<li><a class='bodyLink' href='GeneralLaws/Part{{part}}/Title{{title}}' id=\"/GeneralLaws/Part{{part}}/Title{{title}}\">Title {{title}}</a></li>\n  			<li><a class='bodyLink' href='GeneralLaws/Part{{part}}/Title{{title}}/Chapter{{chapter}}' id=\"/GeneralLaws/Part{{part}}/Title{{title}}/Chapter{{chapter}}\">Chapter {{chapter}}</a></li>\n  			<li class=\"active\">Article {{article}}</li>\n</ul>\n<h1>Chapter {{chapter}} Article {{article}}</h1>\n{{#desc}}<h2>{{desc}}</h2>{{/desc}}\n{{#text}}<p>{{text}}</p>{{/text}}\n</div>"),
-    session: Mustache.compile("<div class=\"row\">\n<ul class=\"breadcrumb\">\n  			<li><a class='bodyLink' href=\"SessionLaw\" id=\"SessionLaw\">Session Laws</a></li>\n  			<li><a class='bodyLink' href=\"SessionLaw/Year{{year}}\" id=\"SessionLaw/Year{{year}}\">Year {{year}}</a></li>\n  			\n  			<li class=\"active\">Chapter {{chapter}}</li>\n</ul>\n<h1>Session {{year}} Chapter {{chapter}}</h1>\n{{#desc}}<h4>{{desc}}</h4>{{/desc}}\n{{#text}}{{{text}}}{{/text}}\n</div>"),
-    chapter: Mustache.compile("<div class=\"row\">\n<ul class=\"breadcrumb\">\n  			<li><a class='bodyLink' href=\"/GeneralLaws\" id=\"GeneralLaws\">General Laws</a></li>\n  			<li><a class='bodyLink' href='/GeneralLaws/Part{{doc.part}}' id=\"GeneralLaws/Part{{pat}}\">Part {{pat}}</a></li>\n  			<li><a class='bodyLink' href='/GeneralLaws/Part{{doc.part}}/Title{{doc.title}}' id=\"GeneralLaws/Part{{pat}}/Title{{tit}}\">Title {{tit}}</a></li>\n  			<li class=\"active\">Chapter {{chap}}</li>\n</ul>\n<h1>Chapter {{chap}}</h1>\n<dl>\n{{#rows}}\n{{#doc.desc}}<dt><strong>{{doc.longCode}} {{doc.sub}}:</strong> <a class='bodyLink' href='../../../c{{doc.chapter}}{{doc.shortCode}}{{doc.sub}}' id='c{{doc.chapter}}{{doc.shortCode}}{{doc.sub}}'>{{doc.desc}}</a></dt>{{/doc.desc}}\n{{#doc.text}}<dd>{{doc.text}}</dd>{{/doc.text}}\n{{/rows}}\n</dl>\n</div>"),
-    title: Mustache.compile("<div class=\"row\">\n<ul class=\"breadcrumb\">\n  			<li><a class='bodyLink' href=\"/GeneralLaws\" id=\"GeneralLaws\">General Laws</a></li>\n  			<li><a class='bodyLink' href='/GeneralLaws/Part{{tp}}' id=\"/GeneralLaws/Part{{tp}}\">Part {{tp}}</a></li>\n  			\n  			<li class=\"active\">Title {{t}}</li>\n</ul>\n<h1>Title {{t}}</h1>\n<ul>\n{{#row}}\n	<li>\n	<a class='bodyLink' href='Title{{title}}/Chapter{{chapter}}' id=\"GeneralLaws/Part{{part}}/Title{{title}}/Chapter{{chapter}}\">\n		Chapter {{chapter}}\n	</a>\n	</li>\n{{/row}}\n</ul>\n</div>"),
-    year: Mustache.compile("<div class=\"row\">\n<ul class=\"breadcrumb\">\n  			<li><a class='bodyLink' href=\"/SessionLaw\" id=\"SessionLaw\">Session Laws</a></li>\n  			\n  			\n  			<li class=\"active\">Year {{year}}</li>\n</ul>\n<h1>Year {{year}}</h1>\n<ul>\n{{#rows}}{{#doc.desc}}\n	<li><h3>\n	<a class='bodyLink' href='/{{doc._id}}' id=\"{{doc._id}}\">\n		Chapter {{doc.chapter}}\n	</a></h3>\n	{{doc.desc}}\n	</li>\n	{{/doc.desc}}\n{{/rows}}\n</ul>\n</div>"),
-    part: Mustache.compile("<div class=\"row\">\n<ul class=\"breadcrumb\">\n  			<li><a class='bodyLink' href=\"/GeneralLaws\" id=\"GeneralLaws\">General Laws</a></li>\n  			\n  			\n  			<li class=\"active\">Part {{p}}</li>\n</ul>\n<h1>Part {{p}}</h1>\n<ul>\n{{#rowp}}\n	<li>\n	<a class='bodyLink' href='Part{{part}}/Title{{title}}' id=\"GeneralLaws/Part{{part}}/Title{{title}}\">\n		Title {{title}}\n	</a>\n	</li>\n{{/rowp}}\n</ul>\n</div>"),
-    sess: Mustache.compile("<div class=\"row\">\n<ul class=\"breadcrumb\">\n  			<li class=\"active\">Session Laws</li>\n</ul>\n<h1>Session Laws</h1>\n<ul>\n{{#rows}}\n	<li>\n	<a class='bodyLink' href='SessionLaw/Year{{year}}' id=\"SessionLaw/Year{{year}}\">\n		Year {{year}}\n	</a>\n	</li>\n{{/rows}}\n</ul>\n</div>"),
-    general: Mustache.compile("<div class=\"row\">\n<ul class=\"breadcrumb\">\n  			<li class=\"active\">General Laws</li>\n</ul>\n<h1>General Laws</h1>\n<ul>\n{{#rowg}}\n	<li>\n	<a class='bodyLink' href='GeneralLaws/Part{{part}}' id=\"GeneralLaws/Part{{part}}\">\n		Part {{part}}\n	</a>\n	</li>\n{{/rowg}}\n</ul>\n</div>")
-  };
-
-}).call(this);
-
-},{"mustache":9}],6:[function(require,module,exports){
 var Backbone = require('backbone');
 
 var $ = require('jquery');
 
 Backbone.$ = $;
 
-var templates = require('./templates');
+var templates = require('../templates');
 
 var spin = require('spin');
 
@@ -11285,7 +11263,7 @@ var View = Backbone.View.extend({
 
   module.exports = View;
 
-},{"./templates":5,"backbone":7,"jquery":"9XoxEL","spin":"8wbCjN"}],7:[function(require,module,exports){
+},{"../templates":28,"backbone":6,"jquery":"9XoxEL","spin":"8wbCjN"}],6:[function(require,module,exports){
 //     Backbone.js 1.1.0
 
 //     (c) 2010-2011 Jeremy Ashkenas, DocumentCloud Inc.
@@ -12868,7 +12846,7 @@ var View = Backbone.View.extend({
 
 }).call(this);
 
-},{"underscore":8}],8:[function(require,module,exports){
+},{"underscore":7}],7:[function(require,module,exports){
 //     Underscore.js 1.5.2
 //     http://underscorejs.org
 //     (c) 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
@@ -14146,619 +14124,464 @@ var View = Backbone.View.extend({
 
 }).call(this);
 
-},{}],9:[function(require,module,exports){
-/*!
- * mustache.js - Logic-less {{mustache}} templates with JavaScript
- * http://github.com/janl/mustache.js
- */
+},{}],8:[function(require,module,exports){
+/*
 
-/*global define: false*/
+Copyright (C) 2011 by Yehuda Katz
 
-(function (root, factory) {
-  if (typeof exports === "object" && exports) {
-    module.exports = factory; // CommonJS
-  } else if (typeof define === "function" && define.amd) {
-    define(factory); // AMD
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+*/
+
+// lib/handlebars/browser-prefix.js
+var Handlebars = {};
+module.exports = Handlebars;
+
+(function(Handlebars, undefined) {
+;
+// lib/handlebars/base.js
+
+Handlebars.VERSION = "1.0.0";
+Handlebars.COMPILER_REVISION = 4;
+
+Handlebars.REVISION_CHANGES = {
+  1: '<= 1.0.rc.2', // 1.0.rc.2 is actually rev2 but doesn't report it
+  2: '== 1.0.0-rc.3',
+  3: '== 1.0.0-rc.4',
+  4: '>= 1.0.0'
+};
+
+Handlebars.helpers  = {};
+Handlebars.partials = {};
+
+var toString = Object.prototype.toString,
+    functionType = '[object Function]',
+    objectType = '[object Object]';
+
+Handlebars.registerHelper = function(name, fn, inverse) {
+  if (toString.call(name) === objectType) {
+    if (inverse || fn) { throw new Handlebars.Exception('Arg not supported with multiple helpers'); }
+    Handlebars.Utils.extend(this.helpers, name);
   } else {
-    root.Mustache = factory; // <script>
+    if (inverse) { fn.not = inverse; }
+    this.helpers[name] = fn;
   }
-}(this, (function () {
+};
 
-  var exports = {};
-
-  exports.name = "mustache.js";
-  exports.version = "0.7.2";
-  exports.tags = ["{{", "}}"];
-
-  exports.Scanner = Scanner;
-  exports.Context = Context;
-  exports.Writer = Writer;
-
-  var whiteRe = /\s*/;
-  var spaceRe = /\s+/;
-  var nonSpaceRe = /\S/;
-  var eqRe = /\s*=/;
-  var curlyRe = /\s*\}/;
-  var tagRe = /#|\^|\/|>|\{|&|=|!/;
-
-  // Workaround for https://issues.apache.org/jira/browse/COUCHDB-577
-  // See https://github.com/janl/mustache.js/issues/189
-  function testRe(re, string) {
-    return RegExp.prototype.test.call(re, string);
+Handlebars.registerPartial = function(name, str) {
+  if (toString.call(name) === objectType) {
+    Handlebars.Utils.extend(this.partials,  name);
+  } else {
+    this.partials[name] = str;
   }
+};
 
-  function isWhitespace(string) {
-    return !testRe(nonSpaceRe, string);
+Handlebars.registerHelper('helperMissing', function(arg) {
+  if(arguments.length === 2) {
+    return undefined;
+  } else {
+    throw new Error("Missing helper: '" + arg + "'");
   }
+});
 
-  var isArray = Array.isArray || function (obj) {
-    return Object.prototype.toString.call(obj) === "[object Array]";
-  };
+Handlebars.registerHelper('blockHelperMissing', function(context, options) {
+  var inverse = options.inverse || function() {}, fn = options.fn;
 
-  function escapeRe(string) {
-    return string.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, "\\$&");
-  }
+  var type = toString.call(context);
 
-  var entityMap = {
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': '&quot;',
-    "'": '&#39;',
-    "/": '&#x2F;'
-  };
+  if(type === functionType) { context = context.call(this); }
 
-  function escapeHtml(string) {
-    return String(string).replace(/[&<>"'\/]/g, function (s) {
-      return entityMap[s];
-    });
-  }
-
-  // Export the escaping function so that the user may override it.
-  // See https://github.com/janl/mustache.js/issues/244
-  exports.escape = escapeHtml;
-
-  function Scanner(string) {
-    this.string = string;
-    this.tail = string;
-    this.pos = 0;
-  }
-
-  /**
-   * Returns `true` if the tail is empty (end of string).
-   */
-  Scanner.prototype.eos = function () {
-    return this.tail === "";
-  };
-
-  /**
-   * Tries to match the given regular expression at the current position.
-   * Returns the matched text if it can match, the empty string otherwise.
-   */
-  Scanner.prototype.scan = function (re) {
-    var match = this.tail.match(re);
-
-    if (match && match.index === 0) {
-      this.tail = this.tail.substring(match[0].length);
-      this.pos += match[0].length;
-      return match[0];
-    }
-
-    return "";
-  };
-
-  /**
-   * Skips all text until the given regular expression can be matched. Returns
-   * the skipped string, which is the entire tail if no match can be made.
-   */
-  Scanner.prototype.scanUntil = function (re) {
-    var match, pos = this.tail.search(re);
-
-    switch (pos) {
-    case -1:
-      match = this.tail;
-      this.pos += this.tail.length;
-      this.tail = "";
-      break;
-    case 0:
-      match = "";
-      break;
-    default:
-      match = this.tail.substring(0, pos);
-      this.tail = this.tail.substring(pos);
-      this.pos += pos;
-    }
-
-    return match;
-  };
-
-  function Context(view, parent) {
-    this.view = view;
-    this.parent = parent;
-    this.clearCache();
-  }
-
-  Context.make = function (view) {
-    return (view instanceof Context) ? view : new Context(view);
-  };
-
-  Context.prototype.clearCache = function () {
-    this._cache = {};
-  };
-
-  Context.prototype.push = function (view) {
-    return new Context(view, this);
-  };
-
-  Context.prototype.lookup = function (name) {
-    var value = this._cache[name];
-
-    if (!value) {
-      if (name === ".") {
-        value = this.view;
-      } else {
-        var context = this;
-
-        while (context) {
-          if (name.indexOf(".") > 0) {
-            var names = name.split("."), i = 0;
-
-            value = context.view;
-
-            while (value && i < names.length) {
-              value = value[names[i++]];
-            }
-          } else {
-            value = context.view[name];
-          }
-
-          if (value != null) {
-            break;
-          }
-
-          context = context.parent;
-        }
-      }
-
-      this._cache[name] = value;
-    }
-
-    if (typeof value === "function") {
-      value = value.call(this.view);
-    }
-
-    return value;
-  };
-
-  function Writer() {
-    this.clearCache();
-  }
-
-  Writer.prototype.clearCache = function () {
-    this._cache = {};
-    this._partialCache = {};
-  };
-
-  Writer.prototype.compile = function (template, tags) {
-    var fn = this._cache[template];
-
-    if (!fn) {
-      var tokens = exports.parse(template, tags);
-      fn = this._cache[template] = this.compileTokens(tokens, template);
-    }
-
-    return fn;
-  };
-
-  Writer.prototype.compilePartial = function (name, template, tags) {
-    var fn = this.compile(template, tags);
-    this._partialCache[name] = fn;
-    return fn;
-  };
-
-  Writer.prototype.compileTokens = function (tokens, template) {
-    var fn = compileTokens(tokens);
-    var self = this;
-
-    return function (view, partials) {
-      if (partials) {
-        if (typeof partials === "function") {
-          self._loadPartial = partials;
-        } else {
-          for (var name in partials) {
-            self.compilePartial(name, partials[name]);
-          }
-        }
-      }
-
-      return fn(self, Context.make(view), template);
-    };
-  };
-
-  Writer.prototype.render = function (template, view, partials) {
-    return this.compile(template)(view, partials);
-  };
-
-  Writer.prototype._section = function (name, context, text, callback) {
-    var value = context.lookup(name);
-
-    switch (typeof value) {
-    case "object":
-      if (isArray(value)) {
-        var buffer = "";
-
-        for (var i = 0, len = value.length; i < len; ++i) {
-          buffer += callback(this, context.push(value[i]));
-        }
-
-        return buffer;
-      }
-
-      return value ? callback(this, context.push(value)) : "";
-    case "function":
-      var self = this;
-      var scopedRender = function (template) {
-        return self.render(template, context);
-      };
-
-      var result = value.call(context.view, text, scopedRender);
-      return result != null ? result : "";
-    default:
-      if (value) {
-        return callback(this, context);
-      }
-    }
-
-    return "";
-  };
-
-  Writer.prototype._inverted = function (name, context, callback) {
-    var value = context.lookup(name);
-
-    // Use JavaScript's definition of falsy. Include empty arrays.
-    // See https://github.com/janl/mustache.js/issues/186
-    if (!value || (isArray(value) && value.length === 0)) {
-      return callback(this, context);
-    }
-
-    return "";
-  };
-
-  Writer.prototype._partial = function (name, context) {
-    if (!(name in this._partialCache) && this._loadPartial) {
-      this.compilePartial(name, this._loadPartial(name));
-    }
-
-    var fn = this._partialCache[name];
-
-    return fn ? fn(context) : "";
-  };
-
-  Writer.prototype._name = function (name, context) {
-    var value = context.lookup(name);
-
-    if (typeof value === "function") {
-      value = value.call(context.view);
-    }
-
-    return (value == null) ? "" : String(value);
-  };
-
-  Writer.prototype._escaped = function (name, context) {
-    return exports.escape(this._name(name, context));
-  };
-
-  /**
-   * Low-level function that compiles the given `tokens` into a function
-   * that accepts three arguments: a Writer, a Context, and the template.
-   */
-  function compileTokens(tokens) {
-    var subRenders = {};
-
-    function subRender(i, tokens, template) {
-      if (!subRenders[i]) {
-        var fn = compileTokens(tokens);
-        subRenders[i] = function (writer, context) {
-          return fn(writer, context, template);
-        };
-      }
-
-      return subRenders[i];
-    }
-
-    return function (writer, context, template) {
-      var buffer = "";
-      var token, sectionText;
-
-      for (var i = 0, len = tokens.length; i < len; ++i) {
-        token = tokens[i];
-
-        switch (token[0]) {
-        case "#":
-          sectionText = template.slice(token[3], token[5]);
-          buffer += writer._section(token[1], context, sectionText, subRender(i, token[4], template));
-          break;
-        case "^":
-          buffer += writer._inverted(token[1], context, subRender(i, token[4], template));
-          break;
-        case ">":
-          buffer += writer._partial(token[1], context);
-          break;
-        case "&":
-          buffer += writer._name(token[1], context);
-          break;
-        case "name":
-          buffer += writer._escaped(token[1], context);
-          break;
-        case "text":
-          buffer += token[1];
-          break;
-        }
-      }
-
-      return buffer;
-    };
-  }
-
-  /**
-   * Forms the given array of `tokens` into a nested tree structure where
-   * tokens that represent a section have two additional items: 1) an array of
-   * all tokens that appear in that section and 2) the index in the original
-   * template that represents the end of that section.
-   */
-  function nestTokens(tokens) {
-    var tree = [];
-    var collector = tree;
-    var sections = [];
-
-    var token;
-    for (var i = 0, len = tokens.length; i < len; ++i) {
-      token = tokens[i];
-      switch (token[0]) {
-      case '#':
-      case '^':
-        sections.push(token);
-        collector.push(token);
-        collector = token[4] = [];
-        break;
-      case '/':
-        var section = sections.pop();
-        section[5] = token[2];
-        collector = sections.length > 0 ? sections[sections.length - 1][4] : tree;
-        break;
-      default:
-        collector.push(token);
-      }
-    }
-
-    return tree;
-  }
-
-  /**
-   * Combines the values of consecutive text tokens in the given `tokens` array
-   * to a single token.
-   */
-  function squashTokens(tokens) {
-    var squashedTokens = [];
-
-    var token, lastToken;
-    for (var i = 0, len = tokens.length; i < len; ++i) {
-      token = tokens[i];
-      if (token[0] === 'text' && lastToken && lastToken[0] === 'text') {
-        lastToken[1] += token[1];
-        lastToken[3] = token[3];
-      } else {
-        lastToken = token;
-        squashedTokens.push(token);
-      }
-    }
-
-    return squashedTokens;
-  }
-
-  function escapeTags(tags) {
-    return [
-      new RegExp(escapeRe(tags[0]) + "\\s*"),
-      new RegExp("\\s*" + escapeRe(tags[1]))
-    ];
-  }
-
-  /**
-   * Breaks up the given `template` string into a tree of token objects. If
-   * `tags` is given here it must be an array with two string values: the
-   * opening and closing tags used in the template (e.g. ["<%", "%>"]). Of
-   * course, the default is to use mustaches (i.e. Mustache.tags).
-   */
-  exports.parse = function (template, tags) {
-    template = template || '';
-    tags = tags || exports.tags;
-
-    if (typeof tags === 'string') tags = tags.split(spaceRe);
-    if (tags.length !== 2) {
-      throw new Error('Invalid tags: ' + tags.join(', '));
-    }
-
-    var tagRes = escapeTags(tags);
-    var scanner = new Scanner(template);
-
-    var sections = [];     // Stack to hold section tokens
-    var tokens = [];       // Buffer to hold the tokens
-    var spaces = [];       // Indices of whitespace tokens on the current line
-    var hasTag = false;    // Is there a {{tag}} on the current line?
-    var nonSpace = false;  // Is there a non-space char on the current line?
-
-    // Strips all whitespace tokens array for the current line
-    // if there was a {{#tag}} on it and otherwise only space.
-    function stripSpace() {
-      if (hasTag && !nonSpace) {
-        while (spaces.length) {
-          tokens.splice(spaces.pop(), 1);
-        }
-      } else {
-        spaces = [];
-      }
-
-      hasTag = false;
-      nonSpace = false;
-    }
-
-    var start, type, value, chr;
-    while (!scanner.eos()) {
-      start = scanner.pos;
-      value = scanner.scanUntil(tagRes[0]);
-
-      if (value) {
-        for (var i = 0, len = value.length; i < len; ++i) {
-          chr = value.charAt(i);
-
-          if (isWhitespace(chr)) {
-            spaces.push(tokens.length);
-          } else {
-            nonSpace = true;
-          }
-
-          tokens.push(["text", chr, start, start + 1]);
-          start += 1;
-
-          if (chr === "\n") {
-            stripSpace(); // Check for whitespace on the current line.
-          }
-        }
-      }
-
-      start = scanner.pos;
-
-      // Match the opening tag.
-      if (!scanner.scan(tagRes[0])) {
-        break;
-      }
-
-      hasTag = true;
-      type = scanner.scan(tagRe) || "name";
-
-      // Skip any whitespace between tag and value.
-      scanner.scan(whiteRe);
-
-      // Extract the tag value.
-      if (type === "=") {
-        value = scanner.scanUntil(eqRe);
-        scanner.scan(eqRe);
-        scanner.scanUntil(tagRes[1]);
-      } else if (type === "{") {
-        var closeRe = new RegExp("\\s*" + escapeRe("}" + tags[1]));
-        value = scanner.scanUntil(closeRe);
-        scanner.scan(curlyRe);
-        scanner.scanUntil(tagRes[1]);
-        type = "&";
-      } else {
-        value = scanner.scanUntil(tagRes[1]);
-      }
-
-      // Match the closing tag.
-      if (!scanner.scan(tagRes[1])) {
-        throw new Error('Unclosed tag at ' + scanner.pos);
-      }
-
-      // Check section nesting.
-      if (type === '/') {
-        if (sections.length === 0) {
-          throw new Error('Unopened section "' + value + '" at ' + start);
-        }
-
-        var section = sections.pop();
-
-        if (section[1] !== value) {
-          throw new Error('Unclosed section "' + section[1] + '" at ' + start);
-        }
-      }
-
-      var token = [type, value, start, scanner.pos];
-      tokens.push(token);
-
-      if (type === '#' || type === '^') {
-        sections.push(token);
-      } else if (type === "name" || type === "{" || type === "&") {
-        nonSpace = true;
-      } else if (type === "=") {
-        // Set the tags for the next time around.
-        tags = value.split(spaceRe);
-
-        if (tags.length !== 2) {
-          throw new Error('Invalid tags at ' + start + ': ' + tags.join(', '));
-        }
-
-        tagRes = escapeTags(tags);
-      }
-    }
-
-    // Make sure there are no open sections when we're done.
-    var section = sections.pop();
-    if (section) {
-      throw new Error('Unclosed section "' + section[1] + '" at ' + scanner.pos);
-    }
-
-    return nestTokens(squashTokens(tokens));
-  };
-
-  // The high-level clearCache, compile, compilePartial, and render functions
-  // use this default writer.
-  var _writer = new Writer();
-
-  /**
-   * Clears all cached templates and partials in the default writer.
-   */
-  exports.clearCache = function () {
-    return _writer.clearCache();
-  };
-
-  /**
-   * Compiles the given `template` to a reusable function using the default
-   * writer.
-   */
-  exports.compile = function (template, tags) {
-    return _writer.compile(template, tags);
-  };
-
-  /**
-   * Compiles the partial with the given `name` and `template` to a reusable
-   * function using the default writer.
-   */
-  exports.compilePartial = function (name, template, tags) {
-    return _writer.compilePartial(name, template, tags);
-  };
-
-  /**
-   * Compiles the given array of tokens (the output of a parse) to a reusable
-   * function using the default writer.
-   */
-  exports.compileTokens = function (tokens, template) {
-    return _writer.compileTokens(tokens, template);
-  };
-
-  /**
-   * Renders the `template` with the given `view` and `partials` using the
-   * default writer.
-   */
-  exports.render = function (template, view, partials) {
-    return _writer.render(template, view, partials);
-  };
-
-  // This is here for backwards compatibility with 0.4.x.
-  exports.to_html = function (template, view, partials, send) {
-    var result = exports.render(template, view, partials);
-
-    if (typeof send === "function") {
-      send(result);
+  if(context === true) {
+    return fn(this);
+  } else if(context === false || context == null) {
+    return inverse(this);
+  } else if(type === "[object Array]") {
+    if(context.length > 0) {
+      return Handlebars.helpers.each(context, options);
     } else {
-      return result;
+      return inverse(this);
     }
-  };
+  } else {
+    return fn(context);
+  }
+});
 
-  return exports;
+Handlebars.K = function() {};
 
-}())));
+Handlebars.createFrame = Object.create || function(object) {
+  Handlebars.K.prototype = object;
+  var obj = new Handlebars.K();
+  Handlebars.K.prototype = null;
+  return obj;
+};
 
-},{}],10:[function(require,module,exports){
+Handlebars.logger = {
+  DEBUG: 0, INFO: 1, WARN: 2, ERROR: 3, level: 3,
+
+  methodMap: {0: 'debug', 1: 'info', 2: 'warn', 3: 'error'},
+
+  // can be overridden in the host environment
+  log: function(level, obj) {
+    if (Handlebars.logger.level <= level) {
+      var method = Handlebars.logger.methodMap[level];
+      if (typeof console !== 'undefined' && console[method]) {
+        console[method].call(console, obj);
+      }
+    }
+  }
+};
+
+Handlebars.log = function(level, obj) { Handlebars.logger.log(level, obj); };
+
+Handlebars.registerHelper('each', function(context, options) {
+  var fn = options.fn, inverse = options.inverse;
+  var i = 0, ret = "", data;
+
+  var type = toString.call(context);
+  if(type === functionType) { context = context.call(this); }
+
+  if (options.data) {
+    data = Handlebars.createFrame(options.data);
+  }
+
+  if(context && typeof context === 'object') {
+    if(context instanceof Array){
+      for(var j = context.length; i<j; i++) {
+        if (data) { data.index = i; }
+        ret = ret + fn(context[i], { data: data });
+      }
+    } else {
+      for(var key in context) {
+        if(context.hasOwnProperty(key)) {
+          if(data) { data.key = key; }
+          ret = ret + fn(context[key], {data: data});
+          i++;
+        }
+      }
+    }
+  }
+
+  if(i === 0){
+    ret = inverse(this);
+  }
+
+  return ret;
+});
+
+Handlebars.registerHelper('if', function(conditional, options) {
+  var type = toString.call(conditional);
+  if(type === functionType) { conditional = conditional.call(this); }
+
+  if(!conditional || Handlebars.Utils.isEmpty(conditional)) {
+    return options.inverse(this);
+  } else {
+    return options.fn(this);
+  }
+});
+
+Handlebars.registerHelper('unless', function(conditional, options) {
+  return Handlebars.helpers['if'].call(this, conditional, {fn: options.inverse, inverse: options.fn});
+});
+
+Handlebars.registerHelper('with', function(context, options) {
+  var type = toString.call(context);
+  if(type === functionType) { context = context.call(this); }
+
+  if (!Handlebars.Utils.isEmpty(context)) return options.fn(context);
+});
+
+Handlebars.registerHelper('log', function(context, options) {
+  var level = options.data && options.data.level != null ? parseInt(options.data.level, 10) : 1;
+  Handlebars.log(level, context);
+});
+;
+// lib/handlebars/utils.js
+
+var errorProps = ['description', 'fileName', 'lineNumber', 'message', 'name', 'number', 'stack'];
+
+Handlebars.Exception = function(message) {
+  var tmp = Error.prototype.constructor.apply(this, arguments);
+
+  // Unfortunately errors are not enumerable in Chrome (at least), so `for prop in tmp` doesn't work.
+  for (var idx = 0; idx < errorProps.length; idx++) {
+    this[errorProps[idx]] = tmp[errorProps[idx]];
+  }
+};
+Handlebars.Exception.prototype = new Error();
+
+// Build out our basic SafeString type
+Handlebars.SafeString = function(string) {
+  this.string = string;
+};
+Handlebars.SafeString.prototype.toString = function() {
+  return this.string.toString();
+};
+
+var escape = {
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+  "'": "&#x27;",
+  "`": "&#x60;"
+};
+
+var badChars = /[&<>"'`]/g;
+var possible = /[&<>"'`]/;
+
+var escapeChar = function(chr) {
+  return escape[chr] || "&amp;";
+};
+
+Handlebars.Utils = {
+  extend: function(obj, value) {
+    for(var key in value) {
+      if(value.hasOwnProperty(key)) {
+        obj[key] = value[key];
+      }
+    }
+  },
+
+  escapeExpression: function(string) {
+    // don't escape SafeStrings, since they're already safe
+    if (string instanceof Handlebars.SafeString) {
+      return string.toString();
+    } else if (string == null || string === false) {
+      return "";
+    }
+
+    // Force a string conversion as this will be done by the append regardless and
+    // the regex test will do this transparently behind the scenes, causing issues if
+    // an object's to string has escaped characters in it.
+    string = string.toString();
+
+    if(!possible.test(string)) { return string; }
+    return string.replace(badChars, escapeChar);
+  },
+
+  isEmpty: function(value) {
+    if (!value && value !== 0) {
+      return true;
+    } else if(toString.call(value) === "[object Array]" && value.length === 0) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+};
+;
+// lib/handlebars/runtime.js
+
+Handlebars.VM = {
+  template: function(templateSpec) {
+    // Just add water
+    var container = {
+      escapeExpression: Handlebars.Utils.escapeExpression,
+      invokePartial: Handlebars.VM.invokePartial,
+      programs: [],
+      program: function(i, fn, data) {
+        var programWrapper = this.programs[i];
+        if(data) {
+          programWrapper = Handlebars.VM.program(i, fn, data);
+        } else if (!programWrapper) {
+          programWrapper = this.programs[i] = Handlebars.VM.program(i, fn);
+        }
+        return programWrapper;
+      },
+      merge: function(param, common) {
+        var ret = param || common;
+
+        if (param && common) {
+          ret = {};
+          Handlebars.Utils.extend(ret, common);
+          Handlebars.Utils.extend(ret, param);
+        }
+        return ret;
+      },
+      programWithDepth: Handlebars.VM.programWithDepth,
+      noop: Handlebars.VM.noop,
+      compilerInfo: null
+    };
+
+    return function(context, options) {
+      options = options || {};
+      var result = templateSpec.call(container, Handlebars, context, options.helpers, options.partials, options.data);
+
+      var compilerInfo = container.compilerInfo || [],
+          compilerRevision = compilerInfo[0] || 1,
+          currentRevision = Handlebars.COMPILER_REVISION;
+
+      if (compilerRevision !== currentRevision) {
+        if (compilerRevision < currentRevision) {
+          var runtimeVersions = Handlebars.REVISION_CHANGES[currentRevision],
+              compilerVersions = Handlebars.REVISION_CHANGES[compilerRevision];
+          throw "Template was precompiled with an older version of Handlebars than the current runtime. "+
+                "Please update your precompiler to a newer version ("+runtimeVersions+") or downgrade your runtime to an older version ("+compilerVersions+").";
+        } else {
+          // Use the embedded version info since the runtime doesn't know about this revision yet
+          throw "Template was precompiled with a newer version of Handlebars than the current runtime. "+
+                "Please update your runtime to a newer version ("+compilerInfo[1]+").";
+        }
+      }
+
+      return result;
+    };
+  },
+
+  programWithDepth: function(i, fn, data /*, $depth */) {
+    var args = Array.prototype.slice.call(arguments, 3);
+
+    var program = function(context, options) {
+      options = options || {};
+
+      return fn.apply(this, [context, options.data || data].concat(args));
+    };
+    program.program = i;
+    program.depth = args.length;
+    return program;
+  },
+  program: function(i, fn, data) {
+    var program = function(context, options) {
+      options = options || {};
+
+      return fn(context, options.data || data);
+    };
+    program.program = i;
+    program.depth = 0;
+    return program;
+  },
+  noop: function() { return ""; },
+  invokePartial: function(partial, name, context, helpers, partials, data) {
+    var options = { helpers: helpers, partials: partials, data: data };
+
+    if(partial === undefined) {
+      throw new Handlebars.Exception("The partial " + name + " could not be found");
+    } else if(partial instanceof Function) {
+      return partial(context, options);
+    } else if (!Handlebars.compile) {
+      throw new Handlebars.Exception("The partial " + name + " could not be compiled when running in runtime-only mode");
+    } else {
+      partials[name] = Handlebars.compile(partial, {data: data !== undefined});
+      return partials[name](context, options);
+    }
+  }
+};
+
+Handlebars.template = Handlebars.VM.template;
+;
+// lib/handlebars/browser-suffix.js
+})(Handlebars);
+;
+
+},{}],9:[function(require,module,exports){
+'use strict';
+
+var pouchCollate = function(a, b) {
+  var ai = collationIndex(a);
+  var bi = collationIndex(b);
+  if ((ai - bi) !== 0) {
+    return ai - bi;
+  }
+  if (a === null) {
+    return 0;
+  }
+  if (typeof a === 'number') {
+    return a - b;
+  }
+  if (typeof a === 'boolean') {
+    return a < b ? -1 : 1;
+  }
+  if (typeof a === 'string') {
+    return stringCollate(a, b);
+  }
+  if (Array.isArray(a)) {
+    return arrayCollate(a, b);
+  }
+  if (typeof a === 'object') {
+    return objectCollate(a, b);
+  }
+};
+
+var stringCollate = function(a, b) {
+  // See: https://github.com/daleharvey/pouchdb/issues/40
+  // This is incompatible with the CouchDB implementation, but its the
+  // best we can do for now
+  return (a === b) ? 0 : ((a > b) ? 1 : -1);
+};
+
+var objectCollate = function(a, b) {
+  var ak = Object.keys(a), bk = Object.keys(b);
+  var len = Math.min(ak.length, bk.length);
+  for (var i = 0; i < len; i++) {
+    // First sort the keys
+    var sort = pouchCollate(ak[i], bk[i]);
+    if (sort !== 0) {
+      return sort;
+    }
+    // if the keys are equal sort the values
+    sort = pouchCollate(a[ak[i]], b[bk[i]]);
+    if (sort !== 0) {
+      return sort;
+    }
+
+  }
+  return (ak.length === bk.length) ? 0 :
+    (ak.length > bk.length) ? 1 : -1;
+};
+
+var arrayCollate = function(a, b) {
+  var len = Math.min(a.length, b.length);
+  for (var i = 0; i < len; i++) {
+    var sort = pouchCollate(a[i], b[i]);
+    if (sort !== 0) {
+      return sort;
+    }
+  }
+  return (a.length === b.length) ? 0 :
+    (a.length > b.length) ? 1 : -1;
+};
+
+// The collation is defined by erlangs ordered terms
+// the atoms null, true, false come first, then numbers, strings,
+// arrays, then objects
+var collationIndex = function(x) {
+  var id = ['boolean', 'number', 'string', 'object'];
+  if (id.indexOf(typeof x) !== -1) {
+    if (x === null) {
+      return 1;
+    }
+    return id.indexOf(typeof x) + 2;
+  }
+  if (Array.isArray(x)) {
+    return 4.5;
+  }
+};
+
+// a few hacks to get things in the right place for node.js
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = pouchCollate;
+}
+
+
+},{}],"bootstrap":[function(require,module,exports){
+module.exports=require('/lrkCq');
+},{}],11:[function(require,module,exports){
 /*globals Pouch: true, PouchUtils: true, require, console */
 
 "use strict";
@@ -15688,7 +15511,7 @@ HttpPouch.valid = function() {
 Pouch.adapter('http', HttpPouch);
 Pouch.adapter('https', HttpPouch);
 
-},{"../pouch.js":21,"../pouch.utils.js":24}],11:[function(require,module,exports){
+},{"../pouch.js":21,"../pouch.utils.js":24}],12:[function(require,module,exports){
 /*globals PouchUtils: true, PouchMerge */
 
 'use strict';
@@ -16565,7 +16388,7 @@ IdbPouch.Changes = new PouchUtils.Changes();
 
 Pouch.adapter('idb', IdbPouch);
 
-},{"../pouch.utils.js":24}],12:[function(require,module,exports){
+},{"../pouch.utils.js":24}],13:[function(require,module,exports){
 /*globals PouchUtils: true, PouchMerge */
 
 'use strict';
@@ -17287,7 +17110,7 @@ webSqlPouch.Changes = new PouchUtils.Changes();
 
 Pouch.adapter('websql', webSqlPouch);
 
-},{"../pouch.utils.js":24}],13:[function(require,module,exports){
+},{"../pouch.utils.js":24}],14:[function(require,module,exports){
 var request;
 var extend;
 var createBlob;
@@ -17480,7 +17303,7 @@ if (typeof module !== 'undefined' && module.exports) {
   module.exports = ajax;
 }
 
-},{"./blob.js":14,"./extend.js":15,"request":25}],14:[function(require,module,exports){
+},{"./blob.js":15,"./extend.js":16,"request":36}],15:[function(require,module,exports){
 //Abstracts constructing a Blob object, so it also works in older
 //browsers that don't support the native Blob constructor. (i.e.
 //old QtWebKit versions, at least).
@@ -17506,7 +17329,7 @@ if (typeof module !== 'undefined' && module.exports) {
   module.exports = createBlob;
 }
 
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 // Extends method
 // (taken from http://code.jquery.com/jquery-1.9.0.js)
 // Populate the class2type map
@@ -17641,7 +17464,7 @@ if (typeof module !== 'undefined' && module.exports) {
   module.exports = extend;
 }
 
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 /**
 *
 *  MD5 (Message-Digest Algorithm)
@@ -17836,7 +17659,7 @@ var Crypto = {};
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = Crypto;
 }
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 // BEGIN Math.uuid.js
 
 /*!
@@ -17918,7 +17741,7 @@ if (typeof module !== 'undefined' && module.exports) {
   module.exports = uuid;
 }
 
-},{}],18:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 /*global Pouch: true, pouchCollate: true */
 
 "use strict";
@@ -18228,7 +18051,7 @@ MapReduce._delete = function() { };
 
 Pouch.plugin('mapreduce', MapReduce);
 
-},{"../pouch.collate.js":20}],19:[function(require,module,exports){
+},{"../pouch.collate.js":9}],20:[function(require,module,exports){
 /*globals Pouch: true, cordova, PouchUtils: true, PouchMerge */
 
 "use strict";
@@ -18926,97 +18749,7 @@ if (typeof module !== 'undefined' && module.exports) {
   module.exports = PouchAdapter;
 }
 
-},{"./pouch.utils.js":24}],20:[function(require,module,exports){
-'use strict';
-
-var pouchCollate = function(a, b) {
-  var ai = collationIndex(a);
-  var bi = collationIndex(b);
-  if ((ai - bi) !== 0) {
-    return ai - bi;
-  }
-  if (a === null) {
-    return 0;
-  }
-  if (typeof a === 'number') {
-    return a - b;
-  }
-  if (typeof a === 'boolean') {
-    return a < b ? -1 : 1;
-  }
-  if (typeof a === 'string') {
-    return stringCollate(a, b);
-  }
-  if (Array.isArray(a)) {
-    return arrayCollate(a, b);
-  }
-  if (typeof a === 'object') {
-    return objectCollate(a, b);
-  }
-};
-
-var stringCollate = function(a, b) {
-  // See: https://github.com/daleharvey/pouchdb/issues/40
-  // This is incompatible with the CouchDB implementation, but its the
-  // best we can do for now
-  return (a === b) ? 0 : ((a > b) ? 1 : -1);
-};
-
-var objectCollate = function(a, b) {
-  var ak = Object.keys(a), bk = Object.keys(b);
-  var len = Math.min(ak.length, bk.length);
-  for (var i = 0; i < len; i++) {
-    // First sort the keys
-    var sort = pouchCollate(ak[i], bk[i]);
-    if (sort !== 0) {
-      return sort;
-    }
-    // if the keys are equal sort the values
-    sort = pouchCollate(a[ak[i]], b[bk[i]]);
-    if (sort !== 0) {
-      return sort;
-    }
-
-  }
-  return (ak.length === bk.length) ? 0 :
-    (ak.length > bk.length) ? 1 : -1;
-};
-
-var arrayCollate = function(a, b) {
-  var len = Math.min(a.length, b.length);
-  for (var i = 0; i < len; i++) {
-    var sort = pouchCollate(a[i], b[i]);
-    if (sort !== 0) {
-      return sort;
-    }
-  }
-  return (a.length === b.length) ? 0 :
-    (a.length > b.length) ? 1 : -1;
-};
-
-// The collation is defined by erlangs ordered terms
-// the atoms null, true, false come first, then numbers, strings,
-// arrays, then objects
-var collationIndex = function(x) {
-  var id = ['boolean', 'number', 'string', 'object'];
-  if (id.indexOf(typeof x) !== -1) {
-    if (x === null) {
-      return 1;
-    }
-    return id.indexOf(typeof x) + 2;
-  }
-  if (Array.isArray(x)) {
-    return 4.5;
-  }
-};
-
-// a few hacks to get things in the right place for node.js
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = pouchCollate;
-}
-
-
-},{}],21:[function(require,module,exports){
+},{"./pouch.utils.js":24}],21:[function(require,module,exports){
 var global=self;/*globals PouchAdapter: true, PouchUtils: true */
 
 "use strict";
@@ -19475,7 +19208,7 @@ if (typeof module !== 'undefined' && module.exports) {
   window.PouchDB = Pouch;
 }
 
-},{"./adapters/pouch.http.js":10,"./adapters/pouch.idb.js":11,"./adapters/pouch.leveldb.js":25,"./adapters/pouch.websql.js":12,"./plugins/pouchdb.mapreduce.js":18,"./pouch.adapter.js":19,"./pouch.replicate.js":23,"./pouch.utils.js":24}],22:[function(require,module,exports){
+},{"./adapters/pouch.http.js":11,"./adapters/pouch.idb.js":12,"./adapters/pouch.leveldb.js":36,"./adapters/pouch.websql.js":13,"./plugins/pouchdb.mapreduce.js":19,"./pouch.adapter.js":20,"./pouch.replicate.js":23,"./pouch.utils.js":24}],22:[function(require,module,exports){
 'use strict';
 
 var extend;
@@ -19756,7 +19489,7 @@ PouchMerge.rootToLeaf = function(tree) {
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = PouchMerge;
 }
-},{"./deps/extend":15}],23:[function(require,module,exports){
+},{"./deps/extend":16}],23:[function(require,module,exports){
 /*globals PouchUtils: true */
 
 'use strict';
@@ -20361,9 +20094,796 @@ if (typeof module !== 'undefined' && module.exports) {
   module.exports = PouchUtils;
 }
 
-},{"./deps/ajax":13,"./deps/blob":14,"./deps/extend":15,"./deps/md5.js":16,"./deps/uuid":17,"./pouch.merge.js":22,"__browserify_Buffer":26}],25:[function(require,module,exports){
+},{"./deps/ajax":14,"./deps/blob":15,"./deps/extend":16,"./deps/md5.js":17,"./deps/uuid":18,"./pouch.merge.js":22,"__browserify_Buffer":38}],25:[function(require,module,exports){
+var Handlebars = require('handlebars-runtime');
+module.exports = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, options, functionType="function", escapeExpression=this.escapeExpression, self=this, blockHelperMissing=helpers.blockHelperMissing;
 
-},{}],26:[function(require,module,exports){
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "<h2>";
+  if (stack1 = helpers.desc) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.desc; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</h2>";
+  return buffer;
+  }
+
+function program3(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "<p>";
+  if (stack1 = helpers.text) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.text; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</p>";
+  return buffer;
+  }
+
+  buffer += "<div class=\"row\">\n		<ul class=\"breadcrumb\">\n  			<li><a class='bodyLink' href=\"GeneralLaws\" id=\"GeneralLaws\">General Laws</a></li>\n  			<li><a class='bodyLink' href='GeneralLaws/Part";
+  if (stack1 = helpers.part) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.part; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "' id=\"/GeneralLaws/Part";
+  if (stack1 = helpers.part) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.part; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\">Part ";
+  if (stack1 = helpers.part) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.part; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</a></li>\n  			<li><a class='bodyLink' href='GeneralLaws/Part";
+  if (stack1 = helpers.part) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.part; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "/Title";
+  if (stack1 = helpers.title) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.title; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "' id=\"/GeneralLaws/Part";
+  if (stack1 = helpers.part) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.part; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "/Title";
+  if (stack1 = helpers.title) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.title; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\">Title ";
+  if (stack1 = helpers.title) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.title; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</a></li>\n  			<li><a class='bodyLink' href='GeneralLaws/Part";
+  if (stack1 = helpers.part) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.part; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "/Title";
+  if (stack1 = helpers.title) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.title; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "/Chapter";
+  if (stack1 = helpers.chapter) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.chapter; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "' id=\"/GeneralLaws/Part";
+  if (stack1 = helpers.part) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.part; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "/Title";
+  if (stack1 = helpers.title) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.title; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "/Chapter";
+  if (stack1 = helpers.chapter) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.chapter; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\">Chapter ";
+  if (stack1 = helpers.chapter) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.chapter; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</a></li>\n  			<li class=\"active\">Article ";
+  if (stack1 = helpers.article) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.article; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</li>\n		</ul>\n		<h1>Chapter ";
+  if (stack1 = helpers.chapter) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.chapter; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + " Article ";
+  if (stack1 = helpers.article) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.article; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</h1>\n		";
+  options = {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data};
+  if (stack1 = helpers.desc) { stack1 = stack1.call(depth0, options); }
+  else { stack1 = depth0.desc; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  if (!helpers.desc) { stack1 = blockHelperMissing.call(depth0, stack1, options); }
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n		";
+  options = {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data};
+  if (stack1 = helpers.text) { stack1 = stack1.call(depth0, options); }
+  else { stack1 = depth0.text; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  if (!helpers.text) { stack1 = blockHelperMissing.call(depth0, stack1, options); }
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n		</div>\n";
+  return buffer;
+  });
+
+},{"handlebars-runtime":8}],26:[function(require,module,exports){
+var Handlebars = require('handlebars-runtime');
+module.exports = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, stack2, options, functionType="function", escapeExpression=this.escapeExpression, self=this, blockHelperMissing=helpers.blockHelperMissing;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1, stack2;
+  buffer += "\n		";
+  stack2 = ((stack1 = ((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.desc)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1)),blockHelperMissing.call(depth0, stack1, {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data}));
+  if(stack2 || stack2 === 0) { buffer += stack2; }
+  buffer += "\n		";
+  stack2 = ((stack1 = ((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.text)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1)),blockHelperMissing.call(depth0, stack1, {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data}));
+  if(stack2 || stack2 === 0) { buffer += stack2; }
+  buffer += "\n		";
+  return buffer;
+  }
+function program2(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "<dt><strong>"
+    + escapeExpression(((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.longCode)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " "
+    + escapeExpression(((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.sub)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + ":</strong> <a class='bodyLink' href='../../../c"
+    + escapeExpression(((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.chapter)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + escapeExpression(((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.shortCode)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + escapeExpression(((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.sub)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "' id='c"
+    + escapeExpression(((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.chapter)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + escapeExpression(((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.shortCode)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + escapeExpression(((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.sub)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "'>"
+    + escapeExpression(((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.desc)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</a></dt>";
+  return buffer;
+  }
+
+function program4(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "<dd>"
+    + escapeExpression(((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.text)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</dd>";
+  return buffer;
+  }
+
+  buffer += "<div class=\"row\">\n		<ul class=\"breadcrumb\">\n  			<li><a class='bodyLink' href=\"/GeneralLaws\" id=\"GeneralLaws\">General Laws</a></li>\n  			<li><a class='bodyLink' href='/GeneralLaws/Part"
+    + escapeExpression(((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.part)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "' id=\"GeneralLaws/Part";
+  if (stack2 = helpers.pat) { stack2 = stack2.call(depth0, {hash:{},data:data}); }
+  else { stack2 = depth0.pat; stack2 = typeof stack2 === functionType ? stack2.apply(depth0) : stack2; }
+  buffer += escapeExpression(stack2)
+    + "\">Part ";
+  if (stack2 = helpers.pat) { stack2 = stack2.call(depth0, {hash:{},data:data}); }
+  else { stack2 = depth0.pat; stack2 = typeof stack2 === functionType ? stack2.apply(depth0) : stack2; }
+  buffer += escapeExpression(stack2)
+    + "</a></li>\n  			<li><a class='bodyLink' href='/GeneralLaws/Part"
+    + escapeExpression(((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.part)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "/Title"
+    + escapeExpression(((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.title)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "' id=\"GeneralLaws/Part";
+  if (stack2 = helpers.pat) { stack2 = stack2.call(depth0, {hash:{},data:data}); }
+  else { stack2 = depth0.pat; stack2 = typeof stack2 === functionType ? stack2.apply(depth0) : stack2; }
+  buffer += escapeExpression(stack2)
+    + "/Title";
+  if (stack2 = helpers.tit) { stack2 = stack2.call(depth0, {hash:{},data:data}); }
+  else { stack2 = depth0.tit; stack2 = typeof stack2 === functionType ? stack2.apply(depth0) : stack2; }
+  buffer += escapeExpression(stack2)
+    + "\">Title ";
+  if (stack2 = helpers.tit) { stack2 = stack2.call(depth0, {hash:{},data:data}); }
+  else { stack2 = depth0.tit; stack2 = typeof stack2 === functionType ? stack2.apply(depth0) : stack2; }
+  buffer += escapeExpression(stack2)
+    + "</a></li>\n  			<li class=\"active\">Chapter ";
+  if (stack2 = helpers.chap) { stack2 = stack2.call(depth0, {hash:{},data:data}); }
+  else { stack2 = depth0.chap; stack2 = typeof stack2 === functionType ? stack2.apply(depth0) : stack2; }
+  buffer += escapeExpression(stack2)
+    + "</li>\n		</ul>\n		<h1>Chapter ";
+  if (stack2 = helpers.chap) { stack2 = stack2.call(depth0, {hash:{},data:data}); }
+  else { stack2 = depth0.chap; stack2 = typeof stack2 === functionType ? stack2.apply(depth0) : stack2; }
+  buffer += escapeExpression(stack2)
+    + "</h1>\n		<dl>\n		";
+  options = {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data};
+  if (stack2 = helpers.rows) { stack2 = stack2.call(depth0, options); }
+  else { stack2 = depth0.rows; stack2 = typeof stack2 === functionType ? stack2.apply(depth0) : stack2; }
+  if (!helpers.rows) { stack2 = blockHelperMissing.call(depth0, stack2, options); }
+  if(stack2 || stack2 === 0) { buffer += stack2; }
+  buffer += "\n		</dl>\n		</div>\n";
+  return buffer;
+  });
+
+},{"handlebars-runtime":8}],27:[function(require,module,exports){
+var Handlebars = require('handlebars-runtime');
+module.exports = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, options, functionType="function", escapeExpression=this.escapeExpression, self=this, blockHelperMissing=helpers.blockHelperMissing;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n			<li>\n			<a class='bodyLink' href='GeneralLaws/Part";
+  if (stack1 = helpers.part) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.part; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "' id=\"GeneralLaws/Part";
+  if (stack1 = helpers.part) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.part; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\">\n				Part ";
+  if (stack1 = helpers.part) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.part; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\n			</a>\n			</li>\n		";
+  return buffer;
+  }
+
+  buffer += "<div class=\"row\">\n		<ul class=\"breadcrumb\">\n  			<li class=\"active\">General Laws</li>\n		</ul>\n		<h1>General Laws</h1>\n		<ul>\n		";
+  options = {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data};
+  if (stack1 = helpers.rowg) { stack1 = stack1.call(depth0, options); }
+  else { stack1 = depth0.rowg; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  if (!helpers.rowg) { stack1 = blockHelperMissing.call(depth0, stack1, options); }
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n		</ul>\n		</div>\n";
+  return buffer;
+  });
+
+},{"handlebars-runtime":8}],28:[function(require,module,exports){
+module.exports = {
+	search:require('./search.hbs'),
+	section:require('./section.hbs'),
+	article:require('./article.hbs'),
+	session:require('./session.hbs'),
+	chapter:require('./chapter.hbs'),
+	title:require('./title.hbs'),
+	year:require('./year.hbs'),
+	part:require('./part.hbs'),
+	sess:require('./sess.hbs'),
+	general:require('./general.hbs')
+}
+
+},{"./article.hbs":25,"./chapter.hbs":26,"./general.hbs":27,"./part.hbs":29,"./search.hbs":30,"./section.hbs":31,"./sess.hbs":32,"./session.hbs":33,"./title.hbs":34,"./year.hbs":35}],29:[function(require,module,exports){
+var Handlebars = require('handlebars-runtime');
+module.exports = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, options, functionType="function", escapeExpression=this.escapeExpression, self=this, blockHelperMissing=helpers.blockHelperMissing;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n			<li>\n			<a class='bodyLink' href='Part";
+  if (stack1 = helpers.part) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.part; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "/Title";
+  if (stack1 = helpers.title) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.title; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "' id=\"GeneralLaws/Part";
+  if (stack1 = helpers.part) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.part; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "/Title";
+  if (stack1 = helpers.title) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.title; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\">\n				Title ";
+  if (stack1 = helpers.title) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.title; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\n			</a>\n			</li>\n		";
+  return buffer;
+  }
+
+  buffer += "<div class=\"row\">\n		<ul class=\"breadcrumb\">\n  			<li><a class='bodyLink' href=\"/GeneralLaws\" id=\"GeneralLaws\">General Laws</a></li>\n  			\n  			\n  			<li class=\"active\">Part ";
+  if (stack1 = helpers['p']) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0['p']; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</li>\n		</ul>\n		<h1>Part ";
+  if (stack1 = helpers['p']) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0['p']; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</h1>\n		<ul>\n		";
+  options = {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data};
+  if (stack1 = helpers.rowp) { stack1 = stack1.call(depth0, options); }
+  else { stack1 = depth0.rowp; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  if (!helpers.rowp) { stack1 = blockHelperMissing.call(depth0, stack1, options); }
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n		</ul>\n		</div>\n";
+  return buffer;
+  });
+
+},{"handlebars-runtime":8}],30:[function(require,module,exports){
+var Handlebars = require('handlebars-runtime');
+module.exports = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, options, functionType="function", escapeExpression=this.escapeExpression, self=this, blockHelperMissing=helpers.blockHelperMissing;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1, stack2;
+  buffer += "\n		";
+  stack2 = ((stack1 = ((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.section)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1)),blockHelperMissing.call(depth0, stack1, {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data}));
+  if(stack2 || stack2 === 0) { buffer += stack2; }
+  buffer += "\n		";
+  stack2 = ((stack1 = ((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.article)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1)),blockHelperMissing.call(depth0, stack1, {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data}));
+  if(stack2 || stack2 === 0) { buffer += stack2; }
+  buffer += "\n		";
+  stack2 = ((stack1 = ((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.year)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1)),blockHelperMissing.call(depth0, stack1, {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data}));
+  if(stack2 || stack2 === 0) { buffer += stack2; }
+  buffer += "\n		";
+  return buffer;
+  }
+function program2(depth0,data) {
+  
+  var buffer = "", stack1, stack2;
+  buffer += "<dt>\n		<a class='bodyLink' href='/c"
+    + escapeExpression(((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.chapter)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "s"
+    + escapeExpression(((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.section)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "' id=\"/c"
+    + escapeExpression(((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.chapter)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "s"
+    + escapeExpression(((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.section)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">Chapter "
+    + escapeExpression(((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.chapter)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " Section "
+    + escapeExpression(((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.section)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</a>\n  		</dt>\n		";
+  stack2 = ((stack1 = ((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.desc)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1)),blockHelperMissing.call(depth0, stack1, {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data}));
+  if(stack2 || stack2 === 0) { buffer += stack2; }
+  buffer += "\n		";
+  stack2 = ((stack1 = ((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.text)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1)),blockHelperMissing.call(depth0, stack1, {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data}));
+  if(stack2 || stack2 === 0) { buffer += stack2; }
+  buffer += "\n		";
+  return buffer;
+  }
+function program3(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "<dd><strong>"
+    + escapeExpression(((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.desc)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</strong></dd>";
+  return buffer;
+  }
+
+function program5(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "<dd>"
+    + escapeExpression(((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.text)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</dd>";
+  return buffer;
+  }
+
+function program7(depth0,data) {
+  
+  var buffer = "", stack1, stack2;
+  buffer += "<dt>\n		<a class='bodyLink' href='/c"
+    + escapeExpression(((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.chapter)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "a"
+    + escapeExpression(((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.article)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "' id=\"/c"
+    + escapeExpression(((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.chapter)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "a"
+    + escapeExpression(((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.article)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">Chapter "
+    + escapeExpression(((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.chapter)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " Article "
+    + escapeExpression(((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.article)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</a>\n  		</dt>\n		";
+  stack2 = ((stack1 = ((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.desc)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1)),blockHelperMissing.call(depth0, stack1, {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data}));
+  if(stack2 || stack2 === 0) { buffer += stack2; }
+  buffer += "\n		";
+  stack2 = ((stack1 = ((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.text)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1)),blockHelperMissing.call(depth0, stack1, {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data}));
+  if(stack2 || stack2 === 0) { buffer += stack2; }
+  buffer += "\n		";
+  return buffer;
+  }
+
+function program9(depth0,data) {
+  
+  var buffer = "", stack1, stack2;
+  buffer += "<dt>\n		<a class='bodyLink' href='../y"
+    + escapeExpression(((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.year)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "c"
+    + escapeExpression(((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.chapter)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "' id=\"/y"
+    + escapeExpression(((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.year)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "c"
+    + escapeExpression(((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.chapter)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">Session "
+    + escapeExpression(((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.year)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " Chapter "
+    + escapeExpression(((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.chapter)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</a>\n  		</dt>\n		";
+  stack2 = ((stack1 = ((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.desc)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1)),blockHelperMissing.call(depth0, stack1, {hash:{},inverse:self.noop,fn:self.program(10, program10, data),data:data}));
+  if(stack2 || stack2 === 0) { buffer += stack2; }
+  buffer += "\n		";
+  return buffer;
+  }
+function program10(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "<dd>"
+    + escapeExpression(((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.desc)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</dd>";
+  return buffer;
+  }
+
+  buffer += "<div class=\"row\">\n		<h1>\"";
+  if (stack1 = helpers['q']) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0['q']; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\"</h1>\n		<p>";
+  if (stack1 = helpers.total_rows) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.total_rows; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + " results</p><dl>\n		";
+  options = {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data};
+  if (stack1 = helpers.rows) { stack1 = stack1.call(depth0, options); }
+  else { stack1 = depth0.rows; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  if (!helpers.rows) { stack1 = blockHelperMissing.call(depth0, stack1, options); }
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n		</dl>\n		</div>\n";
+  return buffer;
+  });
+
+},{"handlebars-runtime":8}],31:[function(require,module,exports){
+var Handlebars = require('handlebars-runtime');
+module.exports = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, options, functionType="function", escapeExpression=this.escapeExpression, self=this, blockHelperMissing=helpers.blockHelperMissing;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "<h2>";
+  if (stack1 = helpers.desc) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.desc; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</h2>";
+  return buffer;
+  }
+
+function program3(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "<p>";
+  if (stack1 = helpers.text) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.text; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</p>";
+  return buffer;
+  }
+
+  buffer += "<div class=\"row\">\n		<ul class=\"breadcrumb\">\n  			<li><a class='bodyLink' href=\"GeneralLaws\" id=\"GeneralLaws\">General Laws</a></li>\n  			<li><a class='bodyLink' href='GeneralLaws/Part";
+  if (stack1 = helpers.part) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.part; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "' id=\"/GeneralLaws/Part";
+  if (stack1 = helpers.part) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.part; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\">Part ";
+  if (stack1 = helpers.part) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.part; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</a></li>\n  			<li><a class='bodyLink' href='GeneralLaws/Part";
+  if (stack1 = helpers.part) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.part; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "/Title";
+  if (stack1 = helpers.title) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.title; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "' id=\"/GeneralLaws/Part";
+  if (stack1 = helpers.part) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.part; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "/Title";
+  if (stack1 = helpers.title) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.title; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\">Title ";
+  if (stack1 = helpers.title) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.title; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</a></li>\n  			<li><a class='bodyLink' href='GeneralLaws/Part";
+  if (stack1 = helpers.part) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.part; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "/Title";
+  if (stack1 = helpers.title) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.title; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "/Chapter";
+  if (stack1 = helpers.chapter) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.chapter; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "' id=\"/GeneralLaws/Part";
+  if (stack1 = helpers.part) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.part; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "/Title";
+  if (stack1 = helpers.title) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.title; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "/Chapter";
+  if (stack1 = helpers.chapter) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.chapter; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\">Chapter ";
+  if (stack1 = helpers.chapter) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.chapter; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</a></li>\n  			<li class=\"active\">Section ";
+  if (stack1 = helpers.section) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.section; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</li>\n		</ul>\n		<h1>Chapter ";
+  if (stack1 = helpers.chapter) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.chapter; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + " Section ";
+  if (stack1 = helpers.section) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.section; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</h1>\n		";
+  options = {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data};
+  if (stack1 = helpers.desc) { stack1 = stack1.call(depth0, options); }
+  else { stack1 = depth0.desc; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  if (!helpers.desc) { stack1 = blockHelperMissing.call(depth0, stack1, options); }
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n		";
+  options = {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data};
+  if (stack1 = helpers.text) { stack1 = stack1.call(depth0, options); }
+  else { stack1 = depth0.text; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  if (!helpers.text) { stack1 = blockHelperMissing.call(depth0, stack1, options); }
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n		</div>\n";
+  return buffer;
+  });
+
+},{"handlebars-runtime":8}],32:[function(require,module,exports){
+var Handlebars = require('handlebars-runtime');
+module.exports = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, options, functionType="function", escapeExpression=this.escapeExpression, self=this, blockHelperMissing=helpers.blockHelperMissing;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n			<li>\n			<a class='bodyLink' href='SessionLaw/Year";
+  if (stack1 = helpers.year) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.year; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "' id=\"SessionLaw/Year";
+  if (stack1 = helpers.year) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.year; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\">\n				Year ";
+  if (stack1 = helpers.year) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.year; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\n			</a>\n			</li>\n		";
+  return buffer;
+  }
+
+  buffer += "<div class=\"row\">\n		<ul class=\"breadcrumb\">\n  			<li class=\"active\">Session Laws</li>\n		</ul>\n		<h1>Session Laws</h1>\n		<ul>\n		";
+  options = {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data};
+  if (stack1 = helpers.rows) { stack1 = stack1.call(depth0, options); }
+  else { stack1 = depth0.rows; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  if (!helpers.rows) { stack1 = blockHelperMissing.call(depth0, stack1, options); }
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n		</ul>\n		</div>\n";
+  return buffer;
+  });
+
+},{"handlebars-runtime":8}],33:[function(require,module,exports){
+var Handlebars = require('handlebars-runtime');
+module.exports = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, options, functionType="function", escapeExpression=this.escapeExpression, self=this, blockHelperMissing=helpers.blockHelperMissing;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "<h4>";
+  if (stack1 = helpers.desc) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.desc; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</h4>";
+  return buffer;
+  }
+
+function program3(depth0,data) {
+  
+  var stack1;
+  if (stack1 = helpers.text) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.text; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
+  }
+
+  buffer += "<div class=\"row\">\n		<ul class=\"breadcrumb\">\n  			<li><a class='bodyLink' href=\"SessionLaw\" id=\"SessionLaw\">Session Laws</a></li>\n  			<li><a class='bodyLink' href=\"SessionLaw/Year";
+  if (stack1 = helpers.year) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.year; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\" id=\"SessionLaw/Year";
+  if (stack1 = helpers.year) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.year; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\">Year ";
+  if (stack1 = helpers.year) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.year; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</a></li>\n  			\n  			<li class=\"active\">Chapter ";
+  if (stack1 = helpers.chapter) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.chapter; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</li>\n		</ul>\n		<h1>Session ";
+  if (stack1 = helpers.year) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.year; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + " Chapter ";
+  if (stack1 = helpers.chapter) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.chapter; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</h1>\n		";
+  options = {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data};
+  if (stack1 = helpers.desc) { stack1 = stack1.call(depth0, options); }
+  else { stack1 = depth0.desc; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  if (!helpers.desc) { stack1 = blockHelperMissing.call(depth0, stack1, options); }
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n		";
+  options = {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data};
+  if (stack1 = helpers.text) { stack1 = stack1.call(depth0, options); }
+  else { stack1 = depth0.text; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  if (!helpers.text) { stack1 = blockHelperMissing.call(depth0, stack1, options); }
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n		</div>\n";
+  return buffer;
+  });
+
+},{"handlebars-runtime":8}],34:[function(require,module,exports){
+var Handlebars = require('handlebars-runtime');
+module.exports = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, options, functionType="function", escapeExpression=this.escapeExpression, self=this, blockHelperMissing=helpers.blockHelperMissing;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n			<li>\n			<a class='bodyLink' href='Title";
+  if (stack1 = helpers.title) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.title; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "/Chapter";
+  if (stack1 = helpers.chapter) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.chapter; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "' id=\"GeneralLaws/Part";
+  if (stack1 = helpers.part) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.part; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "/Title";
+  if (stack1 = helpers.title) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.title; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "/Chapter";
+  if (stack1 = helpers.chapter) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.chapter; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\">\n				Chapter ";
+  if (stack1 = helpers.chapter) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.chapter; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\n			</a>\n			</li>\n		";
+  return buffer;
+  }
+
+  buffer += "<div class=\"row\">\n		<ul class=\"breadcrumb\">\n  			<li><a class='bodyLink' href=\"/GeneralLaws\" id=\"GeneralLaws\">General Laws</a></li>\n  			<li><a class='bodyLink' href='/GeneralLaws/Part";
+  if (stack1 = helpers.tp) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.tp; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "' id=\"/GeneralLaws/Part";
+  if (stack1 = helpers.tp) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.tp; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\">Part ";
+  if (stack1 = helpers.tp) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.tp; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</a></li>\n  			\n  			<li class=\"active\">Title ";
+  if (stack1 = helpers['t']) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0['t']; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</li>\n		</ul>\n		<h1>Title ";
+  if (stack1 = helpers['t']) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0['t']; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</h1>\n		<ul>\n		";
+  options = {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data};
+  if (stack1 = helpers.row) { stack1 = stack1.call(depth0, options); }
+  else { stack1 = depth0.row; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  if (!helpers.row) { stack1 = blockHelperMissing.call(depth0, stack1, options); }
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n		</ul>\n		</div>\n";
+  return buffer;
+  });
+
+},{"handlebars-runtime":8}],35:[function(require,module,exports){
+var Handlebars = require('handlebars-runtime');
+module.exports = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, options, functionType="function", escapeExpression=this.escapeExpression, self=this, blockHelperMissing=helpers.blockHelperMissing;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1, stack2;
+  stack2 = ((stack1 = ((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.desc)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1)),blockHelperMissing.call(depth0, stack1, {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data}));
+  if(stack2 || stack2 === 0) { buffer += stack2; }
+  buffer += "\n		";
+  return buffer;
+  }
+function program2(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n			<li><h3>\n			<a class='bodyLink' href='/"
+    + escapeExpression(((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1._id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "' id=\""
+    + escapeExpression(((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1._id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n				Chapter "
+    + escapeExpression(((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.chapter)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\n			</a></h3>\n			"
+    + escapeExpression(((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.desc)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\n			</li>\n			";
+  return buffer;
+  }
+
+  buffer += "<div class=\"row\">\n		<ul class=\"breadcrumb\">\n  			<li><a class='bodyLink' href=\"/SessionLaw\" id=\"SessionLaw\">Session Laws</a></li>\n  			\n  			\n  			<li class=\"active\">Year ";
+  if (stack1 = helpers.year) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.year; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</li>\n		</ul>\n		<h1>Year ";
+  if (stack1 = helpers.year) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.year; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</h1>\n		<ul>\n		";
+  options = {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data};
+  if (stack1 = helpers.rows) { stack1 = stack1.call(depth0, options); }
+  else { stack1 = depth0.rows; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  if (!helpers.rows) { stack1 = blockHelperMissing.call(depth0, stack1, options); }
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n		</ul>\n		</div>\n";
+  return buffer;
+  });
+
+},{"handlebars-runtime":8}],36:[function(require,module,exports){
+
+},{}],"spin":[function(require,module,exports){
+module.exports=require('8wbCjN');
+},{}],38:[function(require,module,exports){
 require=(function(e,t,n,r){function i(r){if(!n[r]){if(!t[r]){if(e)return e(r);throw new Error("Cannot find module '"+r+"'")}var s=n[r]={exports:{}};t[r][0](function(e){var n=t[r][1][e];return i(n?n:e)},s,s.exports)}return n[r].exports}for(var s=0;s<r.length;s++)i(r[s]);return i})(typeof require!=="undefined"&&require,{1:[function(require,module,exports){
 // UTILITY
 var util = require('util');
@@ -24227,9 +24747,5 @@ SlowBuffer.prototype.writeDoubleBE = Buffer.prototype.writeDoubleBE;
 
 },{}],"jquery":[function(require,module,exports){
 module.exports=require('9XoxEL');
-},{}],"bootstrap":[function(require,module,exports){
-module.exports=require('/lrkCq');
-},{}],"spin":[function(require,module,exports){
-module.exports=require('8wbCjN');
 },{}]},{},[3])
 ;

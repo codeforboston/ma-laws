@@ -1,0 +1,24 @@
+<div class="row">
+		<h1>"{{q}}"</h1>
+		<p>{{total_rows}} results</p><dl>
+		{{#rows}}
+		{{#doc.section}}<dt>
+		<a class='bodyLink' href='/c{{doc.chapter}}s{{doc.section}}' id="/c{{doc.chapter}}s{{doc.section}}">Chapter {{doc.chapter}} Section {{doc.section}}</a>
+  		</dt>
+		{{#doc.desc}}<dd><strong>{{doc.desc}}</strong></dd>{{/doc.desc}}
+		{{#doc.text}}<dd>{{doc.text}}</dd>{{/doc.text}}
+		{{/doc.section}}
+		{{#doc.article}}<dt>
+		<a class='bodyLink' href='/c{{doc.chapter}}a{{doc.article}}' id="/c{{doc.chapter}}a{{doc.article}}">Chapter {{doc.chapter}} Article {{doc.article}}</a>
+  		</dt>
+		{{#doc.desc}}<dd><strong>{{doc.desc}}</strong></dd>{{/doc.desc}}
+		{{#doc.text}}<dd>{{doc.text}}</dd>{{/doc.text}}
+		{{/doc.article}}
+		{{#doc.year}}<dt>
+		<a class='bodyLink' href='../y{{doc.year}}c{{doc.chapter}}' id="/y{{doc.year}}c{{doc.chapter}}">Session {{doc.year}} Chapter {{doc.chapter}}</a>
+  		</dt>
+		{{#doc.desc}}<dd>{{doc.desc}}</dd>{{/doc.desc}}
+		{{/doc.year}}
+		{{/rows}}
+		</dl>
+		</div>

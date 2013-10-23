@@ -4,7 +4,7 @@ var $ = require('jquery');
 
 Backbone.$ = $;
 
-var templates = require('./templates');
+var templates = require('../templates');
 
 var spin = require('spin');
 

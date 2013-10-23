@@ -1,0 +1,18 @@
+<div class="row">
+		<ul class="breadcrumb">
+  			<li><a class='bodyLink' href="/GeneralLaws" id="GeneralLaws">General Laws</a></li>
+  			<li><a class='bodyLink' href='/GeneralLaws/Part{{tp}}' id="/GeneralLaws/Part{{tp}}">Part {{tp}}</a></li>
+  			
+  			<li class="active">Title {{t}}</li>
+		</ul>
+		<h1>Title {{t}}</h1>
+		<ul>
+		{{#row}}
+			<li>
+			<a class='bodyLink' href='Title{{title}}/Chapter{{chapter}}' id="GeneralLaws/Part{{part}}/Title{{title}}/Chapter{{chapter}}">
+				Chapter {{chapter}}
+			</a>
+			</li>
+		{{/row}}
+		</ul>
+		</div>

@@ -1,0 +1,20 @@
+<div class="row">
+		<ul class="breadcrumb">
+  			<li><a class='bodyLink' href="/SessionLaw" id="SessionLaw">Session Laws</a></li>
+  			
+  			
+  			<li class="active">Year {{year}}</li>
+		</ul>
+		<h1>Year {{year}}</h1>
+		<ul>
+		{{#rows}}{{#doc.desc}}
+			<li><h3>
+			<a class='bodyLink' href='/{{doc._id}}' id="{{doc._id}}">
+				Chapter {{doc.chapter}}
+			</a></h3>
+			{{doc.desc}}
+			</li>
+			{{/doc.desc}}
+		{{/rows}}
+		</ul>
+		</div>
