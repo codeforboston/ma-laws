@@ -1,9 +1,7 @@
 all: browser put
 
 compile:
-	coffee -o js coffee/script.coffee
 	coffee -o js coffee/templates.coffee
-	coffee -o js coffee/view.coffee
 
 put:
 	erica push law
