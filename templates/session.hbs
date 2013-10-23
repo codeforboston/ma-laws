@@ -6,6 +6,6 @@
   			<li class="active">Chapter {{chapter}}</li>
 		</ul>
 		<h1>Session {{year}} Chapter {{chapter}}</h1>
-		{{#desc}}<h4>{{desc}}</h4>{{/desc}}
-		{{#text}}{{{text}}}{{/text}}
+		{{#if desc}}<h4>{{desc}}</h4>{{/if}}
+		{{#if text}}{{{text}}}{{/if}}
 		</div>

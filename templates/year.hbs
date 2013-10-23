@@ -7,14 +7,14 @@
 		</ul>
 		<h1>Year {{year}}</h1>
 		<ul>
-		{{#rows}}{{#doc.desc}}
+		{{#rows}}{{#if doc.desc}}
 			<li><h3>
 			<a class='bodyLink' href='/{{doc._id}}' id="{{doc._id}}">
 				Chapter {{doc.chapter}}
 			</a></h3>
 			{{doc.desc}}
 			</li>
-			{{/doc.desc}}
+			{{/if}}
 		{{/rows}}
 		</ul>
 		</div>

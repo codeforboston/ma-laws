@@ -1,15 +1,21 @@
 <div class="row">
-		<ul class="breadcrumb">
-  			<li><a class='bodyLink' href="/GeneralLaws" id="GeneralLaws">General Laws</a></li>
-  			<li><a class='bodyLink' href='/GeneralLaws/Part{{doc.part}}' id="GeneralLaws/Part{{pat}}">Part {{pat}}</a></li>
-  			<li><a class='bodyLink' href='/GeneralLaws/Part{{doc.part}}/Title{{doc.title}}' id="GeneralLaws/Part{{pat}}/Title{{tit}}">Title {{tit}}</a></li>
-  			<li class="active">Chapter {{chap}}</li>
-		</ul>
-		<h1>Chapter {{chap}}</h1>
-		<dl>
-		{{#rows}}
-		{{#doc.desc}}<dt><strong>{{doc.longCode}} {{doc.sub}}:</strong> <a class='bodyLink' href='../../../c{{doc.chapter}}{{doc.shortCode}}{{doc.sub}}' id='c{{doc.chapter}}{{doc.shortCode}}{{doc.sub}}'>{{doc.desc}}</a></dt>{{/doc.desc}}
-		{{#doc.text}}<dd>{{doc.text}}</dd>{{/doc.text}}
-		{{/rows}}
-		</dl>
-		</div>
+    <ul class="breadcrumb">
+        <li><a class='bodyLink' href="/GeneralLaws" id="GeneralLaws">General Laws</a></li>
+      	<li><a class='bodyLink' href='/GeneralLaws/Part{{doc.part}}' id="GeneralLaws/Part{{pat}}">Part {{pat}}</a></li>
+      	<li><a class='bodyLink' href='/GeneralLaws/Part{{doc.part}}/Title{{doc.title}}' id="GeneralLaws/Part{{pat}}/Title{{tit}}">Title {{tit}}</a></li>
+      	<li class="active">Chapter {{chap}}</li>
+	</ul>
+	<h1>Chapter {{chap}}</h1>
+	<dl>
+	{{#rows}}
+	    {{#if doc.desc}}
+		    <dt><strong>{{doc.longCode}} {{doc.sub}}:</strong> 
+		    <a class='bodyLink' href='../../../c{{doc.chapter}}{{doc.shortCode}}{{doc.sub}}' 
+		    id='c{{doc.chapter}}{{doc.shortCode}}{{doc.sub}}'>{{doc.desc}}</a></dt>
+		 {{/if}}
+		{{#if doc.text}}
+		    <dd>{{doc.text}}</dd>
+        {{/if}}
+	{{/rows}}
+	</dl>
+</div>
