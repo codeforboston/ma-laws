@@ -1,0 +1,34 @@
+{{#if type}}
+<li><a class='bodyLink' href="{{base}}/{{type}}Laws" id="{{type}}Laws">{{type}} Laws</a></li>
+{{/if}}
+{{#if year}}
+<li><a class='bodyLink' href="{{base}}/{{type}}Laws/Year{{year}}" id="{{type}}Laws/Year{{year}}">Year {{year}}</a></li>
+{{/if}}
+{{#if part}}
+<li><a class='bodyLink' href='{{base}}/{{type}}Laws/Part{{part}}' id="{{type}}Laws/Part{{part}}">Part {{part}}</a></li>
+{{/if}}
+{{#if title}}
+<li>
+<a class='bodyLink'
+href='{{base}}/{{type}}Laws/Part{{part}}/Title{{title}}'
+id="{{type}}Laws//Part{{part}}/Title{{title}}"
+>Title {{title}}</a>
+</li>
+{{/if}}
+{{#if chapter}}
+<li>
+<a class='bodyLink'
+href='{{base}}/{{type}}Laws/Part{{part}}/Title{{title}}/Chapter{{chapter}}'
+id="{{type}}Laws//Part{{part}}/Title{{title}}/Chapter{{chapter}}"
+>Chapter {{chapter}}</a>
+</li>
+{{/if}}
+{{#if section}}
+<li class="active">Section {{section}}</li>
+{{/if}}
+{{#if article}}
+<li class="active">Article {{article}}</li>
+{{/if}}
+{{#if ychapter}}
+<li class="active">Chapter {{ychapter}}</li>
+{{/if}}

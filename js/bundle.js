@@ -10803,6 +10803,31 @@ var $ = require('jquery');
 
 Backbone.$ = $;
 
+var template = require('../templates/breadcrumb.hbs');
+
+module.exports = Backbone.View.extend({
+    template:template,
+    render:function(doc){
+        this.$el.html(this.template(doc))
+    },
+    events : {
+      'click .bodyLink': 'movePage'
+    },
+    movePage : function(a) {
+      a.preventDefault();
+      return window.routes.navigate(a.target.id, {
+        trigger: true
+      });
+    }
+});
+
+},{"../templates/breadcrumb.hbs":27,"backbone":7,"jquery":"9XoxEL"}],4:[function(require,module,exports){
+var Backbone = require('backbone');
+
+var $ = require('jquery');
+
+Backbone.$ = $;
+
 var View = require('./view');
 
 var Pouch = require('pouchdb');
@@ -10943,7 +10968,7 @@ session : function(path) {
   };
 
   start('law');
-},{"./view":5,"backbone":6,"bootstrap":"/lrkCq","jquery":"9XoxEL","pouchdb":21,"spin":"8wbCjN"}],"8wbCjN":[function(require,module,exports){
+},{"./view":6,"backbone":7,"bootstrap":"/lrkCq","jquery":"9XoxEL","pouchdb":23,"spin":"8wbCjN"}],"8wbCjN":[function(require,module,exports){
 (function(t,e){if(typeof exports=="object")module.exports=e();else if(typeof define=="function"&&define.amd)define(e);else t.Spinner=e()})(this,function(){"use strict";var t=["webkit","Moz","ms","O"],e={},i;function o(t,e){var i=document.createElement(t||"div"),o;for(o in e)i[o]=e[o];return i}function n(t){for(var e=1,i=arguments.length;e<i;e++)t.appendChild(arguments[e]);return t}var r=function(){var t=o("style",{type:"text/css"});n(document.getElementsByTagName("head")[0],t);return t.sheet||t.styleSheet}();function s(t,o,n,s){var a=["opacity",o,~~(t*100),n,s].join("-"),f=.01+n/s*100,l=Math.max(1-(1-t)/o*(100-f),t),u=i.substring(0,i.indexOf("Animation")).toLowerCase(),d=u&&"-"+u+"-"||"";if(!e[a]){r.insertRule("@"+d+"keyframes "+a+"{"+"0%{opacity:"+l+"}"+f+"%{opacity:"+t+"}"+(f+.01)+"%{opacity:1}"+(f+o)%100+"%{opacity:"+t+"}"+"100%{opacity:"+l+"}"+"}",r.cssRules.length);e[a]=1}return a}function a(e,i){var o=e.style,n,r;if(o[i]!==undefined)return i;i=i.charAt(0).toUpperCase()+i.slice(1);for(r=0;r<t.length;r++){n=t[r]+i;if(o[n]!==undefined)return n}}function f(t,e){for(var i in e)t.style[a(t,i)||i]=e[i];return t}function l(t){for(var e=1;e<arguments.length;e++){var i=arguments[e];for(var o in i)if(t[o]===undefined)t[o]=i[o]}return t}function u(t){var e={x:t.offsetLeft,y:t.offsetTop};while(t=t.offsetParent)e.x+=t.offsetLeft,e.y+=t.offsetTop;return e}function d(t,e){return typeof t=="string"?t:t[e%t.length]}var p={lines:12,length:7,width:5,radius:10,rotate:0,corners:1,color:"#000",direction:1,speed:1,trail:100,opacity:1/4,fps:20,zIndex:2e9,className:"spinner",top:"auto",left:"auto",position:"relative"};function c(t){if(typeof this=="undefined")return new c(t);this.opts=l(t||{},c.defaults,p)}c.defaults={};l(c.prototype,{spin:function(t){this.stop();var e=this,n=e.opts,r=e.el=f(o(0,{className:n.className}),{position:n.position,width:0,zIndex:n.zIndex}),s=n.radius+n.length+n.width,a,l;if(t){t.insertBefore(r,t.firstChild||null);l=u(t);a=u(r);f(r,{left:(n.left=="auto"?l.x-a.x+(t.offsetWidth>>1):parseInt(n.left,10)+s)+"px",top:(n.top=="auto"?l.y-a.y+(t.offsetHeight>>1):parseInt(n.top,10)+s)+"px"})}r.setAttribute("role","progressbar");e.lines(r,e.opts);if(!i){var d=0,p=(n.lines-1)*(1-n.direction)/2,c,h=n.fps,m=h/n.speed,y=(1-n.opacity)/(m*n.trail/100),g=m/n.lines;(function v(){d++;for(var t=0;t<n.lines;t++){c=Math.max(1-(d+(n.lines-t)*g)%m*y,n.opacity);e.opacity(r,t*n.direction+p,c,n)}e.timeout=e.el&&setTimeout(v,~~(1e3/h))})()}return e},stop:function(){var t=this.el;if(t){clearTimeout(this.timeout);if(t.parentNode)t.parentNode.removeChild(t);this.el=undefined}return this},lines:function(t,e){var r=0,a=(e.lines-1)*(1-e.direction)/2,l;function u(t,i){return f(o(),{position:"absolute",width:e.length+e.width+"px",height:e.width+"px",background:t,boxShadow:i,transformOrigin:"left",transform:"rotate("+~~(360/e.lines*r+e.rotate)+"deg) translate("+e.radius+"px"+",0)",borderRadius:(e.corners*e.width>>1)+"px"})}for(;r<e.lines;r++){l=f(o(),{position:"absolute",top:1+~(e.width/2)+"px",transform:e.hwaccel?"translate3d(0,0,0)":"",opacity:e.opacity,animation:i&&s(e.opacity,e.trail,a+r*e.direction,e.lines)+" "+1/e.speed+"s linear infinite"});if(e.shadow)n(l,f(u("#000","0 0 4px "+"#000"),{top:2+"px"}));n(t,n(l,u(d(e.color,r),"0 0 1px rgba(0,0,0,.1)")))}return t},opacity:function(t,e,i){if(e<t.childNodes.length)t.childNodes[e].style.opacity=i}});function h(){function t(t,e){return o("<"+t+' xmlns="urn:schemas-microsoft.com:vml" class="spin-vml">',e)}r.addRule(".spin-vml","behavior:url(#default#VML)");c.prototype.lines=function(e,i){var o=i.length+i.width,r=2*o;function s(){return f(t("group",{coordsize:r+" "+r,coordorigin:-o+" "+-o}),{width:r,height:r})}var a=-(i.width+i.length)*2+"px",l=f(s(),{position:"absolute",top:a,left:a}),u;function p(e,r,a){n(l,n(f(s(),{rotation:360/i.lines*e+"deg",left:~~r}),n(f(t("roundrect",{arcsize:i.corners}),{width:o,height:i.width,left:i.radius,top:-i.width>>1,filter:a}),t("fill",{color:d(i.color,e),opacity:i.opacity}),t("stroke",{opacity:0}))))}if(i.shadow)for(u=1;u<=i.lines;u++)p(u,-2,"progid:DXImageTransform.Microsoft.Blur(pixelradius=2,makeshadow=1,shadowopacity=.3)");for(u=1;u<=i.lines;u++)p(u);return n(e,l)};c.prototype.opacity=function(t,e,i,o){var n=t.firstChild;o=o.shadow&&o.lines||0;if(n&&e+o<n.childNodes.length){n=n.childNodes[e+o];n=n&&n.firstChild;n=n&&n.firstChild;if(n)n.opacity=i}}}var m=f(o("group"),{behavior:"url(#default#VML)"});if(!a(m,"transform")&&m.adj)h();else i=a(m,"animation");return c});
 
 /**
@@ -11027,7 +11052,7 @@ $('#el').spin('flower', 'red');
 
 }));
 
-},{"jquery":"9XoxEL","spin":"8wbCjN"}],5:[function(require,module,exports){
+},{"jquery":"9XoxEL","spin":"8wbCjN"}],6:[function(require,module,exports){
 var Backbone = require('backbone');
 
 var $ = require('jquery');
@@ -11037,11 +11062,13 @@ Backbone.$ = $;
 var templates = require('../templates');
 
 var spin = require('spin');
+var Breadcrumb = require('./breadcrumb');
 
 var View = Backbone.View.extend({
     initialize : function(opts) {
       return this.db = opts.db;
     },
+    breadcrumb:new Breadcrumb({ el: $('#bcrumb')}),
     events : {
       'click .bodyLink': 'movePage'
     },
@@ -11084,6 +11111,7 @@ var View = Backbone.View.extend({
             body.spin(false);
           } else {
             body.spin(false);
+            body.breadcrumb.render(doc);
             return body.$el.html(body.template.section(doc));
           }
         });
@@ -11094,6 +11122,7 @@ var View = Backbone.View.extend({
             body.spin(false);
           } else {
             body.spin(false);
+            body.breadcrumb.render(doc);
             return body.$el.html(body.template.article(doc));
           }
         });
@@ -11104,6 +11133,11 @@ var View = Backbone.View.extend({
             body.spin(false);
           } else {
             body.spin(false);
+            body.breadcrumb.render({
+                type:'Session',
+                year:doc.year,
+                ychapter:doc.chapter
+            });
             return body.$el.html(body.template.session(doc));
           }
         });
@@ -11121,6 +11155,9 @@ var View = Backbone.View.extend({
               out.year = row.key.pop();
               return out;
             });
+            body.breadcrumb.render({
+                type:'session'
+            });
             body.spin(false);
             return body.$el.html(body.template.sess(resp));
           });
@@ -11136,7 +11173,12 @@ var View = Backbone.View.extend({
               return a.doc.chapter - b.doc.chapter;
             });
             resp.year = loc.year;
+            body.breadcrumb.render({
+                type:'session',
+                year:loc.year
+            });
             body.spin(false);
+            
             return body.$el.html(body.template.year(resp));
           });
         }
@@ -11147,6 +11189,7 @@ var View = Backbone.View.extend({
             body.spin(false);
           } else {
             body.spin(false);
+            body.breadcrumb.render(doc);
             return body.$el.html(body.template.section(doc));
           }
         });
@@ -11179,6 +11222,12 @@ var View = Backbone.View.extend({
           resp.tit = loc.title;
           resp.pat = loc.part;
           body.spin(false);
+          body.breadcrumb.render({
+            type:'General',
+            chapter:loc.chapter,
+            title:loc.title,
+            part:loc.part
+          });
           return body.$el.html(body.template.chapter(resp));
         });
       } else if (loc.chapter === 'all' && loc.title !== 'all') {
@@ -11203,6 +11252,11 @@ var View = Backbone.View.extend({
             return out;
           });
           body.spin(false);
+          body.breadcrumb.render({
+            title: loc.title,
+            part: loc.part,
+            type:'General'
+          });
           return body.$el.html(body.template.title({
             row: rows,
             t: loc.title,
@@ -11230,6 +11284,10 @@ var View = Backbone.View.extend({
             return out;
           });
           body.spin(false);
+          body.breadcrumb.render({
+            part: loc.part,
+            type:'General'
+          });
           return body.$el.html(body.template.part({
             rowp: rows,
             p: loc.part
@@ -11251,6 +11309,9 @@ var View = Backbone.View.extend({
             return out;
           });
           body.spin(false);
+          body.breadcrumb.render({
+            type:'General'
+          });
           return body.$el.html(body.template.general({
             rowg: rows,
             g: true
@@ -11263,7 +11324,7 @@ var View = Backbone.View.extend({
 
   module.exports = View;
 
-},{"../templates":28,"backbone":6,"jquery":"9XoxEL","spin":"8wbCjN"}],6:[function(require,module,exports){
+},{"../templates":30,"./breadcrumb":3,"backbone":7,"jquery":"9XoxEL","spin":"8wbCjN"}],7:[function(require,module,exports){
 //     Backbone.js 1.1.0
 
 //     (c) 2010-2011 Jeremy Ashkenas, DocumentCloud Inc.
@@ -12846,7 +12907,7 @@ var View = Backbone.View.extend({
 
 }).call(this);
 
-},{"underscore":7}],7:[function(require,module,exports){
+},{"underscore":8}],8:[function(require,module,exports){
 //     Underscore.js 1.5.2
 //     http://underscorejs.org
 //     (c) 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
@@ -14124,7 +14185,7 @@ var View = Backbone.View.extend({
 
 }).call(this);
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 /*
 
 Copyright (C) 2011 by Yehuda Katz
@@ -14489,99 +14550,290 @@ Handlebars.template = Handlebars.VM.template;
 })(Handlebars);
 ;
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 'use strict';
 
-var pouchCollate = function(a, b) {
-  var ai = collationIndex(a);
-  var bi = collationIndex(b);
-  if ((ai - bi) !== 0) {
-    return ai - bi;
+var extend;
+if (typeof module !== 'undefined' && module.exports) {
+  extend = require('./deps/extend');
+}
+
+
+// for a better overview of what this is doing, read:
+// https://github.com/apache/couchdb/blob/master/src/couchdb/couch_key_tree.erl
+//
+// But for a quick intro, CouchDB uses a revision tree to store a documents
+// history, A -> B -> C, when a document has conflicts, that is a branch in the
+// tree, A -> (B1 | B2 -> C), We store these as a nested array in the format
+//
+// KeyTree = [Path ... ]
+// Path = {pos: position_from_root, ids: Tree}
+// Tree = [Key, Opts, [Tree, ...]], in particular single node: [Key, []]
+
+// Turn a path as a flat array into a tree with a single branch
+function pathToTree(path) {
+  var doc = path.shift();
+  var root = [doc.id, doc.opts, []];
+  var leaf = root;
+  var nleaf;
+
+  while (path.length) {
+    doc = path.shift();
+    nleaf = [doc.id, doc.opts, []];
+    leaf[2].push(nleaf);
+    leaf = nleaf;
   }
-  if (a === null) {
-    return 0;
+  return root;
+}
+
+// Merge two trees together
+// The roots of tree1 and tree2 must be the same revision
+function mergeTree(in_tree1, in_tree2) {
+  var queue = [{tree1: in_tree1, tree2: in_tree2}];
+  var conflicts = false;
+  while (queue.length > 0) {
+    var item = queue.pop();
+    var tree1 = item.tree1;
+    var tree2 = item.tree2;
+
+    if (tree1[1].status || tree2[1].status) {
+      tree1[1].status = (tree1[1].status ===  'available' ||
+                         tree2[1].status === 'available') ? 'available' : 'missing';
+    }
+
+    for (var i = 0; i < tree2[2].length; i++) {
+      if (!tree1[2][0]) {
+        conflicts = 'new_leaf';
+        tree1[2][0] = tree2[2][i];
+        continue;
+      }
+
+      var merged = false;
+      for (var j = 0; j < tree1[2].length; j++) {
+        if (tree1[2][j][0] === tree2[2][i][0]) {
+          queue.push({tree1: tree1[2][j], tree2: tree2[2][i]});
+          merged = true;
+        }
+      }
+      if (!merged) {
+        conflicts = 'new_branch';
+        tree1[2].push(tree2[2][i]);
+        tree1[2].sort();
+      }
+    }
   }
-  if (typeof a === 'number') {
-    return a - b;
+  return {conflicts: conflicts, tree: in_tree1};
+}
+
+function doMerge(tree, path, dontExpand) {
+  var restree = [];
+  var conflicts = false;
+  var merged = false;
+  var res, branch;
+
+  if (!tree.length) {
+    return {tree: [path], conflicts: 'new_leaf'};
   }
-  if (typeof a === 'boolean') {
-    return a < b ? -1 : 1;
+
+  tree.forEach(function(branch) {
+    if (branch.pos === path.pos && branch.ids[0] === path.ids[0]) {
+      // Paths start at the same position and have the same root, so they need
+      // merged
+      res = mergeTree(branch.ids, path.ids);
+      restree.push({pos: branch.pos, ids: res.tree});
+      conflicts = conflicts || res.conflicts;
+      merged = true;
+    } else if (dontExpand !== true) {
+      // The paths start at a different position, take the earliest path and
+      // traverse up until it as at the same point from root as the path we want to
+      // merge.  If the keys match we return the longer path with the other merged
+      // After stemming we dont want to expand the trees
+
+      var t1 = branch.pos < path.pos ? branch : path;
+      var t2 = branch.pos < path.pos ? path : branch;
+      var diff = t2.pos - t1.pos;
+
+      var candidateParents = [];
+
+      var trees = [];
+      trees.push({ids: t1.ids, diff: diff, parent: null, parentIdx: null});
+      while (trees.length > 0) {
+        var item = trees.pop();
+        if (item.diff === 0) {
+          if (item.ids[0] === t2.ids[0]) {
+            candidateParents.push(item);
+          }
+          continue;
+        }
+        if (!item.ids) {
+          continue;
+        }
+        /*jshint loopfunc:true */
+        item.ids[2].forEach(function(el, idx) {
+          trees.push({ids: el, diff: item.diff-1, parent: item.ids, parentIdx: idx});
+        });
+      }
+
+      var el = candidateParents[0];
+
+      if (!el) {
+        restree.push(branch);
+      } else {
+        res = mergeTree(el.ids, t2.ids);
+        el.parent[2][el.parentIdx] = res.tree;
+        restree.push({pos: t1.pos, ids: t1.ids});
+        conflicts = conflicts || res.conflicts;
+        merged = true;
+      }
+    } else {
+      restree.push(branch);
+    }
+  });
+
+  // We didnt find
+  if (!merged) {
+    restree.push(path);
   }
-  if (typeof a === 'string') {
-    return stringCollate(a, b);
-  }
-  if (Array.isArray(a)) {
-    return arrayCollate(a, b);
-  }
-  if (typeof a === 'object') {
-    return objectCollate(a, b);
+
+  restree.sort(function(a, b) {
+    return a.pos - b.pos;
+  });
+
+  return {
+    tree: restree,
+    conflicts: conflicts || 'internal_node'
+  };
+}
+
+// To ensure we dont grow the revision tree infinitely, we stem old revisions
+function stem(tree, depth) {
+  // First we break out the tree into a complete list of root to leaf paths,
+  // we cut off the start of the path and generate a new set of flat trees
+  var stemmedPaths = PouchMerge.rootToLeaf(tree).map(function(path) {
+    var stemmed = path.ids.slice(-depth);
+    return {
+      pos: path.pos + (path.ids.length - stemmed.length),
+      ids: pathToTree(stemmed)
+    };
+  });
+  // Then we remerge all those flat trees together, ensuring that we dont
+  // connect trees that would go beyond the depth limit
+  return stemmedPaths.reduce(function(prev, current, i, arr) {
+    return doMerge(prev, current, true).tree;
+  }, [stemmedPaths.shift()]);
+}
+
+var PouchMerge = {};
+
+PouchMerge.merge = function(tree, path, depth) {
+  // Ugh, nicer way to not modify arguments in place?
+  tree = extend(true, [], tree);
+  path = extend(true, {}, path);
+  var newTree = doMerge(tree, path);
+  return {
+    tree: stem(newTree.tree, depth),
+    conflicts: newTree.conflicts
+  };
+};
+
+// We fetch all leafs of the revision tree, and sort them based on tree length
+// and whether they were deleted, undeleted documents with the longest revision
+// tree (most edits) win
+// The final sort algorithm is slightly documented in a sidebar here:
+// http://guide.couchdb.org/draft/conflicts.html
+PouchMerge.winningRev = function(metadata) {
+  var leafs = [];
+  PouchMerge.traverseRevTree(metadata.rev_tree,
+                              function(isLeaf, pos, id, something, opts) {
+    if (isLeaf) {
+      leafs.push({pos: pos, id: id, deleted: !!opts.deleted});
+    }
+  });
+  leafs.sort(function(a, b) {
+    if (a.deleted !== b.deleted) {
+      return a.deleted > b.deleted ? 1 : -1;
+    }
+    if (a.pos !== b.pos) {
+      return b.pos - a.pos;
+    }
+    return a.id < b.id ? 1 : -1;
+  });
+
+  return leafs[0].pos + '-' + leafs[0].id;
+};
+
+// Pretty much all below can be combined into a higher order function to
+// traverse revisions
+// The return value from the callback will be passed as context to all
+// children of that node
+PouchMerge.traverseRevTree = function(revs, callback) {
+  var toVisit = [];
+
+  revs.forEach(function(tree) {
+    toVisit.push({pos: tree.pos, ids: tree.ids});
+  });
+  while (toVisit.length > 0) {
+    var node = toVisit.pop();
+    var pos = node.pos;
+    var tree = node.ids;
+    var newCtx = callback(tree[2].length === 0, pos, tree[0], node.ctx, tree[1]);
+    /*jshint loopfunc: true */
+    tree[2].forEach(function(branch) {
+      toVisit.push({pos: pos+1, ids: branch, ctx: newCtx});
+    });
   }
 };
 
-var stringCollate = function(a, b) {
-  // See: https://github.com/daleharvey/pouchdb/issues/40
-  // This is incompatible with the CouchDB implementation, but its the
-  // best we can do for now
-  return (a === b) ? 0 : ((a > b) ? 1 : -1);
+PouchMerge.collectLeaves = function(revs) {
+  var leaves = [];
+  PouchMerge.traverseRevTree(revs, function(isLeaf, pos, id, acc, opts) {
+    if (isLeaf) {
+      leaves.unshift({rev: pos + "-" + id, pos: pos, opts: opts});
+    }
+  });
+  leaves.sort(function(a, b) {
+    return b.pos - a.pos;
+  });
+  leaves.map(function(leaf) { delete leaf.pos; });
+  return leaves;
 };
 
-var objectCollate = function(a, b) {
-  var ak = Object.keys(a), bk = Object.keys(b);
-  var len = Math.min(ak.length, bk.length);
-  for (var i = 0; i < len; i++) {
-    // First sort the keys
-    var sort = pouchCollate(ak[i], bk[i]);
-    if (sort !== 0) {
-      return sort;
+// returns revs of all conflicts that is leaves such that
+// 1. are not deleted and
+// 2. are different than winning revision
+PouchMerge.collectConflicts = function(metadata) {
+  var win = PouchMerge.winningRev(metadata);
+  var leaves = PouchMerge.collectLeaves(metadata.rev_tree);
+  var conflicts = [];
+  leaves.forEach(function(leaf) {
+    if (leaf.rev !== win && !leaf.opts.deleted) {
+      conflicts.push(leaf.rev);
     }
-    // if the keys are equal sort the values
-    sort = pouchCollate(a[ak[i]], b[bk[i]]);
-    if (sort !== 0) {
-      return sort;
-    }
-
-  }
-  return (ak.length === bk.length) ? 0 :
-    (ak.length > bk.length) ? 1 : -1;
+  });
+  return conflicts;
 };
 
-var arrayCollate = function(a, b) {
-  var len = Math.min(a.length, b.length);
-  for (var i = 0; i < len; i++) {
-    var sort = pouchCollate(a[i], b[i]);
-    if (sort !== 0) {
-      return sort;
+PouchMerge.rootToLeaf = function(tree) {
+  var paths = [];
+  PouchMerge.traverseRevTree(tree, function(isLeaf, pos, id, history, opts) {
+    history = history ? history.slice(0) : [];
+    history.push({id: id, opts: opts});
+    if (isLeaf) {
+      var rootPos = pos + 1 - history.length;
+      paths.unshift({pos: rootPos, ids: history});
     }
-  }
-  return (a.length === b.length) ? 0 :
-    (a.length > b.length) ? 1 : -1;
-};
-
-// The collation is defined by erlangs ordered terms
-// the atoms null, true, false come first, then numbers, strings,
-// arrays, then objects
-var collationIndex = function(x) {
-  var id = ['boolean', 'number', 'string', 'object'];
-  if (id.indexOf(typeof x) !== -1) {
-    if (x === null) {
-      return 1;
-    }
-    return id.indexOf(typeof x) + 2;
-  }
-  if (Array.isArray(x)) {
-    return 4.5;
-  }
+    return history;
+  });
+  return paths;
 };
 
 // a few hacks to get things in the right place for node.js
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = pouchCollate;
+  module.exports = PouchMerge;
 }
-
-
-},{}],"bootstrap":[function(require,module,exports){
+},{"./deps/extend":17}],"bootstrap":[function(require,module,exports){
 module.exports=require('/lrkCq');
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 /*globals Pouch: true, PouchUtils: true, require, console */
 
 "use strict";
@@ -15511,7 +15763,7 @@ HttpPouch.valid = function() {
 Pouch.adapter('http', HttpPouch);
 Pouch.adapter('https', HttpPouch);
 
-},{"../pouch.js":21,"../pouch.utils.js":24}],12:[function(require,module,exports){
+},{"../pouch.js":23,"../pouch.utils.js":25}],13:[function(require,module,exports){
 /*globals PouchUtils: true, PouchMerge */
 
 'use strict';
@@ -16388,7 +16640,7 @@ IdbPouch.Changes = new PouchUtils.Changes();
 
 Pouch.adapter('idb', IdbPouch);
 
-},{"../pouch.utils.js":24}],13:[function(require,module,exports){
+},{"../pouch.utils.js":25}],14:[function(require,module,exports){
 /*globals PouchUtils: true, PouchMerge */
 
 'use strict';
@@ -17110,7 +17362,7 @@ webSqlPouch.Changes = new PouchUtils.Changes();
 
 Pouch.adapter('websql', webSqlPouch);
 
-},{"../pouch.utils.js":24}],14:[function(require,module,exports){
+},{"../pouch.utils.js":25}],15:[function(require,module,exports){
 var request;
 var extend;
 var createBlob;
@@ -17303,7 +17555,7 @@ if (typeof module !== 'undefined' && module.exports) {
   module.exports = ajax;
 }
 
-},{"./blob.js":15,"./extend.js":16,"request":36}],15:[function(require,module,exports){
+},{"./blob.js":16,"./extend.js":17,"request":38}],16:[function(require,module,exports){
 //Abstracts constructing a Blob object, so it also works in older
 //browsers that don't support the native Blob constructor. (i.e.
 //old QtWebKit versions, at least).
@@ -17329,7 +17581,7 @@ if (typeof module !== 'undefined' && module.exports) {
   module.exports = createBlob;
 }
 
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 // Extends method
 // (taken from http://code.jquery.com/jquery-1.9.0.js)
 // Populate the class2type map
@@ -17464,7 +17716,7 @@ if (typeof module !== 'undefined' && module.exports) {
   module.exports = extend;
 }
 
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 /**
 *
 *  MD5 (Message-Digest Algorithm)
@@ -17659,7 +17911,7 @@ var Crypto = {};
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = Crypto;
 }
-},{}],18:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 // BEGIN Math.uuid.js
 
 /*!
@@ -17741,7 +17993,7 @@ if (typeof module !== 'undefined' && module.exports) {
   module.exports = uuid;
 }
 
-},{}],19:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 /*global Pouch: true, pouchCollate: true */
 
 "use strict";
@@ -18051,7 +18303,7 @@ MapReduce._delete = function() { };
 
 Pouch.plugin('mapreduce', MapReduce);
 
-},{"../pouch.collate.js":9}],20:[function(require,module,exports){
+},{"../pouch.collate.js":22}],21:[function(require,module,exports){
 /*globals Pouch: true, cordova, PouchUtils: true, PouchMerge */
 
 "use strict";
@@ -18749,7 +19001,97 @@ if (typeof module !== 'undefined' && module.exports) {
   module.exports = PouchAdapter;
 }
 
-},{"./pouch.utils.js":24}],21:[function(require,module,exports){
+},{"./pouch.utils.js":25}],22:[function(require,module,exports){
+'use strict';
+
+var pouchCollate = function(a, b) {
+  var ai = collationIndex(a);
+  var bi = collationIndex(b);
+  if ((ai - bi) !== 0) {
+    return ai - bi;
+  }
+  if (a === null) {
+    return 0;
+  }
+  if (typeof a === 'number') {
+    return a - b;
+  }
+  if (typeof a === 'boolean') {
+    return a < b ? -1 : 1;
+  }
+  if (typeof a === 'string') {
+    return stringCollate(a, b);
+  }
+  if (Array.isArray(a)) {
+    return arrayCollate(a, b);
+  }
+  if (typeof a === 'object') {
+    return objectCollate(a, b);
+  }
+};
+
+var stringCollate = function(a, b) {
+  // See: https://github.com/daleharvey/pouchdb/issues/40
+  // This is incompatible with the CouchDB implementation, but its the
+  // best we can do for now
+  return (a === b) ? 0 : ((a > b) ? 1 : -1);
+};
+
+var objectCollate = function(a, b) {
+  var ak = Object.keys(a), bk = Object.keys(b);
+  var len = Math.min(ak.length, bk.length);
+  for (var i = 0; i < len; i++) {
+    // First sort the keys
+    var sort = pouchCollate(ak[i], bk[i]);
+    if (sort !== 0) {
+      return sort;
+    }
+    // if the keys are equal sort the values
+    sort = pouchCollate(a[ak[i]], b[bk[i]]);
+    if (sort !== 0) {
+      return sort;
+    }
+
+  }
+  return (ak.length === bk.length) ? 0 :
+    (ak.length > bk.length) ? 1 : -1;
+};
+
+var arrayCollate = function(a, b) {
+  var len = Math.min(a.length, b.length);
+  for (var i = 0; i < len; i++) {
+    var sort = pouchCollate(a[i], b[i]);
+    if (sort !== 0) {
+      return sort;
+    }
+  }
+  return (a.length === b.length) ? 0 :
+    (a.length > b.length) ? 1 : -1;
+};
+
+// The collation is defined by erlangs ordered terms
+// the atoms null, true, false come first, then numbers, strings,
+// arrays, then objects
+var collationIndex = function(x) {
+  var id = ['boolean', 'number', 'string', 'object'];
+  if (id.indexOf(typeof x) !== -1) {
+    if (x === null) {
+      return 1;
+    }
+    return id.indexOf(typeof x) + 2;
+  }
+  if (Array.isArray(x)) {
+    return 4.5;
+  }
+};
+
+// a few hacks to get things in the right place for node.js
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = pouchCollate;
+}
+
+
+},{}],23:[function(require,module,exports){
 var global=self;/*globals PouchAdapter: true, PouchUtils: true */
 
 "use strict";
@@ -19208,288 +19550,7 @@ if (typeof module !== 'undefined' && module.exports) {
   window.PouchDB = Pouch;
 }
 
-},{"./adapters/pouch.http.js":11,"./adapters/pouch.idb.js":12,"./adapters/pouch.leveldb.js":36,"./adapters/pouch.websql.js":13,"./plugins/pouchdb.mapreduce.js":19,"./pouch.adapter.js":20,"./pouch.replicate.js":23,"./pouch.utils.js":24}],22:[function(require,module,exports){
-'use strict';
-
-var extend;
-if (typeof module !== 'undefined' && module.exports) {
-  extend = require('./deps/extend');
-}
-
-
-// for a better overview of what this is doing, read:
-// https://github.com/apache/couchdb/blob/master/src/couchdb/couch_key_tree.erl
-//
-// But for a quick intro, CouchDB uses a revision tree to store a documents
-// history, A -> B -> C, when a document has conflicts, that is a branch in the
-// tree, A -> (B1 | B2 -> C), We store these as a nested array in the format
-//
-// KeyTree = [Path ... ]
-// Path = {pos: position_from_root, ids: Tree}
-// Tree = [Key, Opts, [Tree, ...]], in particular single node: [Key, []]
-
-// Turn a path as a flat array into a tree with a single branch
-function pathToTree(path) {
-  var doc = path.shift();
-  var root = [doc.id, doc.opts, []];
-  var leaf = root;
-  var nleaf;
-
-  while (path.length) {
-    doc = path.shift();
-    nleaf = [doc.id, doc.opts, []];
-    leaf[2].push(nleaf);
-    leaf = nleaf;
-  }
-  return root;
-}
-
-// Merge two trees together
-// The roots of tree1 and tree2 must be the same revision
-function mergeTree(in_tree1, in_tree2) {
-  var queue = [{tree1: in_tree1, tree2: in_tree2}];
-  var conflicts = false;
-  while (queue.length > 0) {
-    var item = queue.pop();
-    var tree1 = item.tree1;
-    var tree2 = item.tree2;
-
-    if (tree1[1].status || tree2[1].status) {
-      tree1[1].status = (tree1[1].status ===  'available' ||
-                         tree2[1].status === 'available') ? 'available' : 'missing';
-    }
-
-    for (var i = 0; i < tree2[2].length; i++) {
-      if (!tree1[2][0]) {
-        conflicts = 'new_leaf';
-        tree1[2][0] = tree2[2][i];
-        continue;
-      }
-
-      var merged = false;
-      for (var j = 0; j < tree1[2].length; j++) {
-        if (tree1[2][j][0] === tree2[2][i][0]) {
-          queue.push({tree1: tree1[2][j], tree2: tree2[2][i]});
-          merged = true;
-        }
-      }
-      if (!merged) {
-        conflicts = 'new_branch';
-        tree1[2].push(tree2[2][i]);
-        tree1[2].sort();
-      }
-    }
-  }
-  return {conflicts: conflicts, tree: in_tree1};
-}
-
-function doMerge(tree, path, dontExpand) {
-  var restree = [];
-  var conflicts = false;
-  var merged = false;
-  var res, branch;
-
-  if (!tree.length) {
-    return {tree: [path], conflicts: 'new_leaf'};
-  }
-
-  tree.forEach(function(branch) {
-    if (branch.pos === path.pos && branch.ids[0] === path.ids[0]) {
-      // Paths start at the same position and have the same root, so they need
-      // merged
-      res = mergeTree(branch.ids, path.ids);
-      restree.push({pos: branch.pos, ids: res.tree});
-      conflicts = conflicts || res.conflicts;
-      merged = true;
-    } else if (dontExpand !== true) {
-      // The paths start at a different position, take the earliest path and
-      // traverse up until it as at the same point from root as the path we want to
-      // merge.  If the keys match we return the longer path with the other merged
-      // After stemming we dont want to expand the trees
-
-      var t1 = branch.pos < path.pos ? branch : path;
-      var t2 = branch.pos < path.pos ? path : branch;
-      var diff = t2.pos - t1.pos;
-
-      var candidateParents = [];
-
-      var trees = [];
-      trees.push({ids: t1.ids, diff: diff, parent: null, parentIdx: null});
-      while (trees.length > 0) {
-        var item = trees.pop();
-        if (item.diff === 0) {
-          if (item.ids[0] === t2.ids[0]) {
-            candidateParents.push(item);
-          }
-          continue;
-        }
-        if (!item.ids) {
-          continue;
-        }
-        /*jshint loopfunc:true */
-        item.ids[2].forEach(function(el, idx) {
-          trees.push({ids: el, diff: item.diff-1, parent: item.ids, parentIdx: idx});
-        });
-      }
-
-      var el = candidateParents[0];
-
-      if (!el) {
-        restree.push(branch);
-      } else {
-        res = mergeTree(el.ids, t2.ids);
-        el.parent[2][el.parentIdx] = res.tree;
-        restree.push({pos: t1.pos, ids: t1.ids});
-        conflicts = conflicts || res.conflicts;
-        merged = true;
-      }
-    } else {
-      restree.push(branch);
-    }
-  });
-
-  // We didnt find
-  if (!merged) {
-    restree.push(path);
-  }
-
-  restree.sort(function(a, b) {
-    return a.pos - b.pos;
-  });
-
-  return {
-    tree: restree,
-    conflicts: conflicts || 'internal_node'
-  };
-}
-
-// To ensure we dont grow the revision tree infinitely, we stem old revisions
-function stem(tree, depth) {
-  // First we break out the tree into a complete list of root to leaf paths,
-  // we cut off the start of the path and generate a new set of flat trees
-  var stemmedPaths = PouchMerge.rootToLeaf(tree).map(function(path) {
-    var stemmed = path.ids.slice(-depth);
-    return {
-      pos: path.pos + (path.ids.length - stemmed.length),
-      ids: pathToTree(stemmed)
-    };
-  });
-  // Then we remerge all those flat trees together, ensuring that we dont
-  // connect trees that would go beyond the depth limit
-  return stemmedPaths.reduce(function(prev, current, i, arr) {
-    return doMerge(prev, current, true).tree;
-  }, [stemmedPaths.shift()]);
-}
-
-var PouchMerge = {};
-
-PouchMerge.merge = function(tree, path, depth) {
-  // Ugh, nicer way to not modify arguments in place?
-  tree = extend(true, [], tree);
-  path = extend(true, {}, path);
-  var newTree = doMerge(tree, path);
-  return {
-    tree: stem(newTree.tree, depth),
-    conflicts: newTree.conflicts
-  };
-};
-
-// We fetch all leafs of the revision tree, and sort them based on tree length
-// and whether they were deleted, undeleted documents with the longest revision
-// tree (most edits) win
-// The final sort algorithm is slightly documented in a sidebar here:
-// http://guide.couchdb.org/draft/conflicts.html
-PouchMerge.winningRev = function(metadata) {
-  var leafs = [];
-  PouchMerge.traverseRevTree(metadata.rev_tree,
-                              function(isLeaf, pos, id, something, opts) {
-    if (isLeaf) {
-      leafs.push({pos: pos, id: id, deleted: !!opts.deleted});
-    }
-  });
-  leafs.sort(function(a, b) {
-    if (a.deleted !== b.deleted) {
-      return a.deleted > b.deleted ? 1 : -1;
-    }
-    if (a.pos !== b.pos) {
-      return b.pos - a.pos;
-    }
-    return a.id < b.id ? 1 : -1;
-  });
-
-  return leafs[0].pos + '-' + leafs[0].id;
-};
-
-// Pretty much all below can be combined into a higher order function to
-// traverse revisions
-// The return value from the callback will be passed as context to all
-// children of that node
-PouchMerge.traverseRevTree = function(revs, callback) {
-  var toVisit = [];
-
-  revs.forEach(function(tree) {
-    toVisit.push({pos: tree.pos, ids: tree.ids});
-  });
-  while (toVisit.length > 0) {
-    var node = toVisit.pop();
-    var pos = node.pos;
-    var tree = node.ids;
-    var newCtx = callback(tree[2].length === 0, pos, tree[0], node.ctx, tree[1]);
-    /*jshint loopfunc: true */
-    tree[2].forEach(function(branch) {
-      toVisit.push({pos: pos+1, ids: branch, ctx: newCtx});
-    });
-  }
-};
-
-PouchMerge.collectLeaves = function(revs) {
-  var leaves = [];
-  PouchMerge.traverseRevTree(revs, function(isLeaf, pos, id, acc, opts) {
-    if (isLeaf) {
-      leaves.unshift({rev: pos + "-" + id, pos: pos, opts: opts});
-    }
-  });
-  leaves.sort(function(a, b) {
-    return b.pos - a.pos;
-  });
-  leaves.map(function(leaf) { delete leaf.pos; });
-  return leaves;
-};
-
-// returns revs of all conflicts that is leaves such that
-// 1. are not deleted and
-// 2. are different than winning revision
-PouchMerge.collectConflicts = function(metadata) {
-  var win = PouchMerge.winningRev(metadata);
-  var leaves = PouchMerge.collectLeaves(metadata.rev_tree);
-  var conflicts = [];
-  leaves.forEach(function(leaf) {
-    if (leaf.rev !== win && !leaf.opts.deleted) {
-      conflicts.push(leaf.rev);
-    }
-  });
-  return conflicts;
-};
-
-PouchMerge.rootToLeaf = function(tree) {
-  var paths = [];
-  PouchMerge.traverseRevTree(tree, function(isLeaf, pos, id, history, opts) {
-    history = history ? history.slice(0) : [];
-    history.push({id: id, opts: opts});
-    if (isLeaf) {
-      var rootPos = pos + 1 - history.length;
-      paths.unshift({pos: rootPos, ids: history});
-    }
-    return history;
-  });
-  return paths;
-};
-
-// a few hacks to get things in the right place for node.js
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = PouchMerge;
-}
-},{"./deps/extend":16}],23:[function(require,module,exports){
+},{"./adapters/pouch.http.js":12,"./adapters/pouch.idb.js":13,"./adapters/pouch.leveldb.js":38,"./adapters/pouch.websql.js":14,"./plugins/pouchdb.mapreduce.js":20,"./pouch.adapter.js":21,"./pouch.replicate.js":24,"./pouch.utils.js":25}],24:[function(require,module,exports){
 /*globals PouchUtils: true */
 
 'use strict';
@@ -19770,7 +19831,7 @@ Pouch.replicate = function(src, target, opts, callback) {
   return replicateRet;
 };
 
-},{"./pouch.utils.js":24}],24:[function(require,module,exports){
+},{"./pouch.utils.js":25}],25:[function(require,module,exports){
 var Buffer=require("__browserify_Buffer").Buffer;/*jshint strict: false */
 /*global Buffer: true, escape: true, module, window, Crypto */
 /*global chrome, extend, ajax, createBlob, btoa, atob, uuid, require, PouchMerge: true */
@@ -20094,12 +20155,12 @@ if (typeof module !== 'undefined' && module.exports) {
   module.exports = PouchUtils;
 }
 
-},{"./deps/ajax":14,"./deps/blob":15,"./deps/extend":16,"./deps/md5.js":17,"./deps/uuid":18,"./pouch.merge.js":22,"__browserify_Buffer":38}],25:[function(require,module,exports){
+},{"./deps/ajax":15,"./deps/blob":16,"./deps/extend":17,"./deps/md5.js":18,"./deps/uuid":19,"./pouch.merge.js":10,"__browserify_Buffer":40}],26:[function(require,module,exports){
 var Handlebars = require('handlebars-runtime');
 module.exports = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, options, functionType="function", escapeExpression=this.escapeExpression, self=this, blockHelperMissing=helpers.blockHelperMissing;
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
 
 function program1(depth0,data) {
   
@@ -20123,71 +20184,7 @@ function program3(depth0,data) {
   return buffer;
   }
 
-  buffer += "<div class=\"row\">\n		<ul class=\"breadcrumb\">\n  			<li><a class='bodyLink' href=\"GeneralLaws\" id=\"GeneralLaws\">General Laws</a></li>\n  			<li><a class='bodyLink' href='GeneralLaws/Part";
-  if (stack1 = helpers.part) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.part; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "' id=\"/GeneralLaws/Part";
-  if (stack1 = helpers.part) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.part; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "\">Part ";
-  if (stack1 = helpers.part) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.part; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "</a></li>\n  			<li><a class='bodyLink' href='GeneralLaws/Part";
-  if (stack1 = helpers.part) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.part; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "/Title";
-  if (stack1 = helpers.title) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.title; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "' id=\"/GeneralLaws/Part";
-  if (stack1 = helpers.part) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.part; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "/Title";
-  if (stack1 = helpers.title) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.title; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "\">Title ";
-  if (stack1 = helpers.title) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.title; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "</a></li>\n  			<li><a class='bodyLink' href='GeneralLaws/Part";
-  if (stack1 = helpers.part) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.part; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "/Title";
-  if (stack1 = helpers.title) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.title; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "/Chapter";
-  if (stack1 = helpers.chapter) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.chapter; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "' id=\"/GeneralLaws/Part";
-  if (stack1 = helpers.part) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.part; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "/Title";
-  if (stack1 = helpers.title) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.title; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "/Chapter";
-  if (stack1 = helpers.chapter) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.chapter; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "\">Chapter ";
-  if (stack1 = helpers.chapter) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.chapter; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "</a></li>\n  			<li class=\"active\">Article ";
-  if (stack1 = helpers.article) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.article; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "</li>\n		</ul>\n		<h1>Chapter ";
+  buffer += "\n		<h1>Chapter ";
   if (stack1 = helpers.chapter) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.chapter; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
@@ -20196,115 +20193,317 @@ function program3(depth0,data) {
   else { stack1 = depth0.article; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
     + "</h1>\n		";
-  options = {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data};
-  if (stack1 = helpers.desc) { stack1 = stack1.call(depth0, options); }
-  else { stack1 = depth0.desc; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  if (!helpers.desc) { stack1 = blockHelperMissing.call(depth0, stack1, options); }
+  stack1 = helpers['if'].call(depth0, depth0.desc, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n		";
-  options = {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data};
-  if (stack1 = helpers.text) { stack1 = stack1.call(depth0, options); }
-  else { stack1 = depth0.text; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  if (!helpers.text) { stack1 = blockHelperMissing.call(depth0, stack1, options); }
+  stack1 = helpers['if'].call(depth0, depth0.text, {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n		</div>\n";
+  buffer += "\n\n";
   return buffer;
   });
 
-},{"handlebars-runtime":8}],26:[function(require,module,exports){
+},{"handlebars-runtime":9}],27:[function(require,module,exports){
 var Handlebars = require('handlebars-runtime');
 module.exports = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, stack2, options, functionType="function", escapeExpression=this.escapeExpression, self=this, blockHelperMissing=helpers.blockHelperMissing;
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n<li><a class='bodyLink' href=\"";
+  if (stack1 = helpers.base) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.base; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "/";
+  if (stack1 = helpers.type) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.type; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "Laws\" id=\"";
+  if (stack1 = helpers.type) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.type; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "Laws\">";
+  if (stack1 = helpers.type) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.type; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + " Laws</a></li>\n";
+  return buffer;
+  }
+
+function program3(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n<li><a class='bodyLink' href=\"";
+  if (stack1 = helpers.base) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.base; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "/";
+  if (stack1 = helpers.type) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.type; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "Laws/Year";
+  if (stack1 = helpers.year) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.year; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\" id=\"";
+  if (stack1 = helpers.type) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.type; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "Laws/Year";
+  if (stack1 = helpers.year) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.year; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\">Year ";
+  if (stack1 = helpers.year) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.year; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</a></li>\n";
+  return buffer;
+  }
+
+function program5(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n<li><a class='bodyLink' href='";
+  if (stack1 = helpers.base) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.base; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "/";
+  if (stack1 = helpers.type) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.type; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "Laws/Part";
+  if (stack1 = helpers.part) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.part; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "' id=\"";
+  if (stack1 = helpers.type) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.type; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "Laws/Part";
+  if (stack1 = helpers.part) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.part; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\">Part ";
+  if (stack1 = helpers.part) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.part; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</a></li>\n";
+  return buffer;
+  }
+
+function program7(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n<li>\n<a class='bodyLink'\nhref='";
+  if (stack1 = helpers.base) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.base; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "/";
+  if (stack1 = helpers.type) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.type; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "Laws/Part";
+  if (stack1 = helpers.part) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.part; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "/Title";
+  if (stack1 = helpers.title) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.title; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "'\nid=\"";
+  if (stack1 = helpers.type) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.type; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "Laws//Part";
+  if (stack1 = helpers.part) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.part; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "/Title";
+  if (stack1 = helpers.title) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.title; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\"\n>Title ";
+  if (stack1 = helpers.title) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.title; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</a>\n</li>\n";
+  return buffer;
+  }
+
+function program9(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n<li>\n<a class='bodyLink'\nhref='";
+  if (stack1 = helpers.base) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.base; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "/";
+  if (stack1 = helpers.type) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.type; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "Laws/Part";
+  if (stack1 = helpers.part) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.part; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "/Title";
+  if (stack1 = helpers.title) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.title; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "/Chapter";
+  if (stack1 = helpers.chapter) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.chapter; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "'\nid=\"";
+  if (stack1 = helpers.type) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.type; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "Laws//Part";
+  if (stack1 = helpers.part) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.part; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "/Title";
+  if (stack1 = helpers.title) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.title; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "/Chapter";
+  if (stack1 = helpers.chapter) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.chapter; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\"\n>Chapter ";
+  if (stack1 = helpers.chapter) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.chapter; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</a>\n</li>\n";
+  return buffer;
+  }
+
+function program11(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n<li class=\"active\">Section ";
+  if (stack1 = helpers.section) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.section; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</li>\n";
+  return buffer;
+  }
+
+function program13(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n<li class=\"active\">Article ";
+  if (stack1 = helpers.article) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.article; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</li>\n";
+  return buffer;
+  }
+
+function program15(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n<li class=\"active\">Chapter ";
+  if (stack1 = helpers.ychapter) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.ychapter; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</li>\n";
+  return buffer;
+  }
+
+  stack1 = helpers['if'].call(depth0, depth0.type, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n";
+  stack1 = helpers['if'].call(depth0, depth0.year, {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n";
+  stack1 = helpers['if'].call(depth0, depth0.part, {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n";
+  stack1 = helpers['if'].call(depth0, depth0.title, {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n";
+  stack1 = helpers['if'].call(depth0, depth0.chapter, {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n";
+  stack1 = helpers['if'].call(depth0, depth0.section, {hash:{},inverse:self.noop,fn:self.program(11, program11, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n";
+  stack1 = helpers['if'].call(depth0, depth0.article, {hash:{},inverse:self.noop,fn:self.program(13, program13, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n";
+  stack1 = helpers['if'].call(depth0, depth0.ychapter, {hash:{},inverse:self.noop,fn:self.program(15, program15, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n";
+  return buffer;
+  });
+
+},{"handlebars-runtime":9}],28:[function(require,module,exports){
+var Handlebars = require('handlebars-runtime');
+module.exports = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, options, functionType="function", escapeExpression=this.escapeExpression, self=this, blockHelperMissing=helpers.blockHelperMissing;
 
 function program1(depth0,data) {
   
   var buffer = "", stack1, stack2;
-  buffer += "\n		";
-  stack2 = ((stack1 = ((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.desc)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1)),blockHelperMissing.call(depth0, stack1, {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data}));
+  buffer += "\n	    ";
+  stack2 = helpers['if'].call(depth0, ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.desc), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
   if(stack2 || stack2 === 0) { buffer += stack2; }
   buffer += "\n		";
-  stack2 = ((stack1 = ((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.text)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1)),blockHelperMissing.call(depth0, stack1, {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data}));
+  stack2 = helpers['if'].call(depth0, ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.text), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
   if(stack2 || stack2 === 0) { buffer += stack2; }
-  buffer += "\n		";
+  buffer += "\n	";
   return buffer;
   }
 function program2(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "<dt><strong>"
+  buffer += "\n		    <dt><strong>"
     + escapeExpression(((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.longCode)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + " "
     + escapeExpression(((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.sub)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + ":</strong> <a class='bodyLink' href='../../../c"
+    + ":</strong> \n		    <a class='bodyLink' href='../../../c"
     + escapeExpression(((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.chapter)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + escapeExpression(((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.shortCode)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + escapeExpression(((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.sub)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "' id='c"
+    + "' \n		    id='c"
     + escapeExpression(((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.chapter)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + escapeExpression(((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.shortCode)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + escapeExpression(((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.sub)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "'>"
     + escapeExpression(((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.desc)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</a></dt>";
+    + "</a></dt>\n		 ";
   return buffer;
   }
 
 function program4(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "<dd>"
+  buffer += "\n		    <dd>"
     + escapeExpression(((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.text)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>";
+    + "</dd>\n        ";
   return buffer;
   }
 
-  buffer += "<div class=\"row\">\n		<ul class=\"breadcrumb\">\n  			<li><a class='bodyLink' href=\"/GeneralLaws\" id=\"GeneralLaws\">General Laws</a></li>\n  			<li><a class='bodyLink' href='/GeneralLaws/Part"
-    + escapeExpression(((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.part)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "' id=\"GeneralLaws/Part";
-  if (stack2 = helpers.pat) { stack2 = stack2.call(depth0, {hash:{},data:data}); }
-  else { stack2 = depth0.pat; stack2 = typeof stack2 === functionType ? stack2.apply(depth0) : stack2; }
-  buffer += escapeExpression(stack2)
-    + "\">Part ";
-  if (stack2 = helpers.pat) { stack2 = stack2.call(depth0, {hash:{},data:data}); }
-  else { stack2 = depth0.pat; stack2 = typeof stack2 === functionType ? stack2.apply(depth0) : stack2; }
-  buffer += escapeExpression(stack2)
-    + "</a></li>\n  			<li><a class='bodyLink' href='/GeneralLaws/Part"
-    + escapeExpression(((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.part)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "/Title"
-    + escapeExpression(((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.title)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "' id=\"GeneralLaws/Part";
-  if (stack2 = helpers.pat) { stack2 = stack2.call(depth0, {hash:{},data:data}); }
-  else { stack2 = depth0.pat; stack2 = typeof stack2 === functionType ? stack2.apply(depth0) : stack2; }
-  buffer += escapeExpression(stack2)
-    + "/Title";
-  if (stack2 = helpers.tit) { stack2 = stack2.call(depth0, {hash:{},data:data}); }
-  else { stack2 = depth0.tit; stack2 = typeof stack2 === functionType ? stack2.apply(depth0) : stack2; }
-  buffer += escapeExpression(stack2)
-    + "\">Title ";
-  if (stack2 = helpers.tit) { stack2 = stack2.call(depth0, {hash:{},data:data}); }
-  else { stack2 = depth0.tit; stack2 = typeof stack2 === functionType ? stack2.apply(depth0) : stack2; }
-  buffer += escapeExpression(stack2)
-    + "</a></li>\n  			<li class=\"active\">Chapter ";
-  if (stack2 = helpers.chap) { stack2 = stack2.call(depth0, {hash:{},data:data}); }
-  else { stack2 = depth0.chap; stack2 = typeof stack2 === functionType ? stack2.apply(depth0) : stack2; }
-  buffer += escapeExpression(stack2)
-    + "</li>\n		</ul>\n		<h1>Chapter ";
-  if (stack2 = helpers.chap) { stack2 = stack2.call(depth0, {hash:{},data:data}); }
-  else { stack2 = depth0.chap; stack2 = typeof stack2 === functionType ? stack2.apply(depth0) : stack2; }
-  buffer += escapeExpression(stack2)
-    + "</h1>\n		<dl>\n		";
+  buffer += "   \n	<h1>Chapter ";
+  if (stack1 = helpers.chap) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.chap; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</h1>\n	<dl>\n	";
   options = {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data};
-  if (stack2 = helpers.rows) { stack2 = stack2.call(depth0, options); }
-  else { stack2 = depth0.rows; stack2 = typeof stack2 === functionType ? stack2.apply(depth0) : stack2; }
-  if (!helpers.rows) { stack2 = blockHelperMissing.call(depth0, stack2, options); }
-  if(stack2 || stack2 === 0) { buffer += stack2; }
-  buffer += "\n		</dl>\n		</div>\n";
+  if (stack1 = helpers.rows) { stack1 = stack1.call(depth0, options); }
+  else { stack1 = depth0.rows; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  if (!helpers.rows) { stack1 = blockHelperMissing.call(depth0, stack1, options); }
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n	</dl>\n\n";
   return buffer;
   });
 
-},{"handlebars-runtime":8}],27:[function(require,module,exports){
+},{"handlebars-runtime":9}],29:[function(require,module,exports){
 var Handlebars = require('handlebars-runtime');
 module.exports = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
@@ -20330,17 +20529,17 @@ function program1(depth0,data) {
   return buffer;
   }
 
-  buffer += "<div class=\"row\">\n		<ul class=\"breadcrumb\">\n  			<li class=\"active\">General Laws</li>\n		</ul>\n		<h1>General Laws</h1>\n		<ul>\n		";
+  buffer += "\n		<h1>General Laws</h1>\n		<ul>\n		";
   options = {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data};
   if (stack1 = helpers.rowg) { stack1 = stack1.call(depth0, options); }
   else { stack1 = depth0.rowg; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   if (!helpers.rowg) { stack1 = blockHelperMissing.call(depth0, stack1, options); }
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n		</ul>\n		</div>\n";
+  buffer += "\n		</ul>\n";
   return buffer;
   });
 
-},{"handlebars-runtime":8}],28:[function(require,module,exports){
+},{"handlebars-runtime":9}],30:[function(require,module,exports){
 module.exports = {
 	search:require('./search.hbs'),
 	section:require('./section.hbs'),
@@ -20354,7 +20553,7 @@ module.exports = {
 	general:require('./general.hbs')
 }
 
-},{"./article.hbs":25,"./chapter.hbs":26,"./general.hbs":27,"./part.hbs":29,"./search.hbs":30,"./section.hbs":31,"./sess.hbs":32,"./session.hbs":33,"./title.hbs":34,"./year.hbs":35}],29:[function(require,module,exports){
+},{"./article.hbs":26,"./chapter.hbs":28,"./general.hbs":29,"./part.hbs":31,"./search.hbs":32,"./section.hbs":33,"./sess.hbs":34,"./session.hbs":35,"./title.hbs":36,"./year.hbs":37}],31:[function(require,module,exports){
 var Handlebars = require('handlebars-runtime');
 module.exports = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
@@ -20388,11 +20587,7 @@ function program1(depth0,data) {
   return buffer;
   }
 
-  buffer += "<div class=\"row\">\n		<ul class=\"breadcrumb\">\n  			<li><a class='bodyLink' href=\"/GeneralLaws\" id=\"GeneralLaws\">General Laws</a></li>\n  			\n  			\n  			<li class=\"active\">Part ";
-  if (stack1 = helpers['p']) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0['p']; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "</li>\n		</ul>\n		<h1>Part ";
+  buffer += "\n		<h1>Part ";
   if (stack1 = helpers['p']) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0['p']; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
@@ -20402,11 +20597,11 @@ function program1(depth0,data) {
   else { stack1 = depth0.rowp; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   if (!helpers.rowp) { stack1 = blockHelperMissing.call(depth0, stack1, options); }
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n		</ul>\n		</div>\n";
+  buffer += "\n		</ul>\n\n";
   return buffer;
   });
 
-},{"handlebars-runtime":8}],30:[function(require,module,exports){
+},{"handlebars-runtime":9}],32:[function(require,module,exports){
 var Handlebars = require('handlebars-runtime');
 module.exports = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
@@ -20417,13 +20612,13 @@ function program1(depth0,data) {
   
   var buffer = "", stack1, stack2;
   buffer += "\n		";
-  stack2 = ((stack1 = ((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.section)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1)),blockHelperMissing.call(depth0, stack1, {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data}));
+  stack2 = helpers['if'].call(depth0, ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.section), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
   if(stack2 || stack2 === 0) { buffer += stack2; }
   buffer += "\n		";
-  stack2 = ((stack1 = ((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.article)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1)),blockHelperMissing.call(depth0, stack1, {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data}));
+  stack2 = helpers['if'].call(depth0, ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.article), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
   if(stack2 || stack2 === 0) { buffer += stack2; }
   buffer += "\n		";
-  stack2 = ((stack1 = ((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.year)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1)),blockHelperMissing.call(depth0, stack1, {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data}));
+  stack2 = helpers['if'].call(depth0, ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.year), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
   if(stack2 || stack2 === 0) { buffer += stack2; }
   buffer += "\n		";
   return buffer;
@@ -20444,10 +20639,10 @@ function program2(depth0,data) {
     + " Section "
     + escapeExpression(((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.section)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</a>\n  		</dt>\n		";
-  stack2 = ((stack1 = ((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.desc)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1)),blockHelperMissing.call(depth0, stack1, {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data}));
+  stack2 = helpers['if'].call(depth0, ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.desc), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
   if(stack2 || stack2 === 0) { buffer += stack2; }
   buffer += "\n		";
-  stack2 = ((stack1 = ((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.text)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1)),blockHelperMissing.call(depth0, stack1, {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data}));
+  stack2 = helpers['if'].call(depth0, ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.text), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
   if(stack2 || stack2 === 0) { buffer += stack2; }
   buffer += "\n		";
   return buffer;
@@ -20486,10 +20681,10 @@ function program7(depth0,data) {
     + " Article "
     + escapeExpression(((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.article)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</a>\n  		</dt>\n		";
-  stack2 = ((stack1 = ((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.desc)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1)),blockHelperMissing.call(depth0, stack1, {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data}));
+  stack2 = helpers['if'].call(depth0, ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.desc), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
   if(stack2 || stack2 === 0) { buffer += stack2; }
   buffer += "\n		";
-  stack2 = ((stack1 = ((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.text)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1)),blockHelperMissing.call(depth0, stack1, {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data}));
+  stack2 = helpers['if'].call(depth0, ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.text), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
   if(stack2 || stack2 === 0) { buffer += stack2; }
   buffer += "\n		";
   return buffer;
@@ -20511,7 +20706,7 @@ function program9(depth0,data) {
     + " Chapter "
     + escapeExpression(((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.chapter)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</a>\n  		</dt>\n		";
-  stack2 = ((stack1 = ((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.desc)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1)),blockHelperMissing.call(depth0, stack1, {hash:{},inverse:self.noop,fn:self.program(10, program10, data),data:data}));
+  stack2 = helpers['if'].call(depth0, ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.desc), {hash:{},inverse:self.noop,fn:self.program(10, program10, data),data:data});
   if(stack2 || stack2 === 0) { buffer += stack2; }
   buffer += "\n		";
   return buffer;
@@ -20525,7 +20720,7 @@ function program10(depth0,data) {
   return buffer;
   }
 
-  buffer += "<div class=\"row\">\n		<h1>\"";
+  buffer += "\n		<h1>\"";
   if (stack1 = helpers['q']) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0['q']; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
@@ -20539,16 +20734,16 @@ function program10(depth0,data) {
   else { stack1 = depth0.rows; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   if (!helpers.rows) { stack1 = blockHelperMissing.call(depth0, stack1, options); }
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n		</dl>\n		</div>\n";
+  buffer += "\n		</dl>\n";
   return buffer;
   });
 
-},{"handlebars-runtime":8}],31:[function(require,module,exports){
+},{"handlebars-runtime":9}],33:[function(require,module,exports){
 var Handlebars = require('handlebars-runtime');
 module.exports = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, options, functionType="function", escapeExpression=this.escapeExpression, self=this, blockHelperMissing=helpers.blockHelperMissing;
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
 
 function program1(depth0,data) {
   
@@ -20572,71 +20767,7 @@ function program3(depth0,data) {
   return buffer;
   }
 
-  buffer += "<div class=\"row\">\n		<ul class=\"breadcrumb\">\n  			<li><a class='bodyLink' href=\"GeneralLaws\" id=\"GeneralLaws\">General Laws</a></li>\n  			<li><a class='bodyLink' href='GeneralLaws/Part";
-  if (stack1 = helpers.part) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.part; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "' id=\"/GeneralLaws/Part";
-  if (stack1 = helpers.part) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.part; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "\">Part ";
-  if (stack1 = helpers.part) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.part; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "</a></li>\n  			<li><a class='bodyLink' href='GeneralLaws/Part";
-  if (stack1 = helpers.part) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.part; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "/Title";
-  if (stack1 = helpers.title) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.title; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "' id=\"/GeneralLaws/Part";
-  if (stack1 = helpers.part) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.part; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "/Title";
-  if (stack1 = helpers.title) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.title; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "\">Title ";
-  if (stack1 = helpers.title) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.title; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "</a></li>\n  			<li><a class='bodyLink' href='GeneralLaws/Part";
-  if (stack1 = helpers.part) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.part; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "/Title";
-  if (stack1 = helpers.title) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.title; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "/Chapter";
-  if (stack1 = helpers.chapter) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.chapter; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "' id=\"/GeneralLaws/Part";
-  if (stack1 = helpers.part) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.part; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "/Title";
-  if (stack1 = helpers.title) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.title; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "/Chapter";
-  if (stack1 = helpers.chapter) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.chapter; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "\">Chapter ";
-  if (stack1 = helpers.chapter) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.chapter; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "</a></li>\n  			<li class=\"active\">Section ";
-  if (stack1 = helpers.section) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.section; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "</li>\n		</ul>\n		<h1>Chapter ";
+  buffer += "\n		<h1>Chapter ";
   if (stack1 = helpers.chapter) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.chapter; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
@@ -20645,22 +20776,16 @@ function program3(depth0,data) {
   else { stack1 = depth0.section; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
     + "</h1>\n		";
-  options = {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data};
-  if (stack1 = helpers.desc) { stack1 = stack1.call(depth0, options); }
-  else { stack1 = depth0.desc; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  if (!helpers.desc) { stack1 = blockHelperMissing.call(depth0, stack1, options); }
+  stack1 = helpers['if'].call(depth0, depth0.desc, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n		";
-  options = {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data};
-  if (stack1 = helpers.text) { stack1 = stack1.call(depth0, options); }
-  else { stack1 = depth0.text; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  if (!helpers.text) { stack1 = blockHelperMissing.call(depth0, stack1, options); }
+  stack1 = helpers['if'].call(depth0, depth0.text, {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n		</div>\n";
+  buffer += "\n\n";
   return buffer;
   });
 
-},{"handlebars-runtime":8}],32:[function(require,module,exports){
+},{"handlebars-runtime":9}],34:[function(require,module,exports){
 var Handlebars = require('handlebars-runtime');
 module.exports = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
@@ -20686,22 +20811,22 @@ function program1(depth0,data) {
   return buffer;
   }
 
-  buffer += "<div class=\"row\">\n		<ul class=\"breadcrumb\">\n  			<li class=\"active\">Session Laws</li>\n		</ul>\n		<h1>Session Laws</h1>\n		<ul>\n		";
+  buffer += "\n		<h1>Session Laws</h1>\n		<ul>\n		";
   options = {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data};
   if (stack1 = helpers.rows) { stack1 = stack1.call(depth0, options); }
   else { stack1 = depth0.rows; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   if (!helpers.rows) { stack1 = blockHelperMissing.call(depth0, stack1, options); }
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n		</ul>\n		</div>\n";
+  buffer += "\n		</ul>\n";
   return buffer;
   });
 
-},{"handlebars-runtime":8}],33:[function(require,module,exports){
+},{"handlebars-runtime":9}],35:[function(require,module,exports){
 var Handlebars = require('handlebars-runtime');
 module.exports = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, options, functionType="function", escapeExpression=this.escapeExpression, self=this, blockHelperMissing=helpers.blockHelperMissing;
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
 
 function program1(depth0,data) {
   
@@ -20723,23 +20848,7 @@ function program3(depth0,data) {
   else { return ''; }
   }
 
-  buffer += "<div class=\"row\">\n		<ul class=\"breadcrumb\">\n  			<li><a class='bodyLink' href=\"SessionLaw\" id=\"SessionLaw\">Session Laws</a></li>\n  			<li><a class='bodyLink' href=\"SessionLaw/Year";
-  if (stack1 = helpers.year) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.year; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "\" id=\"SessionLaw/Year";
-  if (stack1 = helpers.year) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.year; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "\">Year ";
-  if (stack1 = helpers.year) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.year; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "</a></li>\n  			\n  			<li class=\"active\">Chapter ";
-  if (stack1 = helpers.chapter) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.chapter; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "</li>\n		</ul>\n		<h1>Session ";
+  buffer += "\n		<h1>Session ";
   if (stack1 = helpers.year) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.year; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
@@ -20748,22 +20857,16 @@ function program3(depth0,data) {
   else { stack1 = depth0.chapter; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
     + "</h1>\n		";
-  options = {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data};
-  if (stack1 = helpers.desc) { stack1 = stack1.call(depth0, options); }
-  else { stack1 = depth0.desc; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  if (!helpers.desc) { stack1 = blockHelperMissing.call(depth0, stack1, options); }
+  stack1 = helpers['if'].call(depth0, depth0.desc, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n		";
-  options = {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data};
-  if (stack1 = helpers.text) { stack1 = stack1.call(depth0, options); }
-  else { stack1 = depth0.text; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  if (!helpers.text) { stack1 = blockHelperMissing.call(depth0, stack1, options); }
+  stack1 = helpers['if'].call(depth0, depth0.text, {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n		</div>\n";
+  buffer += "\n";
   return buffer;
   });
 
-},{"handlebars-runtime":8}],34:[function(require,module,exports){
+},{"handlebars-runtime":9}],36:[function(require,module,exports){
 var Handlebars = require('handlebars-runtime');
 module.exports = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
@@ -20801,23 +20904,7 @@ function program1(depth0,data) {
   return buffer;
   }
 
-  buffer += "<div class=\"row\">\n		<ul class=\"breadcrumb\">\n  			<li><a class='bodyLink' href=\"/GeneralLaws\" id=\"GeneralLaws\">General Laws</a></li>\n  			<li><a class='bodyLink' href='/GeneralLaws/Part";
-  if (stack1 = helpers.tp) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.tp; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "' id=\"/GeneralLaws/Part";
-  if (stack1 = helpers.tp) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.tp; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "\">Part ";
-  if (stack1 = helpers.tp) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.tp; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "</a></li>\n  			\n  			<li class=\"active\">Title ";
-  if (stack1 = helpers['t']) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0['t']; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "</li>\n		</ul>\n		<h1>Title ";
+  buffer += "		<h1>Title ";
   if (stack1 = helpers['t']) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0['t']; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
@@ -20827,11 +20914,11 @@ function program1(depth0,data) {
   else { stack1 = depth0.row; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   if (!helpers.row) { stack1 = blockHelperMissing.call(depth0, stack1, options); }
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n		</ul>\n		</div>\n";
+  buffer += "\n		</ul>\n";
   return buffer;
   });
 
-},{"handlebars-runtime":8}],35:[function(require,module,exports){
+},{"handlebars-runtime":9}],37:[function(require,module,exports){
 var Handlebars = require('handlebars-runtime');
 module.exports = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
@@ -20841,7 +20928,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   var buffer = "", stack1, stack2;
-  stack2 = ((stack1 = ((stack1 = ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.desc)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1)),blockHelperMissing.call(depth0, stack1, {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data}));
+  stack2 = helpers['if'].call(depth0, ((stack1 = depth0.doc),stack1 == null || stack1 === false ? stack1 : stack1.desc), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
   if(stack2 || stack2 === 0) { buffer += stack2; }
   buffer += "\n		";
   return buffer;
@@ -20861,11 +20948,7 @@ function program2(depth0,data) {
   return buffer;
   }
 
-  buffer += "<div class=\"row\">\n		<ul class=\"breadcrumb\">\n  			<li><a class='bodyLink' href=\"/SessionLaw\" id=\"SessionLaw\">Session Laws</a></li>\n  			\n  			\n  			<li class=\"active\">Year ";
-  if (stack1 = helpers.year) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.year; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "</li>\n		</ul>\n		<h1>Year ";
+  buffer += "\n		<h1>Year ";
   if (stack1 = helpers.year) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.year; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
@@ -20875,15 +20958,15 @@ function program2(depth0,data) {
   else { stack1 = depth0.rows; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   if (!helpers.rows) { stack1 = blockHelperMissing.call(depth0, stack1, options); }
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n		</ul>\n		</div>\n";
+  buffer += "\n		</ul>\n\n";
   return buffer;
   });
 
-},{"handlebars-runtime":8}],36:[function(require,module,exports){
+},{"handlebars-runtime":9}],38:[function(require,module,exports){
 
-},{}],"spin":[function(require,module,exports){
-module.exports=require('8wbCjN');
-},{}],38:[function(require,module,exports){
+},{}],"jquery":[function(require,module,exports){
+module.exports=require('9XoxEL');
+},{}],40:[function(require,module,exports){
 require=(function(e,t,n,r){function i(r){if(!n[r]){if(!t[r]){if(e)return e(r);throw new Error("Cannot find module '"+r+"'")}var s=n[r]={exports:{}};t[r][0](function(e){var n=t[r][1][e];return i(n?n:e)},s,s.exports)}return n[r].exports}for(var s=0;s<r.length;s++)i(r[s]);return i})(typeof require!=="undefined"&&require,{1:[function(require,module,exports){
 // UTILITY
 var util = require('util');
@@ -24745,7 +24828,7 @@ SlowBuffer.prototype.writeDoubleBE = Buffer.prototype.writeDoubleBE;
 },{}]},{},[])
 ;;module.exports=require("buffer-browserify")
 
-},{}],"jquery":[function(require,module,exports){
-module.exports=require('9XoxEL');
-},{}]},{},[3])
+},{}],"spin":[function(require,module,exports){
+module.exports=require('8wbCjN');
+},{}]},{},[4])
 ;

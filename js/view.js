@@ -7,11 +7,13 @@ Backbone.$ = $;
 var templates = require('../templates');
 
 var spin = require('spin');
+var Breadcrumb = require('./breadcrumb');
 
 var View = Backbone.View.extend({
     initialize : function(opts) {
       return this.db = opts.db;
     },
+    breadcrumb:new Breadcrumb({ el: $('#bcrumb')}),
     events : {
       'click .bodyLink': 'movePage'
     },
@@ -54,6 +56,7 @@ var View = Backbone.View.extend({
             body.spin(false);
           } else {
             body.spin(false);
+            body.breadcrumb.render(doc);
             return body.$el.html(body.template.section(doc));
           }
         });
@@ -64,6 +67,7 @@ var View = Backbone.View.extend({
             body.spin(false);
           } else {
             body.spin(false);
+            body.breadcrumb.render(doc);
             return body.$el.html(body.template.article(doc));
           }
         });
@@ -74,6 +78,11 @@ var View = Backbone.View.extend({
             body.spin(false);
           } else {
             body.spin(false);
+            body.breadcrumb.render({
+                type:'Session',
+                year:doc.year,
+                ychapter:doc.chapter
+            });
             return body.$el.html(body.template.session(doc));
           }
         });
@@ -91,6 +100,9 @@ var View = Backbone.View.extend({
               out.year = row.key.pop();
               return out;
             });
+            body.breadcrumb.render({
+                type:'session'
+            });
             body.spin(false);
             return body.$el.html(body.template.sess(resp));
           });
@@ -106,7 +118,12 @@ var View = Backbone.View.extend({
               return a.doc.chapter - b.doc.chapter;
             });
             resp.year = loc.year;
+            body.breadcrumb.render({
+                type:'session',
+                year:loc.year
+            });
             body.spin(false);
+            
             return body.$el.html(body.template.year(resp));
           });
         }
@@ -117,6 +134,7 @@ var View = Backbone.View.extend({
             body.spin(false);
           } else {
             body.spin(false);
+            body.breadcrumb.render(doc);
             return body.$el.html(body.template.section(doc));
           }
         });
@@ -149,6 +167,12 @@ var View = Backbone.View.extend({
           resp.tit = loc.title;
           resp.pat = loc.part;
           body.spin(false);
+          body.breadcrumb.render({
+            type:'General',
+            chapter:loc.chapter,
+            title:loc.title,
+            part:loc.part
+          });
           return body.$el.html(body.template.chapter(resp));
         });
       } else if (loc.chapter === 'all' && loc.title !== 'all') {
@@ -173,6 +197,11 @@ var View = Backbone.View.extend({
             return out;
           });
           body.spin(false);
+          body.breadcrumb.render({
+            title: loc.title,
+            part: loc.part,
+            type:'General'
+          });
           return body.$el.html(body.template.title({
             row: rows,
             t: loc.title,
@@ -200,6 +229,10 @@ var View = Backbone.View.extend({
             return out;
           });
           body.spin(false);
+          body.breadcrumb.render({
+            part: loc.part,
+            type:'General'
+          });
           return body.$el.html(body.template.part({
             rowp: rows,
             p: loc.part
@@ -221,6 +254,9 @@ var View = Backbone.View.extend({
             return out;
           });
           body.spin(false);
+          body.breadcrumb.render({
+            type:'General'
+          });
           return body.$el.html(body.template.general({
             rowg: rows,
             g: true
