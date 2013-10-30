@@ -44,7 +44,6 @@ var View = Backbone.View.extend({
       var id, opts, type;
       if ('q' in loc) {
         return this.search(loc.q).then(function(resp) {
-          console.log(resp);
           resp.q = loc.q;
           body.spin(false);
           return body.$el.html(body.template.search(resp));
@@ -101,7 +100,7 @@ var View = Backbone.View.extend({
               return out;
             });
             body.breadcrumb.render({
-                type:'session'
+                type:'Session'
             });
             body.spin(false);
             return body.$el.html(body.template.sess(resp));
@@ -119,7 +118,7 @@ var View = Backbone.View.extend({
             });
             resp.year = loc.year;
             body.breadcrumb.render({
-                type:'session',
+                type:'Session',
                 year:loc.year
             });
             body.spin(false);

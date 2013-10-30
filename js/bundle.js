@@ -10814,6 +10814,7 @@ module.exports = Backbone.View.extend({
       'click .bodyLink': 'movePage'
     },
     movePage : function(a) {
+      console.log(a.target.id);
       a.preventDefault();
       return window.routes.navigate(a.target.id, {
         trigger: true
@@ -10821,7 +10822,7 @@ module.exports = Backbone.View.extend({
     }
 });
 
-},{"../templates/breadcrumb.hbs":27,"backbone":7,"jquery":"9XoxEL"}],4:[function(require,module,exports){
+},{"../templates/breadcrumb.hbs":28,"backbone":7,"jquery":"9XoxEL"}],4:[function(require,module,exports){
 var Backbone = require('backbone');
 
 var $ = require('jquery');
@@ -10854,6 +10855,7 @@ var Routes = Backbone.Router.extend({
       '*spat': 'roo'
     },
     roo : function(type, part, title, chapter, section) {
+      console.log(type,part,title,chapter,section);
       var parts;
       if (type == null) {
         type = 'home';
@@ -11099,7 +11101,6 @@ var View = Backbone.View.extend({
       var id, opts, type;
       if ('q' in loc) {
         return this.search(loc.q).then(function(resp) {
-          console.log(resp);
           resp.q = loc.q;
           body.spin(false);
           return body.$el.html(body.template.search(resp));
@@ -11156,7 +11157,7 @@ var View = Backbone.View.extend({
               return out;
             });
             body.breadcrumb.render({
-                type:'session'
+                type:'Session'
             });
             body.spin(false);
             return body.$el.html(body.template.sess(resp));
@@ -11174,7 +11175,7 @@ var View = Backbone.View.extend({
             });
             resp.year = loc.year;
             body.breadcrumb.render({
-                type:'session',
+                type:'Session',
                 year:loc.year
             });
             body.spin(false);
@@ -11324,7 +11325,7 @@ var View = Backbone.View.extend({
 
   module.exports = View;
 
-},{"../templates":30,"./breadcrumb":3,"backbone":7,"jquery":"9XoxEL","spin":"8wbCjN"}],7:[function(require,module,exports){
+},{"../templates":33,"./breadcrumb":3,"backbone":7,"jquery":"9XoxEL","spin":"8wbCjN"}],7:[function(require,module,exports){
 //     Backbone.js 1.1.0
 
 //     (c) 2010-2011 Jeremy Ashkenas, DocumentCloud Inc.
@@ -14551,289 +14552,6 @@ Handlebars.template = Handlebars.VM.template;
 ;
 
 },{}],10:[function(require,module,exports){
-'use strict';
-
-var extend;
-if (typeof module !== 'undefined' && module.exports) {
-  extend = require('./deps/extend');
-}
-
-
-// for a better overview of what this is doing, read:
-// https://github.com/apache/couchdb/blob/master/src/couchdb/couch_key_tree.erl
-//
-// But for a quick intro, CouchDB uses a revision tree to store a documents
-// history, A -> B -> C, when a document has conflicts, that is a branch in the
-// tree, A -> (B1 | B2 -> C), We store these as a nested array in the format
-//
-// KeyTree = [Path ... ]
-// Path = {pos: position_from_root, ids: Tree}
-// Tree = [Key, Opts, [Tree, ...]], in particular single node: [Key, []]
-
-// Turn a path as a flat array into a tree with a single branch
-function pathToTree(path) {
-  var doc = path.shift();
-  var root = [doc.id, doc.opts, []];
-  var leaf = root;
-  var nleaf;
-
-  while (path.length) {
-    doc = path.shift();
-    nleaf = [doc.id, doc.opts, []];
-    leaf[2].push(nleaf);
-    leaf = nleaf;
-  }
-  return root;
-}
-
-// Merge two trees together
-// The roots of tree1 and tree2 must be the same revision
-function mergeTree(in_tree1, in_tree2) {
-  var queue = [{tree1: in_tree1, tree2: in_tree2}];
-  var conflicts = false;
-  while (queue.length > 0) {
-    var item = queue.pop();
-    var tree1 = item.tree1;
-    var tree2 = item.tree2;
-
-    if (tree1[1].status || tree2[1].status) {
-      tree1[1].status = (tree1[1].status ===  'available' ||
-                         tree2[1].status === 'available') ? 'available' : 'missing';
-    }
-
-    for (var i = 0; i < tree2[2].length; i++) {
-      if (!tree1[2][0]) {
-        conflicts = 'new_leaf';
-        tree1[2][0] = tree2[2][i];
-        continue;
-      }
-
-      var merged = false;
-      for (var j = 0; j < tree1[2].length; j++) {
-        if (tree1[2][j][0] === tree2[2][i][0]) {
-          queue.push({tree1: tree1[2][j], tree2: tree2[2][i]});
-          merged = true;
-        }
-      }
-      if (!merged) {
-        conflicts = 'new_branch';
-        tree1[2].push(tree2[2][i]);
-        tree1[2].sort();
-      }
-    }
-  }
-  return {conflicts: conflicts, tree: in_tree1};
-}
-
-function doMerge(tree, path, dontExpand) {
-  var restree = [];
-  var conflicts = false;
-  var merged = false;
-  var res, branch;
-
-  if (!tree.length) {
-    return {tree: [path], conflicts: 'new_leaf'};
-  }
-
-  tree.forEach(function(branch) {
-    if (branch.pos === path.pos && branch.ids[0] === path.ids[0]) {
-      // Paths start at the same position and have the same root, so they need
-      // merged
-      res = mergeTree(branch.ids, path.ids);
-      restree.push({pos: branch.pos, ids: res.tree});
-      conflicts = conflicts || res.conflicts;
-      merged = true;
-    } else if (dontExpand !== true) {
-      // The paths start at a different position, take the earliest path and
-      // traverse up until it as at the same point from root as the path we want to
-      // merge.  If the keys match we return the longer path with the other merged
-      // After stemming we dont want to expand the trees
-
-      var t1 = branch.pos < path.pos ? branch : path;
-      var t2 = branch.pos < path.pos ? path : branch;
-      var diff = t2.pos - t1.pos;
-
-      var candidateParents = [];
-
-      var trees = [];
-      trees.push({ids: t1.ids, diff: diff, parent: null, parentIdx: null});
-      while (trees.length > 0) {
-        var item = trees.pop();
-        if (item.diff === 0) {
-          if (item.ids[0] === t2.ids[0]) {
-            candidateParents.push(item);
-          }
-          continue;
-        }
-        if (!item.ids) {
-          continue;
-        }
-        /*jshint loopfunc:true */
-        item.ids[2].forEach(function(el, idx) {
-          trees.push({ids: el, diff: item.diff-1, parent: item.ids, parentIdx: idx});
-        });
-      }
-
-      var el = candidateParents[0];
-
-      if (!el) {
-        restree.push(branch);
-      } else {
-        res = mergeTree(el.ids, t2.ids);
-        el.parent[2][el.parentIdx] = res.tree;
-        restree.push({pos: t1.pos, ids: t1.ids});
-        conflicts = conflicts || res.conflicts;
-        merged = true;
-      }
-    } else {
-      restree.push(branch);
-    }
-  });
-
-  // We didnt find
-  if (!merged) {
-    restree.push(path);
-  }
-
-  restree.sort(function(a, b) {
-    return a.pos - b.pos;
-  });
-
-  return {
-    tree: restree,
-    conflicts: conflicts || 'internal_node'
-  };
-}
-
-// To ensure we dont grow the revision tree infinitely, we stem old revisions
-function stem(tree, depth) {
-  // First we break out the tree into a complete list of root to leaf paths,
-  // we cut off the start of the path and generate a new set of flat trees
-  var stemmedPaths = PouchMerge.rootToLeaf(tree).map(function(path) {
-    var stemmed = path.ids.slice(-depth);
-    return {
-      pos: path.pos + (path.ids.length - stemmed.length),
-      ids: pathToTree(stemmed)
-    };
-  });
-  // Then we remerge all those flat trees together, ensuring that we dont
-  // connect trees that would go beyond the depth limit
-  return stemmedPaths.reduce(function(prev, current, i, arr) {
-    return doMerge(prev, current, true).tree;
-  }, [stemmedPaths.shift()]);
-}
-
-var PouchMerge = {};
-
-PouchMerge.merge = function(tree, path, depth) {
-  // Ugh, nicer way to not modify arguments in place?
-  tree = extend(true, [], tree);
-  path = extend(true, {}, path);
-  var newTree = doMerge(tree, path);
-  return {
-    tree: stem(newTree.tree, depth),
-    conflicts: newTree.conflicts
-  };
-};
-
-// We fetch all leafs of the revision tree, and sort them based on tree length
-// and whether they were deleted, undeleted documents with the longest revision
-// tree (most edits) win
-// The final sort algorithm is slightly documented in a sidebar here:
-// http://guide.couchdb.org/draft/conflicts.html
-PouchMerge.winningRev = function(metadata) {
-  var leafs = [];
-  PouchMerge.traverseRevTree(metadata.rev_tree,
-                              function(isLeaf, pos, id, something, opts) {
-    if (isLeaf) {
-      leafs.push({pos: pos, id: id, deleted: !!opts.deleted});
-    }
-  });
-  leafs.sort(function(a, b) {
-    if (a.deleted !== b.deleted) {
-      return a.deleted > b.deleted ? 1 : -1;
-    }
-    if (a.pos !== b.pos) {
-      return b.pos - a.pos;
-    }
-    return a.id < b.id ? 1 : -1;
-  });
-
-  return leafs[0].pos + '-' + leafs[0].id;
-};
-
-// Pretty much all below can be combined into a higher order function to
-// traverse revisions
-// The return value from the callback will be passed as context to all
-// children of that node
-PouchMerge.traverseRevTree = function(revs, callback) {
-  var toVisit = [];
-
-  revs.forEach(function(tree) {
-    toVisit.push({pos: tree.pos, ids: tree.ids});
-  });
-  while (toVisit.length > 0) {
-    var node = toVisit.pop();
-    var pos = node.pos;
-    var tree = node.ids;
-    var newCtx = callback(tree[2].length === 0, pos, tree[0], node.ctx, tree[1]);
-    /*jshint loopfunc: true */
-    tree[2].forEach(function(branch) {
-      toVisit.push({pos: pos+1, ids: branch, ctx: newCtx});
-    });
-  }
-};
-
-PouchMerge.collectLeaves = function(revs) {
-  var leaves = [];
-  PouchMerge.traverseRevTree(revs, function(isLeaf, pos, id, acc, opts) {
-    if (isLeaf) {
-      leaves.unshift({rev: pos + "-" + id, pos: pos, opts: opts});
-    }
-  });
-  leaves.sort(function(a, b) {
-    return b.pos - a.pos;
-  });
-  leaves.map(function(leaf) { delete leaf.pos; });
-  return leaves;
-};
-
-// returns revs of all conflicts that is leaves such that
-// 1. are not deleted and
-// 2. are different than winning revision
-PouchMerge.collectConflicts = function(metadata) {
-  var win = PouchMerge.winningRev(metadata);
-  var leaves = PouchMerge.collectLeaves(metadata.rev_tree);
-  var conflicts = [];
-  leaves.forEach(function(leaf) {
-    if (leaf.rev !== win && !leaf.opts.deleted) {
-      conflicts.push(leaf.rev);
-    }
-  });
-  return conflicts;
-};
-
-PouchMerge.rootToLeaf = function(tree) {
-  var paths = [];
-  PouchMerge.traverseRevTree(tree, function(isLeaf, pos, id, history, opts) {
-    history = history ? history.slice(0) : [];
-    history.push({id: id, opts: opts});
-    if (isLeaf) {
-      var rootPos = pos + 1 - history.length;
-      paths.unshift({pos: rootPos, ids: history});
-    }
-    return history;
-  });
-  return paths;
-};
-
-// a few hacks to get things in the right place for node.js
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = PouchMerge;
-}
-},{"./deps/extend":17}],"bootstrap":[function(require,module,exports){
-module.exports=require('/lrkCq');
-},{}],12:[function(require,module,exports){
 /*globals Pouch: true, PouchUtils: true, require, console */
 
 "use strict";
@@ -15763,7 +15481,7 @@ HttpPouch.valid = function() {
 Pouch.adapter('http', HttpPouch);
 Pouch.adapter('https', HttpPouch);
 
-},{"../pouch.js":23,"../pouch.utils.js":25}],13:[function(require,module,exports){
+},{"../pouch.js":23,"../pouch.utils.js":26}],11:[function(require,module,exports){
 /*globals PouchUtils: true, PouchMerge */
 
 'use strict';
@@ -16640,7 +16358,7 @@ IdbPouch.Changes = new PouchUtils.Changes();
 
 Pouch.adapter('idb', IdbPouch);
 
-},{"../pouch.utils.js":25}],14:[function(require,module,exports){
+},{"../pouch.utils.js":26}],12:[function(require,module,exports){
 /*globals PouchUtils: true, PouchMerge */
 
 'use strict';
@@ -17362,7 +17080,7 @@ webSqlPouch.Changes = new PouchUtils.Changes();
 
 Pouch.adapter('websql', webSqlPouch);
 
-},{"../pouch.utils.js":25}],15:[function(require,module,exports){
+},{"../pouch.utils.js":26}],13:[function(require,module,exports){
 var request;
 var extend;
 var createBlob;
@@ -17555,7 +17273,7 @@ if (typeof module !== 'undefined' && module.exports) {
   module.exports = ajax;
 }
 
-},{"./blob.js":16,"./extend.js":17,"request":38}],16:[function(require,module,exports){
+},{"./blob.js":14,"./extend.js":15,"request":40}],14:[function(require,module,exports){
 //Abstracts constructing a Blob object, so it also works in older
 //browsers that don't support the native Blob constructor. (i.e.
 //old QtWebKit versions, at least).
@@ -17581,7 +17299,7 @@ if (typeof module !== 'undefined' && module.exports) {
   module.exports = createBlob;
 }
 
-},{}],17:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 // Extends method
 // (taken from http://code.jquery.com/jquery-1.9.0.js)
 // Populate the class2type map
@@ -17716,6 +17434,10 @@ if (typeof module !== 'undefined' && module.exports) {
   module.exports = extend;
 }
 
+},{}],"spin":[function(require,module,exports){
+module.exports=require('8wbCjN');
+},{}],"bootstrap":[function(require,module,exports){
+module.exports=require('/lrkCq');
 },{}],18:[function(require,module,exports){
 /**
 *
@@ -19001,7 +18723,7 @@ if (typeof module !== 'undefined' && module.exports) {
   module.exports = PouchAdapter;
 }
 
-},{"./pouch.utils.js":25}],22:[function(require,module,exports){
+},{"./pouch.utils.js":26}],22:[function(require,module,exports){
 'use strict';
 
 var pouchCollate = function(a, b) {
@@ -19550,7 +19272,288 @@ if (typeof module !== 'undefined' && module.exports) {
   window.PouchDB = Pouch;
 }
 
-},{"./adapters/pouch.http.js":12,"./adapters/pouch.idb.js":13,"./adapters/pouch.leveldb.js":38,"./adapters/pouch.websql.js":14,"./plugins/pouchdb.mapreduce.js":20,"./pouch.adapter.js":21,"./pouch.replicate.js":24,"./pouch.utils.js":25}],24:[function(require,module,exports){
+},{"./adapters/pouch.http.js":10,"./adapters/pouch.idb.js":11,"./adapters/pouch.leveldb.js":40,"./adapters/pouch.websql.js":12,"./plugins/pouchdb.mapreduce.js":20,"./pouch.adapter.js":21,"./pouch.replicate.js":25,"./pouch.utils.js":26}],24:[function(require,module,exports){
+'use strict';
+
+var extend;
+if (typeof module !== 'undefined' && module.exports) {
+  extend = require('./deps/extend');
+}
+
+
+// for a better overview of what this is doing, read:
+// https://github.com/apache/couchdb/blob/master/src/couchdb/couch_key_tree.erl
+//
+// But for a quick intro, CouchDB uses a revision tree to store a documents
+// history, A -> B -> C, when a document has conflicts, that is a branch in the
+// tree, A -> (B1 | B2 -> C), We store these as a nested array in the format
+//
+// KeyTree = [Path ... ]
+// Path = {pos: position_from_root, ids: Tree}
+// Tree = [Key, Opts, [Tree, ...]], in particular single node: [Key, []]
+
+// Turn a path as a flat array into a tree with a single branch
+function pathToTree(path) {
+  var doc = path.shift();
+  var root = [doc.id, doc.opts, []];
+  var leaf = root;
+  var nleaf;
+
+  while (path.length) {
+    doc = path.shift();
+    nleaf = [doc.id, doc.opts, []];
+    leaf[2].push(nleaf);
+    leaf = nleaf;
+  }
+  return root;
+}
+
+// Merge two trees together
+// The roots of tree1 and tree2 must be the same revision
+function mergeTree(in_tree1, in_tree2) {
+  var queue = [{tree1: in_tree1, tree2: in_tree2}];
+  var conflicts = false;
+  while (queue.length > 0) {
+    var item = queue.pop();
+    var tree1 = item.tree1;
+    var tree2 = item.tree2;
+
+    if (tree1[1].status || tree2[1].status) {
+      tree1[1].status = (tree1[1].status ===  'available' ||
+                         tree2[1].status === 'available') ? 'available' : 'missing';
+    }
+
+    for (var i = 0; i < tree2[2].length; i++) {
+      if (!tree1[2][0]) {
+        conflicts = 'new_leaf';
+        tree1[2][0] = tree2[2][i];
+        continue;
+      }
+
+      var merged = false;
+      for (var j = 0; j < tree1[2].length; j++) {
+        if (tree1[2][j][0] === tree2[2][i][0]) {
+          queue.push({tree1: tree1[2][j], tree2: tree2[2][i]});
+          merged = true;
+        }
+      }
+      if (!merged) {
+        conflicts = 'new_branch';
+        tree1[2].push(tree2[2][i]);
+        tree1[2].sort();
+      }
+    }
+  }
+  return {conflicts: conflicts, tree: in_tree1};
+}
+
+function doMerge(tree, path, dontExpand) {
+  var restree = [];
+  var conflicts = false;
+  var merged = false;
+  var res, branch;
+
+  if (!tree.length) {
+    return {tree: [path], conflicts: 'new_leaf'};
+  }
+
+  tree.forEach(function(branch) {
+    if (branch.pos === path.pos && branch.ids[0] === path.ids[0]) {
+      // Paths start at the same position and have the same root, so they need
+      // merged
+      res = mergeTree(branch.ids, path.ids);
+      restree.push({pos: branch.pos, ids: res.tree});
+      conflicts = conflicts || res.conflicts;
+      merged = true;
+    } else if (dontExpand !== true) {
+      // The paths start at a different position, take the earliest path and
+      // traverse up until it as at the same point from root as the path we want to
+      // merge.  If the keys match we return the longer path with the other merged
+      // After stemming we dont want to expand the trees
+
+      var t1 = branch.pos < path.pos ? branch : path;
+      var t2 = branch.pos < path.pos ? path : branch;
+      var diff = t2.pos - t1.pos;
+
+      var candidateParents = [];
+
+      var trees = [];
+      trees.push({ids: t1.ids, diff: diff, parent: null, parentIdx: null});
+      while (trees.length > 0) {
+        var item = trees.pop();
+        if (item.diff === 0) {
+          if (item.ids[0] === t2.ids[0]) {
+            candidateParents.push(item);
+          }
+          continue;
+        }
+        if (!item.ids) {
+          continue;
+        }
+        /*jshint loopfunc:true */
+        item.ids[2].forEach(function(el, idx) {
+          trees.push({ids: el, diff: item.diff-1, parent: item.ids, parentIdx: idx});
+        });
+      }
+
+      var el = candidateParents[0];
+
+      if (!el) {
+        restree.push(branch);
+      } else {
+        res = mergeTree(el.ids, t2.ids);
+        el.parent[2][el.parentIdx] = res.tree;
+        restree.push({pos: t1.pos, ids: t1.ids});
+        conflicts = conflicts || res.conflicts;
+        merged = true;
+      }
+    } else {
+      restree.push(branch);
+    }
+  });
+
+  // We didnt find
+  if (!merged) {
+    restree.push(path);
+  }
+
+  restree.sort(function(a, b) {
+    return a.pos - b.pos;
+  });
+
+  return {
+    tree: restree,
+    conflicts: conflicts || 'internal_node'
+  };
+}
+
+// To ensure we dont grow the revision tree infinitely, we stem old revisions
+function stem(tree, depth) {
+  // First we break out the tree into a complete list of root to leaf paths,
+  // we cut off the start of the path and generate a new set of flat trees
+  var stemmedPaths = PouchMerge.rootToLeaf(tree).map(function(path) {
+    var stemmed = path.ids.slice(-depth);
+    return {
+      pos: path.pos + (path.ids.length - stemmed.length),
+      ids: pathToTree(stemmed)
+    };
+  });
+  // Then we remerge all those flat trees together, ensuring that we dont
+  // connect trees that would go beyond the depth limit
+  return stemmedPaths.reduce(function(prev, current, i, arr) {
+    return doMerge(prev, current, true).tree;
+  }, [stemmedPaths.shift()]);
+}
+
+var PouchMerge = {};
+
+PouchMerge.merge = function(tree, path, depth) {
+  // Ugh, nicer way to not modify arguments in place?
+  tree = extend(true, [], tree);
+  path = extend(true, {}, path);
+  var newTree = doMerge(tree, path);
+  return {
+    tree: stem(newTree.tree, depth),
+    conflicts: newTree.conflicts
+  };
+};
+
+// We fetch all leafs of the revision tree, and sort them based on tree length
+// and whether they were deleted, undeleted documents with the longest revision
+// tree (most edits) win
+// The final sort algorithm is slightly documented in a sidebar here:
+// http://guide.couchdb.org/draft/conflicts.html
+PouchMerge.winningRev = function(metadata) {
+  var leafs = [];
+  PouchMerge.traverseRevTree(metadata.rev_tree,
+                              function(isLeaf, pos, id, something, opts) {
+    if (isLeaf) {
+      leafs.push({pos: pos, id: id, deleted: !!opts.deleted});
+    }
+  });
+  leafs.sort(function(a, b) {
+    if (a.deleted !== b.deleted) {
+      return a.deleted > b.deleted ? 1 : -1;
+    }
+    if (a.pos !== b.pos) {
+      return b.pos - a.pos;
+    }
+    return a.id < b.id ? 1 : -1;
+  });
+
+  return leafs[0].pos + '-' + leafs[0].id;
+};
+
+// Pretty much all below can be combined into a higher order function to
+// traverse revisions
+// The return value from the callback will be passed as context to all
+// children of that node
+PouchMerge.traverseRevTree = function(revs, callback) {
+  var toVisit = [];
+
+  revs.forEach(function(tree) {
+    toVisit.push({pos: tree.pos, ids: tree.ids});
+  });
+  while (toVisit.length > 0) {
+    var node = toVisit.pop();
+    var pos = node.pos;
+    var tree = node.ids;
+    var newCtx = callback(tree[2].length === 0, pos, tree[0], node.ctx, tree[1]);
+    /*jshint loopfunc: true */
+    tree[2].forEach(function(branch) {
+      toVisit.push({pos: pos+1, ids: branch, ctx: newCtx});
+    });
+  }
+};
+
+PouchMerge.collectLeaves = function(revs) {
+  var leaves = [];
+  PouchMerge.traverseRevTree(revs, function(isLeaf, pos, id, acc, opts) {
+    if (isLeaf) {
+      leaves.unshift({rev: pos + "-" + id, pos: pos, opts: opts});
+    }
+  });
+  leaves.sort(function(a, b) {
+    return b.pos - a.pos;
+  });
+  leaves.map(function(leaf) { delete leaf.pos; });
+  return leaves;
+};
+
+// returns revs of all conflicts that is leaves such that
+// 1. are not deleted and
+// 2. are different than winning revision
+PouchMerge.collectConflicts = function(metadata) {
+  var win = PouchMerge.winningRev(metadata);
+  var leaves = PouchMerge.collectLeaves(metadata.rev_tree);
+  var conflicts = [];
+  leaves.forEach(function(leaf) {
+    if (leaf.rev !== win && !leaf.opts.deleted) {
+      conflicts.push(leaf.rev);
+    }
+  });
+  return conflicts;
+};
+
+PouchMerge.rootToLeaf = function(tree) {
+  var paths = [];
+  PouchMerge.traverseRevTree(tree, function(isLeaf, pos, id, history, opts) {
+    history = history ? history.slice(0) : [];
+    history.push({id: id, opts: opts});
+    if (isLeaf) {
+      var rootPos = pos + 1 - history.length;
+      paths.unshift({pos: rootPos, ids: history});
+    }
+    return history;
+  });
+  return paths;
+};
+
+// a few hacks to get things in the right place for node.js
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = PouchMerge;
+}
+},{"./deps/extend":15}],25:[function(require,module,exports){
 /*globals PouchUtils: true */
 
 'use strict';
@@ -19831,7 +19834,7 @@ Pouch.replicate = function(src, target, opts, callback) {
   return replicateRet;
 };
 
-},{"./pouch.utils.js":25}],25:[function(require,module,exports){
+},{"./pouch.utils.js":26}],26:[function(require,module,exports){
 var Buffer=require("__browserify_Buffer").Buffer;/*jshint strict: false */
 /*global Buffer: true, escape: true, module, window, Crypto */
 /*global chrome, extend, ajax, createBlob, btoa, atob, uuid, require, PouchMerge: true */
@@ -20155,7 +20158,7 @@ if (typeof module !== 'undefined' && module.exports) {
   module.exports = PouchUtils;
 }
 
-},{"./deps/ajax":15,"./deps/blob":16,"./deps/extend":17,"./deps/md5.js":18,"./deps/uuid":19,"./pouch.merge.js":10,"__browserify_Buffer":40}],26:[function(require,module,exports){
+},{"./deps/ajax":13,"./deps/blob":14,"./deps/extend":15,"./deps/md5.js":18,"./deps/uuid":19,"./pouch.merge.js":24,"__browserify_Buffer":41}],27:[function(require,module,exports){
 var Handlebars = require('handlebars-runtime');
 module.exports = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
@@ -20202,7 +20205,7 @@ function program3(depth0,data) {
   return buffer;
   });
 
-},{"handlebars-runtime":9}],27:[function(require,module,exports){
+},{"handlebars-runtime":9}],28:[function(require,module,exports){
 var Handlebars = require('handlebars-runtime');
 module.exports = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
@@ -20317,7 +20320,7 @@ function program7(depth0,data) {
   if (stack1 = helpers.type) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.type; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "Laws//Part";
+    + "Laws/Part";
   if (stack1 = helpers.part) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.part; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
@@ -20360,7 +20363,7 @@ function program9(depth0,data) {
   if (stack1 = helpers.type) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.type; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "Laws//Part";
+    + "Laws/Part";
   if (stack1 = helpers.part) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.part; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
@@ -20440,7 +20443,61 @@ function program15(depth0,data) {
   return buffer;
   });
 
-},{"handlebars-runtime":9}],28:[function(require,module,exports){
+},{"handlebars-runtime":9}],29:[function(require,module,exports){
+var Handlebars = require('handlebars-runtime');
+module.exports = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, options, functionType="function", escapeExpression=this.escapeExpression, self=this, blockHelperMissing=helpers.blockHelperMissing;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n			<li>\n			<a class='bodyLink' href='Title";
+  if (stack1 = helpers.title) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.title; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "/Chapter";
+  if (stack1 = helpers.chapter) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.chapter; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "' id=\"GeneralLaws/Part";
+  if (stack1 = helpers.part) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.part; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "/Title";
+  if (stack1 = helpers.title) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.title; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "/Chapter";
+  if (stack1 = helpers.chapter) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.chapter; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\">\n				Chapter ";
+  if (stack1 = helpers.chapter) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.chapter; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\n			</a>\n			</li>\n		";
+  return buffer;
+  }
+
+  buffer += "		<h1>Title ";
+  if (stack1 = helpers['t']) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0['t']; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</h1>\n		<ul>\n		";
+  options = {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data};
+  if (stack1 = helpers.row) { stack1 = stack1.call(depth0, options); }
+  else { stack1 = depth0.row; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  if (!helpers.row) { stack1 = blockHelperMissing.call(depth0, stack1, options); }
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n		</ul>\n";
+  return buffer;
+  });
+
+},{"handlebars-runtime":9}],"jquery":[function(require,module,exports){
+module.exports=require('9XoxEL');
+},{}],31:[function(require,module,exports){
 var Handlebars = require('handlebars-runtime');
 module.exports = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
@@ -20503,7 +20560,7 @@ function program4(depth0,data) {
   return buffer;
   });
 
-},{"handlebars-runtime":9}],29:[function(require,module,exports){
+},{"handlebars-runtime":9}],32:[function(require,module,exports){
 var Handlebars = require('handlebars-runtime');
 module.exports = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
@@ -20539,7 +20596,7 @@ function program1(depth0,data) {
   return buffer;
   });
 
-},{"handlebars-runtime":9}],30:[function(require,module,exports){
+},{"handlebars-runtime":9}],33:[function(require,module,exports){
 module.exports = {
 	search:require('./search.hbs'),
 	section:require('./section.hbs'),
@@ -20553,7 +20610,7 @@ module.exports = {
 	general:require('./general.hbs')
 }
 
-},{"./article.hbs":26,"./chapter.hbs":28,"./general.hbs":29,"./part.hbs":31,"./search.hbs":32,"./section.hbs":33,"./sess.hbs":34,"./session.hbs":35,"./title.hbs":36,"./year.hbs":37}],31:[function(require,module,exports){
+},{"./article.hbs":27,"./chapter.hbs":31,"./general.hbs":32,"./part.hbs":34,"./search.hbs":35,"./section.hbs":36,"./sess.hbs":37,"./session.hbs":38,"./title.hbs":29,"./year.hbs":39}],34:[function(require,module,exports){
 var Handlebars = require('handlebars-runtime');
 module.exports = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
@@ -20601,7 +20658,7 @@ function program1(depth0,data) {
   return buffer;
   });
 
-},{"handlebars-runtime":9}],32:[function(require,module,exports){
+},{"handlebars-runtime":9}],35:[function(require,module,exports){
 var Handlebars = require('handlebars-runtime');
 module.exports = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
@@ -20738,7 +20795,7 @@ function program10(depth0,data) {
   return buffer;
   });
 
-},{"handlebars-runtime":9}],33:[function(require,module,exports){
+},{"handlebars-runtime":9}],36:[function(require,module,exports){
 var Handlebars = require('handlebars-runtime');
 module.exports = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
@@ -20785,7 +20842,7 @@ function program3(depth0,data) {
   return buffer;
   });
 
-},{"handlebars-runtime":9}],34:[function(require,module,exports){
+},{"handlebars-runtime":9}],37:[function(require,module,exports){
 var Handlebars = require('handlebars-runtime');
 module.exports = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
@@ -20821,7 +20878,7 @@ function program1(depth0,data) {
   return buffer;
   });
 
-},{"handlebars-runtime":9}],35:[function(require,module,exports){
+},{"handlebars-runtime":9}],38:[function(require,module,exports){
 var Handlebars = require('handlebars-runtime');
 module.exports = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
@@ -20866,59 +20923,7 @@ function program3(depth0,data) {
   return buffer;
   });
 
-},{"handlebars-runtime":9}],36:[function(require,module,exports){
-var Handlebars = require('handlebars-runtime');
-module.exports = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, options, functionType="function", escapeExpression=this.escapeExpression, self=this, blockHelperMissing=helpers.blockHelperMissing;
-
-function program1(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n			<li>\n			<a class='bodyLink' href='Title";
-  if (stack1 = helpers.title) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.title; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "/Chapter";
-  if (stack1 = helpers.chapter) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.chapter; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "' id=\"GeneralLaws/Part";
-  if (stack1 = helpers.part) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.part; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "/Title";
-  if (stack1 = helpers.title) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.title; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "/Chapter";
-  if (stack1 = helpers.chapter) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.chapter; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "\">\n				Chapter ";
-  if (stack1 = helpers.chapter) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.chapter; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "\n			</a>\n			</li>\n		";
-  return buffer;
-  }
-
-  buffer += "		<h1>Title ";
-  if (stack1 = helpers['t']) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0['t']; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "</h1>\n		<ul>\n		";
-  options = {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data};
-  if (stack1 = helpers.row) { stack1 = stack1.call(depth0, options); }
-  else { stack1 = depth0.row; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  if (!helpers.row) { stack1 = blockHelperMissing.call(depth0, stack1, options); }
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n		</ul>\n";
-  return buffer;
-  });
-
-},{"handlebars-runtime":9}],37:[function(require,module,exports){
+},{"handlebars-runtime":9}],39:[function(require,module,exports){
 var Handlebars = require('handlebars-runtime');
 module.exports = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
@@ -20962,11 +20967,9 @@ function program2(depth0,data) {
   return buffer;
   });
 
-},{"handlebars-runtime":9}],38:[function(require,module,exports){
+},{"handlebars-runtime":9}],40:[function(require,module,exports){
 
-},{}],"jquery":[function(require,module,exports){
-module.exports=require('9XoxEL');
-},{}],40:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 require=(function(e,t,n,r){function i(r){if(!n[r]){if(!t[r]){if(e)return e(r);throw new Error("Cannot find module '"+r+"'")}var s=n[r]={exports:{}};t[r][0](function(e){var n=t[r][1][e];return i(n?n:e)},s,s.exports)}return n[r].exports}for(var s=0;s<r.length;s++)i(r[s]);return i})(typeof require!=="undefined"&&require,{1:[function(require,module,exports){
 // UTILITY
 var util = require('util');
@@ -24828,7 +24831,5 @@ SlowBuffer.prototype.writeDoubleBE = Buffer.prototype.writeDoubleBE;
 },{}]},{},[])
 ;;module.exports=require("buffer-browserify")
 
-},{}],"spin":[function(require,module,exports){
-module.exports=require('8wbCjN');
 },{}]},{},[4])
 ;

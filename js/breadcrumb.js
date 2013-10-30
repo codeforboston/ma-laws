@@ -15,6 +15,7 @@ module.exports = Backbone.View.extend({
       'click .bodyLink': 'movePage'
     },
     movePage : function(a) {
+      console.log(a.target.id);
       a.preventDefault();
       return window.routes.navigate(a.target.id, {
         trigger: true

@@ -30,6 +30,7 @@ var Routes = Backbone.Router.extend({
       '*spat': 'roo'
     },
     roo : function(type, part, title, chapter, section) {
+      console.log(type,part,title,chapter,section);
       var parts;
       if (type == null) {
         type = 'home';
