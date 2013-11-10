@@ -1,5 +1,7 @@
    
-	<h1>Chapter {{chap}}</h1>
+	<h1>Chapter {{chap}} <a href="/db/_design/laws/_view/all?{{raw}}" class="btn btn-primary btn-lg active">
+  <span class="glyphicon glyphicon-download-alt"></span> Raw JSON
+</a></h1>
 	<dl>
 	{{#rows}}
 	    {{#if doc.desc}}
@@ -12,4 +14,3 @@
         {{/if}}
 	{{/rows}}
 	</dl>
-

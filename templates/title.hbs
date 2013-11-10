@@ -1,10 +1,12 @@
-		<h1>Title {{t}}</h1>
+		<h1>Title {{title}} <a href="/db/_design/laws/_view/all?{{raw}}" class="btn btn-primary btn-lg active">
+  <span class="glyphicon glyphicon-download-alt"></span> Raw JSON
+</a></h1>
 		<ul>
-		{{#row}}
+		{{#rows}}
 			<li>
 			<a class='bodyLink' href='Title{{title}}/Chapter{{chapter}}' id="GeneralLaws/Part{{part}}/Title{{title}}/Chapter{{chapter}}">
 				Chapter {{chapter}}
 			</a>
 			</li>
-		{{/row}}
+		{{/rows}}
 		</ul>

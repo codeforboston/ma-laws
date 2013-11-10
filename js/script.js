@@ -30,7 +30,6 @@ var Routes = Backbone.Router.extend({
       '*spat': 'roo'
     },
     roo : function(type, part, title, chapter, section) {
-      console.log(type,part,title,chapter,section);
       var parts;
       if (type == null) {
         type = 'home';
@@ -116,7 +115,7 @@ session : function(path) {
   });
 
   function start(dbname) {
-    Pouch(location.protocol + "//" + location.host + "/law", function(err, db) {
+    Pouch(location.protocol + "//" + location.host + "/ltest", function(err, db) {
       window.body = new View({
         db: db,
         el: $('#mainContent')
@@ -127,7 +126,7 @@ session : function(path) {
       Backbone.history.start({
         pushState: true,
         hashChange: false,
-        root: '/law/_design/laws/_rewrite/'
+       //root: '/law/_design/laws/_rewrite/'
       });
       $('#searchForm').on('submit', function(e) {
         e.preventDefault();

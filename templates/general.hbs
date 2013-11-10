@@ -1,11 +1,13 @@
 
-		<h1>General Laws</h1>
+		<h1>General Laws <a href="/db/_design/laws/_view/all?{{raw}}" class="btn btn-primary btn-lg active">
+  <span class="glyphicon glyphicon-download-alt"></span> Raw JSON (big)
+</a></h1>
 		<ul>
-		{{#rowg}}
+		{{#rows}}
 			<li>
 			<a class='bodyLink' href='GeneralLaws/Part{{part}}' id="GeneralLaws/Part{{part}}">
 				Part {{part}}
 			</a>
 			</li>
-		{{/rowg}}
+		{{/rows}}
 		</ul>

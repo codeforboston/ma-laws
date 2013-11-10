@@ -1,5 +1,7 @@
 
-		<h1>Year {{year}}</h1>
+		<h1>Year {{year}} <a href="/db/_design/laws/_view/all?{{raw}}" class="btn btn-primary btn-lg active">
+  <span class="glyphicon glyphicon-download-alt"></span> Raw JSON (big)
+</a></h1>
 		<ul>
 		{{#rows}}{{#if doc.desc}}
 			<li><h3>
