@@ -18,16 +18,13 @@ var View = Backbone.View.extend({
       'click .bodyLink': 'movePage'
     },
     search : function(q) {
-      var opts, path;
-      path = "" + (this.db.id()) + "_design/laws/_search/sections";
-      opts = {
-        q: q,
-        include_docs: true,
-        limit: 200
-      };
-      return $.ajax(path, {
-        data: opts,
-        dataType: 'json'
+      if(!this.dbSearch){
+        this.dbSearch = denodify(this.db.search);
+      }
+      return this.dbSearch('laws/sections',{
+        q:q,
+        include_docs:true,
+        limit:200
       });
     },
     movePage : function(a) {

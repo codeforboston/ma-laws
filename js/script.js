@@ -6,7 +6,7 @@ Backbone.$ = $;
 
 var View = require('./view');
 
-var Pouch = require('pouchdb');
+var Pouch = require('./pouchdb/src/pouch.js');
 
 var spin = require('spin');
 
