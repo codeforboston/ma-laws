@@ -120,10 +120,6 @@ var View = Backbone.View.extend({
                 year:loc.year
             });
             body.spin(false);
-            opts.include_docs=true;
-            opts.reduce=false;
-            delete opts.group_level;
-            resp.raw = $.param(opts);
             return body.$el.html(body.template.year(resp));
           },stopSpin);
         }
@@ -159,7 +155,6 @@ var View = Backbone.View.extend({
             }
             return item;
           });
-          resp.raw = $.param(opts);
           body.spin(false);
           body.breadcrumb.render({
             type:'General',
@@ -167,6 +162,7 @@ var View = Backbone.View.extend({
             title:loc.title,
             part:loc.part
           });
+          resp.chapter = loc.chapter;
           return body.$el.html(body.template.chapter(resp));
         });
       } else if (loc.chapter === 'all' && loc.title !== 'all') {
@@ -188,9 +184,6 @@ var View = Backbone.View.extend({
             out.part = row.key.pop();
             return out;
           });
-          opts.include_docs=true;
-          opts.reduce=false;
-          delete opts.group_level;
           body.spin(false);
           body.breadcrumb.render({
             title: loc.title,
@@ -200,8 +193,7 @@ var View = Backbone.View.extend({
           return body.$el.html(body.template.title({
             rows: rows,
             title: loc.title,
-            part: loc.part,
-            raw: $.param(opts)
+            part: loc.part
           }));
         });
       } else if (loc.title === 'all' && loc.part !== 'all') {
@@ -224,9 +216,6 @@ var View = Backbone.View.extend({
             out.part = row.key.pop();
             return out;
           });
-          opts.include_docs=true;
-          opts.reduce=false;
-          delete opts.group_level;
           body.spin(false);
           body.breadcrumb.render({
             part: loc.part,
@@ -234,8 +223,7 @@ var View = Backbone.View.extend({
           });
           return body.$el.html(body.template.part({
             rows: rows,
-            part: loc.part,
-            raw: $.param(opts)
+            part: loc.part
           }));
         });
       } else {

@@ -17058,7 +17058,7 @@ session : function(path) {
   });
 
   function start(dbname) {
-    Pouch(location.protocol + "//" + location.host + "/ltest", function(err, db) {
+    Pouch(location.protocol + "//" + location.host + "/law", function(err, db) {
       window.body = new View({
         db: db,
         el: $('#mainContent')
@@ -17296,10 +17296,6 @@ var View = Backbone.View.extend({
                 year:loc.year
             });
             body.spin(false);
-            opts.include_docs=true;
-            opts.reduce=false;
-            delete opts.group_level;
-            resp.raw = $.param(opts);
             return body.$el.html(body.template.year(resp));
           },stopSpin);
         }
@@ -17335,7 +17331,6 @@ var View = Backbone.View.extend({
             }
             return item;
           });
-          resp.raw = $.param(opts);
           body.spin(false);
           body.breadcrumb.render({
             type:'General',
@@ -17343,6 +17338,7 @@ var View = Backbone.View.extend({
             title:loc.title,
             part:loc.part
           });
+          resp.chapter = loc.chapter;
           return body.$el.html(body.template.chapter(resp));
         });
       } else if (loc.chapter === 'all' && loc.title !== 'all') {
@@ -17364,9 +17360,6 @@ var View = Backbone.View.extend({
             out.part = row.key.pop();
             return out;
           });
-          opts.include_docs=true;
-          opts.reduce=false;
-          delete opts.group_level;
           body.spin(false);
           body.breadcrumb.render({
             title: loc.title,
@@ -17376,8 +17369,7 @@ var View = Backbone.View.extend({
           return body.$el.html(body.template.title({
             rows: rows,
             title: loc.title,
-            part: loc.part,
-            raw: $.param(opts)
+            part: loc.part
           }));
         });
       } else if (loc.title === 'all' && loc.part !== 'all') {
@@ -17400,9 +17392,6 @@ var View = Backbone.View.extend({
             out.part = row.key.pop();
             return out;
           });
-          opts.include_docs=true;
-          opts.reduce=false;
-          delete opts.group_level;
           body.spin(false);
           body.breadcrumb.render({
             part: loc.part,
@@ -17410,8 +17399,7 @@ var View = Backbone.View.extend({
           });
           return body.$el.html(body.template.part({
             rows: rows,
-            part: loc.part,
-            raw: $.param(opts)
+            part: loc.part
           }));
         });
       } else {
@@ -21471,12 +21459,12 @@ function program4(depth0,data) {
   }
 
   buffer += "   \n	<h1>Chapter ";
-  if (stack1 = helpers.chap) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.chap; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  if (stack1 = helpers.chapter) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.chapter; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + " <a href=\"/db/_design/laws/_view/all?";
-  if (stack1 = helpers.raw) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.raw; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+    + " <a href=\"/api/chapter/";
+  if (stack1 = helpers.chapter) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.chapter; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
     + "\" class=\"btn btn-primary btn-lg active\">\n  <span class=\"glyphicon glyphicon-download-alt\"></span> Raw JSON\n</a></h1>\n	<dl>\n	";
   options = {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data};
@@ -21514,11 +21502,7 @@ function program1(depth0,data) {
   return buffer;
   }
 
-  buffer += "\n		<h1>General Laws <a href=\"/db/_design/laws/_view/all?";
-  if (stack1 = helpers.raw) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.raw; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "\" class=\"btn btn-primary btn-lg active\">\n  <span class=\"glyphicon glyphicon-download-alt\"></span> Raw JSON (big)\n</a></h1>\n		<ul>\n		";
+  buffer += "\n		<h1>General Laws <a href=\"/api/general\" class=\"btn btn-primary btn-lg active\">\n  <span class=\"glyphicon glyphicon-download-alt\"></span> Raw JSON (big)\n</a></h1>\n		<ul>\n		";
   options = {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data};
   if (stack1 = helpers.rows) { stack1 = stack1.call(depth0, options); }
   else { stack1 = depth0.rows; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
@@ -21580,9 +21564,9 @@ function program1(depth0,data) {
   if (stack1 = helpers.part) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.part; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + " <a href=\"/db/_design/laws/_view/all?";
-  if (stack1 = helpers.raw) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.raw; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+    + " <a href=\"/api/part/";
+  if (stack1 = helpers.part) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.part; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
     + "\" class=\"btn btn-primary btn-lg active\">\n  <span class=\"glyphicon glyphicon-download-alt\"></span> Raw JSON (big)\n</a></h1>\n		<ul>\n		";
   options = {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data};
@@ -21717,11 +21701,11 @@ function program10(depth0,data) {
   if (stack1 = helpers['q']) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0['q']; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\"  <a href=\"/db/_design/laws/_search/sections?q=";
+    + "\"  <a href=\"/api/search/";
   if (stack1 = helpers['q']) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0['q']; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "&include_docs=true&limit=200\" class=\"btn btn-primary btn-lg active\">\n  <span class=\"glyphicon glyphicon-download-alt\"></span> Raw JSON\n</a></h1>\n		<p>";
+    + "\" class=\"btn btn-primary btn-lg active\">\n  <span class=\"glyphicon glyphicon-download-alt\"></span> Raw JSON\n</a></h1>\n		<p>";
   if (stack1 = helpers.total_rows) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.total_rows; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
@@ -21816,11 +21800,7 @@ function program1(depth0,data) {
   return buffer;
   }
 
-  buffer += "\n		<h1>Session Laws <a href=\"/db/_design/laws/_view/all?";
-  if (stack1 = helpers.raw) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.raw; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "\" class=\"btn btn-primary btn-lg active\">\n  <span class=\"glyphicon glyphicon-download-alt\"></span> Raw JSON (big)\n</a></h1>\n		<ul>\n		";
+  buffer += "\n		<h1>Session Laws <a href=\"/api/session\" class=\"btn btn-primary btn-lg active\">\n  <span class=\"glyphicon glyphicon-download-alt\"></span> Raw JSON (big)\n</a></h1>\n		<ul>\n		";
   options = {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data};
   if (stack1 = helpers.rows) { stack1 = stack1.call(depth0, options); }
   else { stack1 = depth0.rows; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
@@ -21925,9 +21905,13 @@ function program1(depth0,data) {
   if (stack1 = helpers.title) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.title; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + " <a href=\"/db/_design/laws/_view/all?";
-  if (stack1 = helpers.raw) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.raw; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+    + " <a href=\"/api/";
+  if (stack1 = helpers.part) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.part; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "/";
+  if (stack1 = helpers.title) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.title; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
     + "\" class=\"btn btn-primary btn-lg active\">\n  <span class=\"glyphicon glyphicon-download-alt\"></span> Raw JSON\n</a></h1>\n		<ul>\n		";
   options = {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data};
@@ -21973,9 +21957,9 @@ function program2(depth0,data) {
   if (stack1 = helpers.year) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.year; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + " <a href=\"/db/_design/laws/_view/all?";
-  if (stack1 = helpers.raw) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.raw; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+    + " <a href=\"/api/year/";
+  if (stack1 = helpers.year) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.year; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
     + "\" class=\"btn btn-primary btn-lg active\">\n  <span class=\"glyphicon glyphicon-download-alt\"></span> Raw JSON (big)\n</a></h1>\n		<ul>\n		";
   options = {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data};

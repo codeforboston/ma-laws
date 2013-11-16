@@ -115,7 +115,7 @@ session : function(path) {
   });
 
   function start(dbname) {
-    Pouch(location.protocol + "//" + location.host + "/ltest", function(err, db) {
+    Pouch(location.protocol + "//" + location.host + "/law", function(err, db) {
       window.body = new View({
         db: db,
         el: $('#mainContent')
