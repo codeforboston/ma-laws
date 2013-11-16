@@ -10825,7 +10825,7 @@ module.exports = Backbone.View.extend({
     }
 });
 
-},{"../templates/breadcrumb.hbs":42,"backbone":27,"jquery":"FYq5/o"}],6:[function(require,module,exports){
+},{"../templates/breadcrumb.hbs":40,"backbone":25,"jquery":"FYq5/o"}],6:[function(require,module,exports){
 /*globals Pouch: true, PouchUtils: true, require, console */
 
 "use strict";
@@ -11873,7 +11873,7 @@ HttpPouch.valid = function() {
 Pouch.adapter('http', HttpPouch);
 Pouch.adapter('https', HttpPouch);
 
-},{"../pouch.js":19,"../pouch.utils.js":22}],7:[function(require,module,exports){
+},{"../pouch.js":17,"../pouch.utils.js":20}],7:[function(require,module,exports){
 /*globals PouchUtils: true, PouchMerge */
 
 'use strict';
@@ -12750,7 +12750,7 @@ IdbPouch.Changes = new PouchUtils.Changes();
 
 Pouch.adapter('idb', IdbPouch);
 
-},{"../pouch.utils.js":22}],8:[function(require,module,exports){
+},{"../pouch.utils.js":20}],8:[function(require,module,exports){
 /*globals PouchUtils: true, PouchMerge */
 
 'use strict';
@@ -13472,7 +13472,7 @@ webSqlPouch.Changes = new PouchUtils.Changes();
 
 Pouch.adapter('websql', webSqlPouch);
 
-},{"../pouch.utils.js":22}],9:[function(require,module,exports){
+},{"../pouch.utils.js":20}],9:[function(require,module,exports){
 var request;
 var extend;
 var createBlob;
@@ -13665,7 +13665,7 @@ if (typeof module !== 'undefined' && module.exports) {
   module.exports = ajax;
 }
 
-},{"./blob.js":10,"./extend.js":11,"request":53}],10:[function(require,module,exports){
+},{"./blob.js":10,"./extend.js":11,"request":51}],10:[function(require,module,exports){
 //Abstracts constructing a Blob object, so it also works in older
 //browsers that don't support the native Blob constructor. (i.e.
 //old QtWebKit versions, at least).
@@ -14413,351 +14413,7 @@ MapReduce._delete = function() { };
 
 Pouch.plugin('mapreduce', MapReduce);
 
-},{"../pouch.collate.js":18}],15:[function(require,module,exports){
-/*global Pouch: true, pouchCollate: true */
-
-"use strict";
-
-var pouchCollate;
-if (typeof module !== 'undefined' && module.exports) {
-  pouchCollate = require('../pouch.collate.js');
-}
-
-// This is the first implementation of a basic plugin, we register the
-// plugin object with pouch and it is mixin'd to each database created
-// (regardless of adapter), adapters can override plugins by providing
-// their own implementation. functions on the plugin object that start
-// with _ are reserved function that are called by pouchdb for special
-// notifications.
-
-// If we wanted to store incremental views we can do it here by listening
-// to the changes feed (keeping track of our last update_seq between page loads)
-// and storing the result of the map function (possibly using the upcoming
-// extracted adapter functions)
-
-var Search = function(db) {
-
-  function httpQuery(name, opts, callback) {
-
-    // List of parameters to add to the PUT request
-    var params = [];
-    if (typeof opts.q !== 'undefined') {
-      params.push('q=' + opts.q);
-    }
-    if (typeof opts.include_docs !== 'undefined') {
-      params.push('include_docs=' + opts.include_docs);
-    }
-    if (typeof opts.limit !== 'undefined') {
-      params.push('limit=' + opts.limit);
-    }
-    if (typeof opts.sort !== 'undefined') {
-      params.push('sort=' + opts.sort);
-    }
-    if (typeof opts.bookmark !== 'undefined') {
-      params.push('bookmark=' + opts.bookmark);
-    }
-    if (typeof opts.stale !== 'undefined') {
-      params.push('stale=' + stale);
-    }
-
-    // If keys are supplied, issue a POST request to circumvent GET query string limits
-    // see http://wiki.apache.org/couchdb/HTTP_view_API#Querying_Options
-
-    // Format the list of parameters into a valid URI query string
-    params = params.join('&');
-    params = params === '' ? '' : '?' + params;
-
-      var parts = name.split('/');
-      db.request({
-        method: 'GET',
-        url: '_design/' + parts[0] + '/_search/' + parts[1] + params
-      }, callback);
-  }
-
-  function query(name, opts, callback) {
-    if (typeof opts === 'function') {
-      callback = opts;
-      opts = {};
-    }
-
-    if (db.type() === 'http') {
-    return httpQuery(name, opts, callback);
-  }
-}
-  return {'search': query};
-};
-
-// Deletion is a noop since we dont store the results of the view
-Search._delete = function() { };
-
-Pouch.plugin('search', Search);
-
-},{"../pouch.collate.js":18}],16:[function(require,module,exports){
-/*global Pouch: true */
-
-"use strict";
-
-// If we wanted to store incremental views we can do it here by listening
-// to the changes feed (keeping track of our last update_seq between page loads)
-// and storing the result of the map function (possibly using the upcoming
-// extracted adapter functions)
-
-var Spatial = function(db) {
-
-  var isArray = Array.isArray || function(obj) {
-    return type(obj) === "array";
-  };
-  
-  function viewQuery(fun, options) {
-    if (!options.complete) {
-      return;
-    }
-
-    var results = [];
-    var current = null;
-    var num_started= 0;
-    var completed= false;
-
-    // Make the key a proper one. If a value is a single point, transform it
-    // to a range. If the first element (or the whole key) is a geometry,
-    // calculate its bounding box.
-    // The geometry is also returned (`null` if there is none).
-    var normalizeKey = function(key) {
-      var newKey = [];
-      var geometry = null;
-
-      // Whole key is one geometry
-      if (!isArray(key) && typeof key === "object") {
-        return {
-          key: Spatial.calculateBbox(key),
-          geometry: key
-        };
-      }
-
-      if (!isArray(key[0]) && typeof key[0] === "object") {
-        newKey = Spatial.calculateBbox(key[0]);
-        geometry = key[0];
-        key = key.slice(1);
-      }
-
-      for(var i=0; i<key.length; i++) {
-        if(isArray(key[i])) {
-          newKey.push(key[i]);
-        // If only a single point, not a range was emitted
-        } else {
-          newKey.push([key[i], key[i]]);
-        }
-      }
-      return {
-        key: newKey,
-        geometry: geometry
-      };
-    };
-
-    var within = function(key, start_range, end_range) {
-      var start;
-      var end;
-
-      for(var i=0; i<key.length; i++) {
-        start = key[i][0];
-        end = key[i][1];
-        if (
-          // Wildcard at the start
-          ((start_range[i] === null && (start <= end_range[i] || end_range[i] === null))
-           // Start is set
-           || (start <= end_range[i] || end_range[i] === null))
-          &&
-            // Wildcard at the end
-            ((end_range[i] === null && (end >= start_range[i] || start_range[i] === null))
-             // End is set
-             || (end >= start_range[i] || start_range[i] === null))) {
-          continue;
-        } else {
-          return false;
-        }
-      }
-      return true;
-    };
-
-    var emit = function(key, val) {
-      var keyGeom = normalizeKey(key);
-      var viewRow = {
-        id: current.doc._id,
-        key: keyGeom.key,
-        value: val,
-        geometry: keyGeom.geometry
-      };
-
-      // If no range is given, return everything
-      if (options.start_range !== undefined &&
-          options.end_range !== undefined) {
-        if (!within(keyGeom.key, options.start_range, options.end_range)) {
-          return;
-        }
-      }
-
-      num_started++;
-      if (options.include_docs) {
-        //in this special case, join on _id (issue #106)
-        if (val && typeof val === 'object' && val._id){
-          db.get(val._id,
-              function(_, joined_doc){
-                if (joined_doc) {
-                  viewRow.doc = joined_doc;
-                }
-                results.push(viewRow);
-                checkComplete();
-              });
-          return;
-        } else {
-          viewRow.doc = current.doc;
-        }
-      }
-      results.push(viewRow);
-    };
-
-    // ugly way to make sure references to 'emit' in map/reduce bind to the
-    // above emit
-    eval('fun = ' + fun.toString() + ';');
-
-    // exclude  _conflicts key by default
-    // or to use options.conflicts if it's set when called by db.query
-    var conflicts = ('conflicts' in options ? options.conflicts : false);
-
-    // only proceed once all documents are mapped and joined
-    var checkComplete= function() {
-      if (completed && results.length == num_started){
-        return options.complete(null, {rows: results});
-      }
-    }
-
-    db.changes({
-      conflicts: conflicts,
-      include_docs: true,
-      onChange: function(doc) {
-        // Don't index deleted or design documents
-        if (!('deleted' in doc) && doc.id.indexOf('_design/') !== 0) {
-          current = {doc: doc.doc};
-          fun.call(this, doc.doc);
-        }
-      },
-      complete: function() {
-        completed= true;
-        checkComplete();
-      }
-    });
-  }
-
-  function httpQuery(location, opts, callback) {
-
-    // List of parameters to add to the PUT request
-    var params = [];
-
-    // TODO vmx 2013-01-27: Support skip and limit
-
-    if (typeof opts.start_range !== 'undefined') {
-      params.push('start_range=' + encodeURIComponent(JSON.stringify(
-        opts.start_range)));
-    }
-    if (typeof opts.end_range !== 'undefined') {
-      params.push('end_range=' + encodeURIComponent(JSON.stringify(
-        opts.end_range)));
-    }
-    if (typeof opts.key !== 'undefined') {
-      params.push('key=' + encodeURIComponent(JSON.stringify(opts.key)));
-    }
-
-    // Format the list of parameters into a valid URI query string
-    params = params.join('&');
-    params = params === '' ? '' : '?' + params;
-
-    // We are referencing a query defined in the design doc
-    var parts = location.split('/');
-    db.request({
-      method: 'GET',
-      url: '_design/' + parts[0] + '/_spatial/' + parts[1] + params
-    }, callback);
-  }
-
-  function query(fun, opts, callback) {
-    if (typeof opts === 'function') {
-      callback = opts;
-      opts = {};
-    }
-
-    if (callback) {
-      opts.complete = callback;
-    }
-
-    if (typeof fun !== 'string') {
-        var error = Pouch.error( Pouch.Errors.INVALID_REQUEST, 'Querying with a function is not supported for Spatial Views');
-      return callback ? callback(error) : undefined;
-    }
-
-    if (db.type() === 'http') {
-      return httpQuery(fun, opts, callback);
-    }
-
-    var parts = fun.split('/');
-    db.get('_design/' + parts[0], function(err, doc) {
-      if (err) {
-        if (callback) callback(err);
-        return;
-      }
-      viewQuery(doc.spatial[parts[1]], opts);
-    });
-  }
-
-  return {spatial: query};
-};
-
-// Store it in the Spatial object, so we can test it
-Spatial.calculateBbox = function (geom) {
-  var coords = geom.coordinates;
-  if (geom.type === 'Point') {
-    return [[coords[0], coords[0]], [coords[1], coords[1]]];
-  }
-  if (geom.type === 'GeometryCollection') {
-    coords = geom.geometries.map(function(g) {
-      return Spatial.calculateBbox(g);
-    });
-
-    // Merge all bounding boxes into one big one that encloses all
-    return coords.reduce(function (acc, bbox) {
-      var minX = Math.min(acc[0][0], bbox[0][0]);
-      var minY = Math.min(acc[1][0], bbox[1][0]);
-      var maxX = Math.max(acc[0][1], bbox[0][1]);
-      var maxY = Math.max(acc[1][1], bbox[1][1]);
-      return [[minX, maxX], [minY, maxY]];
-    });
-  }
-
-  // Flatten coords as much as possible
-  while (Array.isArray(coords[0][0])) {
-    coords = coords.reduce(function(a, b) {
-      return a.concat(b);
-    });
-  };
-
-  // Calculate the enclosing bounding box of all coordinates
-  return coords.reduce(function (acc, coord) {
-    if (acc === null) {
-      return [[coord[0], coord[0]], [coord[1], coord[1]]];
-    }
-    var minX = Math.min(acc[0][0], coord[0]);
-    var minY = Math.min(acc[1][0], coord[1]);
-    var maxX = Math.max(acc[0][1], coord[0]);
-    var maxY = Math.max(acc[1][1], coord[1]);
-    return [[minX, maxX], [minY, maxY]];
-  }, null);
-};
-
-// Deletion is a noop since we dont store the results of the view
-Spatial._delete = function() { };
-
-Pouch.plugin('spatial', Spatial);
-
-},{}],17:[function(require,module,exports){
+},{"../pouch.collate.js":16}],15:[function(require,module,exports){
 /*globals Pouch: true, cordova, PouchUtils: true, PouchMerge */
 
 "use strict";
@@ -15481,7 +15137,7 @@ if (typeof module !== 'undefined' && module.exports) {
   module.exports = PouchAdapter;
 }
 
-},{"./pouch.utils.js":22}],18:[function(require,module,exports){
+},{"./pouch.utils.js":20}],16:[function(require,module,exports){
 'use strict';
 
 var pouchCollate = function(a, b) {
@@ -15571,7 +15227,7 @@ if (typeof module !== 'undefined' && module.exports) {
 }
 
 
-},{}],19:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};/*globals PouchAdapter: true, PouchUtils: true */
 
 "use strict";
@@ -16030,14 +15686,12 @@ if (typeof module !== 'undefined' && module.exports) {
   require('./adapters/pouch.websql.js');
   require('./adapters/pouch.leveldb.js');
   require('./plugins/pouchdb.mapreduce.js');
-  require('./plugins/pouchdb.search.js');
-  require('./plugins/pouchdb.spatial.js');
 } else {
   window.Pouch = Pouch;
   window.PouchDB = Pouch;
 }
 
-},{"./adapters/pouch.http.js":6,"./adapters/pouch.idb.js":7,"./adapters/pouch.leveldb.js":53,"./adapters/pouch.websql.js":8,"./plugins/pouchdb.mapreduce.js":14,"./plugins/pouchdb.search.js":15,"./plugins/pouchdb.spatial.js":16,"./pouch.adapter.js":17,"./pouch.replicate.js":21,"./pouch.utils.js":22}],20:[function(require,module,exports){
+},{"./adapters/pouch.http.js":6,"./adapters/pouch.idb.js":7,"./adapters/pouch.leveldb.js":51,"./adapters/pouch.websql.js":8,"./plugins/pouchdb.mapreduce.js":14,"./pouch.adapter.js":15,"./pouch.replicate.js":19,"./pouch.utils.js":20}],18:[function(require,module,exports){
 'use strict';
 
 var extend;
@@ -16318,7 +15972,7 @@ PouchMerge.rootToLeaf = function(tree) {
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = PouchMerge;
 }
-},{"./deps/extend":11}],21:[function(require,module,exports){
+},{"./deps/extend":11}],19:[function(require,module,exports){
 /*globals PouchUtils: true */
 
 'use strict';
@@ -16403,12 +16057,17 @@ var fetchCheckpoint = function(src, target, id, callback) {
 };
 
 var writeCheckpoint = function(src, target, id, checkpoint, callback) {
-  var check = {
-    _id: id,
-    last_seq: checkpoint
+  var updateCheckpoint = function (db, callback) {
+    db.get(id, function(err, doc) {
+      if (err && err.status === 404) {
+          doc = {_id: id};
+      }
+      doc.last_seq = checkpoint;
+      db.put(doc, callback);
+    });
   };
-  target.put(check, function(err, doc) {
-    src.put(check, function(err, doc) {
+  updateCheckpoint(target, function(err, doc) {
+    updateCheckpoint(src, function(err, doc) {
       callback();
     });
   });
@@ -16614,7 +16273,7 @@ Pouch.replicate = function(src, target, opts, callback) {
   return replicateRet;
 };
 
-},{"./pouch.utils.js":22}],22:[function(require,module,exports){
+},{"./pouch.utils.js":20}],20:[function(require,module,exports){
 var Buffer=require("__browserify_Buffer").Buffer;/*jshint strict: false */
 /*global Buffer: true, escape: true, module, window, Crypto */
 /*global chrome, extend, ajax, createBlob, btoa, atob, uuid, require, PouchMerge: true */
@@ -16940,7 +16599,7 @@ if (typeof module !== 'undefined' && module.exports) {
   module.exports = PouchUtils;
 }
 
-},{"./deps/ajax":9,"./deps/blob":10,"./deps/extend":11,"./deps/md5.js":12,"./deps/uuid":13,"./pouch.merge.js":20,"__browserify_Buffer":54}],23:[function(require,module,exports){
+},{"./deps/ajax":9,"./deps/blob":10,"./deps/extend":11,"./deps/md5.js":12,"./deps/uuid":13,"./pouch.merge.js":18,"__browserify_Buffer":52}],21:[function(require,module,exports){
 var Backbone = require('backbone');
 
 var $ = require('jquery');
@@ -17087,7 +16746,7 @@ session : function(path) {
   };
 
   start('law');
-},{"./pouchdb/src/pouch.js":19,"./view":26,"backbone":27,"bootstrap":"DGGHCW","jquery":"FYq5/o","spin":"LOQUo3"}],"LOQUo3":[function(require,module,exports){
+},{"./pouchdb/src/pouch.js":17,"./view":24,"backbone":25,"bootstrap":"DGGHCW","jquery":"FYq5/o","spin":"LOQUo3"}],"LOQUo3":[function(require,module,exports){
 (function(t,e){if(typeof exports=="object")module.exports=e();else if(typeof define=="function"&&define.amd)define(e);else t.Spinner=e()})(this,function(){"use strict";var t=["webkit","Moz","ms","O"],e={},i;function o(t,e){var i=document.createElement(t||"div"),o;for(o in e)i[o]=e[o];return i}function n(t){for(var e=1,i=arguments.length;e<i;e++)t.appendChild(arguments[e]);return t}var r=function(){var t=o("style",{type:"text/css"});n(document.getElementsByTagName("head")[0],t);return t.sheet||t.styleSheet}();function s(t,o,n,s){var a=["opacity",o,~~(t*100),n,s].join("-"),f=.01+n/s*100,l=Math.max(1-(1-t)/o*(100-f),t),u=i.substring(0,i.indexOf("Animation")).toLowerCase(),d=u&&"-"+u+"-"||"";if(!e[a]){r.insertRule("@"+d+"keyframes "+a+"{"+"0%{opacity:"+l+"}"+f+"%{opacity:"+t+"}"+(f+.01)+"%{opacity:1}"+(f+o)%100+"%{opacity:"+t+"}"+"100%{opacity:"+l+"}"+"}",r.cssRules.length);e[a]=1}return a}function a(e,i){var o=e.style,n,r;if(o[i]!==undefined)return i;i=i.charAt(0).toUpperCase()+i.slice(1);for(r=0;r<t.length;r++){n=t[r]+i;if(o[n]!==undefined)return n}}function f(t,e){for(var i in e)t.style[a(t,i)||i]=e[i];return t}function l(t){for(var e=1;e<arguments.length;e++){var i=arguments[e];for(var o in i)if(t[o]===undefined)t[o]=i[o]}return t}function u(t){var e={x:t.offsetLeft,y:t.offsetTop};while(t=t.offsetParent)e.x+=t.offsetLeft,e.y+=t.offsetTop;return e}function d(t,e){return typeof t=="string"?t:t[e%t.length]}var p={lines:12,length:7,width:5,radius:10,rotate:0,corners:1,color:"#000",direction:1,speed:1,trail:100,opacity:1/4,fps:20,zIndex:2e9,className:"spinner",top:"auto",left:"auto",position:"relative"};function c(t){if(typeof this=="undefined")return new c(t);this.opts=l(t||{},c.defaults,p)}c.defaults={};l(c.prototype,{spin:function(t){this.stop();var e=this,n=e.opts,r=e.el=f(o(0,{className:n.className}),{position:n.position,width:0,zIndex:n.zIndex}),s=n.radius+n.length+n.width,a,l;if(t){t.insertBefore(r,t.firstChild||null);l=u(t);a=u(r);f(r,{left:(n.left=="auto"?l.x-a.x+(t.offsetWidth>>1):parseInt(n.left,10)+s)+"px",top:(n.top=="auto"?l.y-a.y+(t.offsetHeight>>1):parseInt(n.top,10)+s)+"px"})}r.setAttribute("role","progressbar");e.lines(r,e.opts);if(!i){var d=0,p=(n.lines-1)*(1-n.direction)/2,c,h=n.fps,m=h/n.speed,y=(1-n.opacity)/(m*n.trail/100),g=m/n.lines;(function v(){d++;for(var t=0;t<n.lines;t++){c=Math.max(1-(d+(n.lines-t)*g)%m*y,n.opacity);e.opacity(r,t*n.direction+p,c,n)}e.timeout=e.el&&setTimeout(v,~~(1e3/h))})()}return e},stop:function(){var t=this.el;if(t){clearTimeout(this.timeout);if(t.parentNode)t.parentNode.removeChild(t);this.el=undefined}return this},lines:function(t,e){var r=0,a=(e.lines-1)*(1-e.direction)/2,l;function u(t,i){return f(o(),{position:"absolute",width:e.length+e.width+"px",height:e.width+"px",background:t,boxShadow:i,transformOrigin:"left",transform:"rotate("+~~(360/e.lines*r+e.rotate)+"deg) translate("+e.radius+"px"+",0)",borderRadius:(e.corners*e.width>>1)+"px"})}for(;r<e.lines;r++){l=f(o(),{position:"absolute",top:1+~(e.width/2)+"px",transform:e.hwaccel?"translate3d(0,0,0)":"",opacity:e.opacity,animation:i&&s(e.opacity,e.trail,a+r*e.direction,e.lines)+" "+1/e.speed+"s linear infinite"});if(e.shadow)n(l,f(u("#000","0 0 4px "+"#000"),{top:2+"px"}));n(t,n(l,u(d(e.color,r),"0 0 1px rgba(0,0,0,.1)")))}return t},opacity:function(t,e,i){if(e<t.childNodes.length)t.childNodes[e].style.opacity=i}});function h(){function t(t,e){return o("<"+t+' xmlns="urn:schemas-microsoft.com:vml" class="spin-vml">',e)}r.addRule(".spin-vml","behavior:url(#default#VML)");c.prototype.lines=function(e,i){var o=i.length+i.width,r=2*o;function s(){return f(t("group",{coordsize:r+" "+r,coordorigin:-o+" "+-o}),{width:r,height:r})}var a=-(i.width+i.length)*2+"px",l=f(s(),{position:"absolute",top:a,left:a}),u;function p(e,r,a){n(l,n(f(s(),{rotation:360/i.lines*e+"deg",left:~~r}),n(f(t("roundrect",{arcsize:i.corners}),{width:o,height:i.width,left:i.radius,top:-i.width>>1,filter:a}),t("fill",{color:d(i.color,e),opacity:i.opacity}),t("stroke",{opacity:0}))))}if(i.shadow)for(u=1;u<=i.lines;u++)p(u,-2,"progid:DXImageTransform.Microsoft.Blur(pixelradius=2,makeshadow=1,shadowopacity=.3)");for(u=1;u<=i.lines;u++)p(u);return n(e,l)};c.prototype.opacity=function(t,e,i,o){var n=t.firstChild;o=o.shadow&&o.lines||0;if(n&&e+o<n.childNodes.length){n=n.childNodes[e+o];n=n&&n.firstChild;n=n&&n.firstChild;if(n)n.opacity=i}}}var m=f(o("group"),{behavior:"url(#default#VML)"});if(!a(m,"transform")&&m.adj)h();else i=a(m,"animation");return c});
 
 /**
@@ -17173,7 +16832,7 @@ $('#el').spin('flower', 'red');
 
 },{"jquery":"FYq5/o","spin":"LOQUo3"}],"spin":[function(require,module,exports){
 module.exports=require('LOQUo3');
-},{}],26:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 var Backbone = require('backbone');
 
 var $ = require('jquery');
@@ -17436,7 +17095,7 @@ var View = Backbone.View.extend({
 
   module.exports = View;
 
-},{"../templates":45,"./breadcrumb":5,"backbone":27,"jquery":"FYq5/o","lie-denodify":30,"spin":"LOQUo3"}],27:[function(require,module,exports){
+},{"../templates":43,"./breadcrumb":5,"backbone":25,"jquery":"FYq5/o","lie-denodify":28,"spin":"LOQUo3"}],25:[function(require,module,exports){
 //     Backbone.js 1.1.0
 
 //     (c) 2010-2011 Jeremy Ashkenas, DocumentCloud Inc.
@@ -19019,7 +18678,7 @@ var View = Backbone.View.extend({
 
 }).call(this);
 
-},{"underscore":28}],28:[function(require,module,exports){
+},{"underscore":26}],26:[function(require,module,exports){
 //     Underscore.js 1.5.2
 //     http://underscorejs.org
 //     (c) 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
@@ -20297,7 +19956,7 @@ var View = Backbone.View.extend({
 
 }).call(this);
 
-},{}],29:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 /*
 
 Copyright (C) 2011 by Yehuda Katz
@@ -20662,7 +20321,7 @@ Handlebars.template = Handlebars.VM.template;
 })(Handlebars);
 ;
 
-},{}],30:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 var promise = require('lie');
 function denodify(func) {
     return function() {
@@ -20681,7 +20340,7 @@ function denodify(func) {
     };
 }
 module.exports = denodify;
-},{"lie":31}],31:[function(require,module,exports){
+},{"lie":29}],29:[function(require,module,exports){
 
 //#Promises
 
@@ -20931,14 +20590,14 @@ module.exports = Promise;
 // fin
 
 // -Calvin W. Metcalf
-},{"immediate":34}],32:[function(require,module,exports){
+},{"immediate":32}],30:[function(require,module,exports){
 "use strict";
 exports.test = function () {
     return false;
 };
-},{}],33:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};module.exports = typeof global === "object" && global ? global : this;
-},{}],34:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 "use strict";
 var types = [
     require("./nextTick"),
@@ -20991,7 +20650,7 @@ retFunc.clear = function (n) {
 };
 module.exports = retFunc;
 
-},{"./messageChannel":35,"./mutation":36,"./nextTick":32,"./postMessage":37,"./realSetImmediate":38,"./stateChange":39,"./timeout":40}],35:[function(require,module,exports){
+},{"./messageChannel":33,"./mutation":34,"./nextTick":30,"./postMessage":35,"./realSetImmediate":36,"./stateChange":37,"./timeout":38}],33:[function(require,module,exports){
 "use strict";
 var globe = require("./global");
 exports.test = function () {
@@ -21005,7 +20664,7 @@ exports.install = function (func) {
         channel.port2.postMessage(0);
     };
 };
-},{"./global":33}],36:[function(require,module,exports){
+},{"./global":31}],34:[function(require,module,exports){
 "use strict";
 //based off rsvp
 //https://github.com/tildeio/rsvp.js/blob/master/lib/rsvp/async.js
@@ -21031,7 +20690,7 @@ exports.install = function (handle) {
         element.setAttribute("drainQueue", "drainQueue");
     };
 };
-},{"./global":33}],37:[function(require,module,exports){
+},{"./global":31}],35:[function(require,module,exports){
 "use strict";
 var globe = require("./global");
 exports.test = function () {
@@ -21069,7 +20728,7 @@ exports.install = function (func) {
         globe.postMessage(codeWord, "*");
     };
 };
-},{"./global":33}],38:[function(require,module,exports){
+},{"./global":31}],36:[function(require,module,exports){
 "use strict";
 var globe = require("./global");
 exports.test = function () {
@@ -21080,7 +20739,7 @@ exports.install = function (handle) {
     return globe.setTimeout.bind(globe, handle, 0);
 };
 
-},{"./global":33}],39:[function(require,module,exports){
+},{"./global":31}],37:[function(require,module,exports){
 "use strict";
 var globe = require("./global");
 exports.test = function () {
@@ -21105,7 +20764,7 @@ exports.install = function (handle) {
         return handle;
     };
 };
-},{"./global":33}],40:[function(require,module,exports){
+},{"./global":31}],38:[function(require,module,exports){
 "use strict";
 exports.test = function () {
     return true;
@@ -21116,7 +20775,7 @@ exports.install = function (t) {
         setTimeout(t, 0);
     };
 };
-},{}],41:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 var Handlebars = require('handlebars-runtime');
 module.exports = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
@@ -21171,7 +20830,7 @@ function program3(depth0,data) {
   return buffer;
   });
 
-},{"handlebars-runtime":29}],42:[function(require,module,exports){
+},{"handlebars-runtime":27}],40:[function(require,module,exports){
 var Handlebars = require('handlebars-runtime');
 module.exports = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
@@ -21409,7 +21068,7 @@ function program15(depth0,data) {
   return buffer;
   });
 
-},{"handlebars-runtime":29}],43:[function(require,module,exports){
+},{"handlebars-runtime":27}],41:[function(require,module,exports){
 var Handlebars = require('handlebars-runtime');
 module.exports = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
@@ -21476,7 +21135,7 @@ function program4(depth0,data) {
   return buffer;
   });
 
-},{"handlebars-runtime":29}],44:[function(require,module,exports){
+},{"handlebars-runtime":27}],42:[function(require,module,exports){
 var Handlebars = require('handlebars-runtime');
 module.exports = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
@@ -21512,7 +21171,7 @@ function program1(depth0,data) {
   return buffer;
   });
 
-},{"handlebars-runtime":29}],45:[function(require,module,exports){
+},{"handlebars-runtime":27}],43:[function(require,module,exports){
 module.exports = {
 	search:require('./search.hbs'),
 	section:require('./section.hbs'),
@@ -21526,7 +21185,7 @@ module.exports = {
 	general:require('./general.hbs')
 }
 
-},{"./article.hbs":41,"./chapter.hbs":43,"./general.hbs":44,"./part.hbs":46,"./search.hbs":47,"./section.hbs":48,"./sess.hbs":49,"./session.hbs":50,"./title.hbs":51,"./year.hbs":52}],46:[function(require,module,exports){
+},{"./article.hbs":39,"./chapter.hbs":41,"./general.hbs":42,"./part.hbs":44,"./search.hbs":45,"./section.hbs":46,"./sess.hbs":47,"./session.hbs":48,"./title.hbs":49,"./year.hbs":50}],44:[function(require,module,exports){
 var Handlebars = require('handlebars-runtime');
 module.exports = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
@@ -21578,7 +21237,7 @@ function program1(depth0,data) {
   return buffer;
   });
 
-},{"handlebars-runtime":29}],47:[function(require,module,exports){
+},{"handlebars-runtime":27}],45:[function(require,module,exports){
 var Handlebars = require('handlebars-runtime');
 module.exports = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
@@ -21719,7 +21378,7 @@ function program10(depth0,data) {
   return buffer;
   });
 
-},{"handlebars-runtime":29}],48:[function(require,module,exports){
+},{"handlebars-runtime":27}],46:[function(require,module,exports){
 var Handlebars = require('handlebars-runtime');
 module.exports = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
@@ -21774,7 +21433,7 @@ function program3(depth0,data) {
   return buffer;
   });
 
-},{"handlebars-runtime":29}],49:[function(require,module,exports){
+},{"handlebars-runtime":27}],47:[function(require,module,exports){
 var Handlebars = require('handlebars-runtime');
 module.exports = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
@@ -21810,7 +21469,7 @@ function program1(depth0,data) {
   return buffer;
   });
 
-},{"handlebars-runtime":29}],50:[function(require,module,exports){
+},{"handlebars-runtime":27}],48:[function(require,module,exports){
 var Handlebars = require('handlebars-runtime');
 module.exports = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
@@ -21863,7 +21522,7 @@ function program3(depth0,data) {
   return buffer;
   });
 
-},{"handlebars-runtime":29}],51:[function(require,module,exports){
+},{"handlebars-runtime":27}],49:[function(require,module,exports){
 var Handlebars = require('handlebars-runtime');
 module.exports = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
@@ -21923,7 +21582,7 @@ function program1(depth0,data) {
   return buffer;
   });
 
-},{"handlebars-runtime":29}],52:[function(require,module,exports){
+},{"handlebars-runtime":27}],50:[function(require,module,exports){
 var Handlebars = require('handlebars-runtime');
 module.exports = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
@@ -21971,9 +21630,9 @@ function program2(depth0,data) {
   return buffer;
   });
 
-},{"handlebars-runtime":29}],53:[function(require,module,exports){
+},{"handlebars-runtime":27}],51:[function(require,module,exports){
 
-},{}],54:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 exports.readIEEE754 = function(buffer, offset, isBE, mLen, nBytes) {
   var e, m,
@@ -24353,5 +24012,5 @@ function hasOwnProperty(obj, prop) {
 },{"_shims":5}]},{},[])
 ;;module.exports=require("buffer-browserify")
 
-},{}]},{},[23])
+},{}]},{},[21])
 ;
