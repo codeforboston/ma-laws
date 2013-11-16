@@ -1,0 +1,79 @@
+[
+{"from": "/css/*", "to": "/css/*"},
+{"from": "/*/css/*", "to": "/css/*"},
+{"from": "/*/*/css/*", "to": "/css/*"},
+{"from": "/*/*/*/css/*", "to": "/css/*"},
+{"from": "/*/*/*/*/css/*", "to": "/css/*"},
+{"from": "/*/*/*/*/*/css/*", "to": "/css/*"},
+{"from": "/js/*", "to": "/js/*"},
+{"from": "/*/js/*", "to": "/js/*"},
+{"from": "/*/*/js/*", "to": "/js/*"},
+{"from": "/*/*/*/js/*", "to": "/js/*"},
+{"from": "/*/*/*/*/js/*", "to": "/js/*"},
+{"from": "/*/*/*/*/*/js/*", "to": "/js/*"},
+{"from": "/fonts/*", "to": "/fonts/*"},
+{"from": "/*/fonts/*", "to": "/fonts/*"},
+{"from": "/*/*/fonts/*", "to": "/fonts/*"},
+{"from": "/*/*/*/fonts/*", "to": "/fonts/*"},
+{"from": "/*/*/*/*/fonts/*", "to": "/fonts/*"},
+{"from": "/*/*/*/*/*/fonts/*", "to": "/fonts/*"},
+{"from": "/coffee/*", "to": "/coffee/*"},
+{
+	"from":"/api/chapter/:key",
+	"to":"_view/chapter",
+	"query":{
+		"include_docs":"true"
+	}
+},
+{
+	"from":"/api/part/:key",
+	"to":"_view/parts",
+	"query":{
+		"include_docs":"true"
+	}
+},
+{
+	"from":"/api/year/:key",
+	"to":"_view/year",
+	"query":{
+		"include_docs":"true"
+	}
+},
+{
+	"from":"/api/session",
+	"to":"_view/type",
+	"query":{
+		"key":"session",
+		"include_docs":"true"
+	}
+},
+{
+	"from":"/api/search/:q",
+	"to":"_search/sections",
+	"query":{
+		"include_docs":"true",
+		"limit":"200"
+	}
+},
+{
+	"from":"/api/general",
+	"to":"_view/type",
+	"query":{
+		"key":"general",
+		"include_docs":"true"
+	}
+},
+{
+	"from":"/api/:part/:title",
+	"to":"_view/title",
+	"query":{
+		"key":[":part",":title"],
+		"include_docs":"true"
+	}
+},
+{"from":"/db/*","to":"../../*"},
+{"from":"/law/*","to":"../../*"},
+{"from":"/ltest/*","to":"../../*"},
+{"from": "/", "to": "/index.html"},
+{"from": "/*", "to": "/index.html"}
+]

@@ -1,0 +1,16 @@
+   
+	<h1>Chapter {{chapter}} <a href="/api/chapter/{{chapter}}" class="btn btn-primary btn-lg active">
+  <span class="glyphicon glyphicon-download-alt"></span> Raw JSON
+</a></h1>
+	<dl>
+	{{#rows}}
+	    {{#if doc.desc}}
+		    <dt><strong>{{doc.longCode}} {{doc.sub}}:</strong> 
+		    <a class='bodyLink' href='../../../c{{doc.chapter}}{{doc.shortCode}}{{doc.sub}}' 
+		    id='c{{doc.chapter}}{{doc.shortCode}}{{doc.sub}}'>{{doc.desc}}</a></dt>
+		 {{/if}}
+		{{#if doc.text}}
+		    <dd>{{doc.text}}</dd>
+        {{/if}}
+	{{/rows}}
+	</dl>

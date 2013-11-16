@@ -1,0 +1,12 @@
+		<h1>Title {{title}} <a href="/api/{{part}}/{{title}}" class="btn btn-primary btn-lg active">
+  <span class="glyphicon glyphicon-download-alt"></span> Raw JSON
+</a></h1>
+		<ul>
+		{{#rows}}
+			<li>
+			<a class='bodyLink' href='Title{{title}}/Chapter{{chapter}}' id="GeneralLaws/Part{{part}}/Title{{title}}/Chapter{{chapter}}">
+				Chapter {{chapter}}
+			</a>
+			</li>
+		{{/rows}}
+		</ul>
