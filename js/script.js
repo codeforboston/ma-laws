@@ -118,15 +118,20 @@ session : function(path) {
     Pouch(location.protocol + "//" + location.host + "/law", function(err, db) {
       window.body = new View({
         db: db,
-        el: $('#mainContent')
+        //el: $('#mainContent')
+			el: $('#lawList')
       });
       window.routes = new Routes({
         body: window.body
       });
+      var root;
+      if(location.port === "5984"||location.hostname === '127.0.0.1'){
+        root = '/law/_design/laws/_rewrite/';
+      }
       Backbone.history.start({
         pushState: true,
         hashChange: false,
-       //root: '/law/_design/laws/_rewrite/'
+       root: root
       });
       $('#searchForm').on('submit', function(e) {
         e.preventDefault();

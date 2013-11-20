@@ -13,6 +13,7 @@ var View = Backbone.View.extend({
     initialize : function(opts) {
       return this.db = opts.db;
     },
+    root:(location.port === "5984"||location.hostname === '127.0.0.1')?'/law/_design/laws/_rewrite/':'/',
     breadcrumb:new Breadcrumb({ el: $('#bcrumb')}),
     events : {
       'click .bodyLink': 'movePage'
@@ -38,6 +39,7 @@ var View = Backbone.View.extend({
     },
     template : templates,
     render : function(loc) {
+      var root = this.root;
       if(!this.fetch){
         this.fetch=denodify(this.db.get);
       }
@@ -51,6 +53,7 @@ var View = Backbone.View.extend({
       if ('q' in loc) {
         return this.search(loc.q).then(function(resp) {
           resp.q = loc.q;
+          resp.root = root;
           stopSpin();
           return body.$el.html(body.template.search(resp));
         });
@@ -59,6 +62,7 @@ var View = Backbone.View.extend({
         return this.fetch(id).then(function(doc) {
             stopSpin();
             body.breadcrumb.render(doc);
+            doc.root = root;
             return body.$el.html(body.template.section(doc));
         },stopSpin);
       } else if ('a' in loc) {
@@ -66,6 +70,7 @@ var View = Backbone.View.extend({
         return this.fetch(id).then(function(doc) {
             stopSpin();
             body.breadcrumb.render(doc);
+            doc.root = root;
             return body.$el.html(body.template.article(doc));
         },stopSpin);
       } else if ('y' in loc) {
@@ -77,6 +82,7 @@ var View = Backbone.View.extend({
                 year:doc.year,
                 ychapter:doc.chapter
             });
+            doc.root = root;
             return body.$el.html(body.template.session(doc));
         },stopSpin);
       } else if (loc.type && loc.type === 'session') {
@@ -101,6 +107,7 @@ var View = Backbone.View.extend({
             delete opts.group_level;
             resp.raw = $.param(opts);
             stopSpin();
+            resp.root = root;
             return body.$el.html(body.template.sess(resp));
           });
         } else {
@@ -120,6 +127,7 @@ var View = Backbone.View.extend({
                 year:loc.year
             });
             body.spin(false);
+            resp.root = root;
             return body.$el.html(body.template.year(resp));
           },stopSpin);
         }
@@ -128,6 +136,7 @@ var View = Backbone.View.extend({
         return this.fetch(id).then(function(doc) {
             stopSpin();
             body.breadcrumb.render(doc);
+            doc.root = root;
             return body.$el.html(body.template.section(doc));
         },stopSpin);
       } else if (loc.section === 'all' && loc.chapter !== 'all') {
@@ -163,6 +172,7 @@ var View = Backbone.View.extend({
             part:loc.part
           });
           resp.chapter = loc.chapter;
+          resp.root = root;
           return body.$el.html(body.template.chapter(resp));
         });
       } else if (loc.chapter === 'all' && loc.title !== 'all') {
@@ -193,7 +203,8 @@ var View = Backbone.View.extend({
           return body.$el.html(body.template.title({
             rows: rows,
             title: loc.title,
-            part: loc.part
+            part: loc.part,
+            root:root
           }));
         });
       } else if (loc.title === 'all' && loc.part !== 'all') {
@@ -223,7 +234,8 @@ var View = Backbone.View.extend({
           });
           return body.$el.html(body.template.part({
             rows: rows,
-            part: loc.part
+            part: loc.part,
+            root:root
           }));
         });
       } else {
@@ -250,7 +262,8 @@ var View = Backbone.View.extend({
           delete opts.group_level;
           return body.$el.html(body.template.general({
             rows: rows,
-            raw: $.param(opts)
+            raw: $.param(opts),
+            root:root
           }));
         });
       }

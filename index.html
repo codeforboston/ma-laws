@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Bootstrap -->
     <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
-   
+    <link href="css/style.css" rel="stylesheet">
     <style>
     html,
 body {
@@ -14,19 +14,19 @@ body {
   /* The html and body elements cannot have any padding or margin. */
 }
 
-/* Wrapper for page content to push down footer */
-#wrap {
-  min-height: 100%;
-  height: auto !important;
-  height: 100%;
-  /* Negative indent footer by its height */
-  margin: 0 auto -60px;
-  /* Pad bottom by footer height */
-  padding: 0 0 60px;
-}
-#wrap > .container {
-  padding: 60px 15px 0;
-}
+		/* Wrapper for page content to push down footer */
+		#wrap {
+		  min-height: 100%;
+		  height: auto !important;
+		  height: 100%;
+		  /* Negative indent footer by its height */
+		  margin: 0 auto -60px;
+		  /* Pad bottom by footer height */
+		  padding: 0 0 60px;
+		}
+		#wrap > .container {
+		  padding: 60px 15px 0;
+		}
     </style> 
  <!--from https://github.com/simonwhitaker/github-fork-ribbon-css -->
     <link rel="stylesheet" href="css/gh-fork-ribbon.css" />
@@ -36,7 +36,7 @@ body {
     <!-- END COPYING HERE 
     <script src="js/respond.min.js"></script>-->
     <script type="text/javascript">
-/*
+
   var _gaq = _gaq || [];
   _gaq.push(['_setAccount', 'UA-37834896-1']);
   _gaq.push(['_setDomainName', 'cloudant.com']);
@@ -47,44 +47,82 @@ body {
     ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
   })();
-*/
+
 </script>
   </head>
-  <body><div class="github-fork-ribbon-wrapper right">
+
+
+  <body>
+	 
+	 <div class="github-fork-ribbon-wrapper right">
         <div class="github-fork-ribbon">
             <a href="https://github.com/codeforboston/ma-laws">Fork me on GitHub</a>
         </div>
-    </div><div id='wrap'>
-     <div class="navbar navbar-fixed-top">
-      <div class="container">
-        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-        <div class="nav-collapse collapse" id="navBar">
-          <ul class="nav navbar-nav">
-          <li>
-          <a class='menulinks' id='GeneralLaws' href='GeneralLaws'>General Laws</a></li>
-        <li>
-          <a class='menulinks' id='SessionLaw' href='SessionLaw'>Session Laws</a></li>
-         </ul>
-          <form class="navbar-form pull-left" id='searchForm'>
-  <input type="text" class="form-control" style="width: 200px;" id='searchBox'>
-  <button type="submit" class="btn btn-default">Search</button>
-</form>
-        </div>
-      </div>
     </div>
-    <div class="container">
-    <div class="row">
-    <ul class="breadcrumb" id='bcrumb'>
-	</ul>
-	<div id='mainContent'>
-	
+
+    	<nav class="navbar navbar-default" role="navigation">			
+			 <div class="navbar-header">
+					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+					<span class="sr-only"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>	
+					</button>
+					<a href="#" class="navbar-brand">MACode.org</a>		
+			 </div>	
+
+			<div class="collapse navbar-collapse navbar-ex1-collapse" id="navBar">	
+				<ul class="nav navbar-nav">						
+					<li class="active"><a class='menulinks' id='GeneralLaws' href='/law/_design/laws/_rewrite/GeneralLaws'>General Laws</a></li>
+					<li><a class='menulinks' id='SessionLaw' href='/law/_design/laws/_rewrite/SessionLaw'>Session Laws</a></li> 	
+				</ul>
+				<form class="navbar-form navbar-center" role="search" id="searchForm">
+					<div class="input-group">
+						<input type="text" class="form-control" id='searchBox' placeholder="Search">
+						<span class="input-group-addon"><span class="glyphicon glyphicon-search search-btn"></span></span>
+					</div>
+				</form>
+			</div>
+
+	   </nav>
+    </div>
+   
+	<div class="row main">
+		<div class="col-md-3 menu" id="lawList">
+			<ul>
+				<li class="active"><a href="#">Item 1</a></li>
+				<li><a href="#">Item 2</a></li>
+				<li><a href="#">Item 3</a></li>
+				<li><a href="#">Item 4</a></li>
+				<li><a href="#">Item 5</a></li>
+			</ul>				
+		</div>
+
+		<div class="col-md-9 content">
+			<div class="col-md-12 breadcrumbs">
+				<ul class="breadcrumb" id='bcrumb'></ul>
+			</div>					
+			<div class="col-md-12" id='mainContent'>
+				<h2 class="law-header">Name of Law: Subtext of Law</h2>
+				<p class="law-text">Sint occaecat cupidatat non proident
+					Ex ea commodo consequat duis
+					Elit sed do eiusmod tempor
+					Duis aute irure dolor in
+					Adipisicing elit sed do eiusmod 
+				</p>
+			</div>
+		</div>
+
 	</div>
-    </div>
-    </div></div>
-    <script src="js/bundle.js"></script>
+
+	<footer>
+		<p class="license">Developed by Code for Boston, 2013. All content is owned and licensed by its respective
+			 creators. The information on this web site does not constitute legal advice. Code for 
+			 Boston strives to update this site regularly, but makes no guarantee that this information 
+			 is accurate or up to date.</p>
+	</footer>
+   
+
+ <script src="js/bundle.js"></script>
   </body>
 </html>
