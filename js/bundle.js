@@ -16725,10 +16725,14 @@ session : function(path) {
       window.routes = new Routes({
         body: window.body
       });
+      var root;
+      if(location.port === "5984"||location.hostname === '127.0.0.1'){
+        root = '/law/_design/laws/_rewrite/';
+      }
       Backbone.history.start({
         pushState: true,
         hashChange: false,
-       //root: '/law/_design/laws/_rewrite/'
+       root: root
       });
       $('#searchForm').on('submit', function(e) {
         e.preventDefault();
@@ -16848,6 +16852,7 @@ var View = Backbone.View.extend({
     initialize : function(opts) {
       return this.db = opts.db;
     },
+    root:(location.port === "5984"||location.hostname === '127.0.0.1')?'/law/_design/laws/_rewrite/':'/',
     breadcrumb:new Breadcrumb({ el: $('#bcrumb')}),
     events : {
       'click .bodyLink': 'movePage'
@@ -16873,6 +16878,7 @@ var View = Backbone.View.extend({
     },
     template : templates,
     render : function(loc) {
+      var root = this.root;
       if(!this.fetch){
         this.fetch=denodify(this.db.get);
       }
@@ -16886,6 +16892,7 @@ var View = Backbone.View.extend({
       if ('q' in loc) {
         return this.search(loc.q).then(function(resp) {
           resp.q = loc.q;
+          resp.root = root;
           stopSpin();
           return body.$el.html(body.template.search(resp));
         });
@@ -16894,6 +16901,7 @@ var View = Backbone.View.extend({
         return this.fetch(id).then(function(doc) {
             stopSpin();
             body.breadcrumb.render(doc);
+            doc.root = root;
             return body.$el.html(body.template.section(doc));
         },stopSpin);
       } else if ('a' in loc) {
@@ -16901,6 +16909,7 @@ var View = Backbone.View.extend({
         return this.fetch(id).then(function(doc) {
             stopSpin();
             body.breadcrumb.render(doc);
+            doc.root = root;
             return body.$el.html(body.template.article(doc));
         },stopSpin);
       } else if ('y' in loc) {
@@ -16912,6 +16921,7 @@ var View = Backbone.View.extend({
                 year:doc.year,
                 ychapter:doc.chapter
             });
+            doc.root = root;
             return body.$el.html(body.template.session(doc));
         },stopSpin);
       } else if (loc.type && loc.type === 'session') {
@@ -16936,6 +16946,7 @@ var View = Backbone.View.extend({
             delete opts.group_level;
             resp.raw = $.param(opts);
             stopSpin();
+            resp.root = root;
             return body.$el.html(body.template.sess(resp));
           });
         } else {
@@ -16955,6 +16966,7 @@ var View = Backbone.View.extend({
                 year:loc.year
             });
             body.spin(false);
+            resp.root = root;
             return body.$el.html(body.template.year(resp));
           },stopSpin);
         }
@@ -16963,6 +16975,7 @@ var View = Backbone.View.extend({
         return this.fetch(id).then(function(doc) {
             stopSpin();
             body.breadcrumb.render(doc);
+            doc.root = root;
             return body.$el.html(body.template.section(doc));
         },stopSpin);
       } else if (loc.section === 'all' && loc.chapter !== 'all') {
@@ -16998,6 +17011,7 @@ var View = Backbone.View.extend({
             part:loc.part
           });
           resp.chapter = loc.chapter;
+          resp.root = root;
           return body.$el.html(body.template.chapter(resp));
         });
       } else if (loc.chapter === 'all' && loc.title !== 'all') {
@@ -17028,7 +17042,8 @@ var View = Backbone.View.extend({
           return body.$el.html(body.template.title({
             rows: rows,
             title: loc.title,
-            part: loc.part
+            part: loc.part,
+            root:root
           }));
         });
       } else if (loc.title === 'all' && loc.part !== 'all') {
@@ -17058,7 +17073,8 @@ var View = Backbone.View.extend({
           });
           return body.$el.html(body.template.part({
             rows: rows,
-            part: loc.part
+            part: loc.part,
+            root:root
           }));
         });
       } else {
@@ -17085,7 +17101,8 @@ var View = Backbone.View.extend({
           delete opts.group_level;
           return body.$el.html(body.template.general({
             rows: rows,
-            raw: $.param(opts)
+            raw: $.param(opts),
+            root:root
           }));
         });
       }
@@ -20812,7 +20829,11 @@ function program3(depth0,data) {
   if (stack1 = helpers.article) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.article; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "  <a href=\"db/c";
+    + "  <a href=\"";
+  if (stack1 = helpers.root) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.root; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "db/c";
   if (stack1 = helpers.chapter) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.chapter; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
@@ -21121,7 +21142,11 @@ function program4(depth0,data) {
   if (stack1 = helpers.chapter) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.chapter; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + " <a href=\"/api/chapter/";
+    + " <a href=\"";
+  if (stack1 = helpers.root) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.root; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "api/chapter/";
   if (stack1 = helpers.chapter) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.chapter; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
@@ -21161,7 +21186,11 @@ function program1(depth0,data) {
   return buffer;
   }
 
-  buffer += "\n		<h1>General Laws <a href=\"/api/general\" class=\"btn btn-primary btn-lg active\">\n  <span class=\"glyphicon glyphicon-download-alt\"></span> Raw JSON (big)\n</a></h1>\n		<ul>\n		";
+  buffer += "\n		<h1>General Laws <a href=\"";
+  if (stack1 = helpers.root) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.root; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "api/general\" class=\"btn btn-primary btn-lg active\">\n  <span class=\"glyphicon glyphicon-download-alt\"></span> Raw JSON (big)\n</a></h1>\n		<ul>\n		";
   options = {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data};
   if (stack1 = helpers.rows) { stack1 = stack1.call(depth0, options); }
   else { stack1 = depth0.rows; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
@@ -21223,7 +21252,11 @@ function program1(depth0,data) {
   if (stack1 = helpers.part) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.part; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + " <a href=\"/api/part/";
+    + " <a href=\"";
+  if (stack1 = helpers.root) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.root; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "api/part/";
   if (stack1 = helpers.part) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.part; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
@@ -21459,7 +21492,11 @@ function program1(depth0,data) {
   return buffer;
   }
 
-  buffer += "\n		<h1>Session Laws <a href=\"/api/session\" class=\"btn btn-primary btn-lg active\">\n  <span class=\"glyphicon glyphicon-download-alt\"></span> Raw JSON (big)\n</a></h1>\n		<ul>\n		";
+  buffer += "\n		<h1>Session Laws <a href=\"";
+  if (stack1 = helpers.root) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.root; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "api/session\" class=\"btn btn-primary btn-lg active\">\n  <span class=\"glyphicon glyphicon-download-alt\"></span> Raw JSON (big)\n</a></h1>\n		<ul>\n		";
   options = {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data};
   if (stack1 = helpers.rows) { stack1 = stack1.call(depth0, options); }
   else { stack1 = depth0.rows; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
@@ -21504,7 +21541,11 @@ function program3(depth0,data) {
   if (stack1 = helpers.chapter) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.chapter; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "  <a href=\"db/y";
+    + "  <a href=\"";
+  if (stack1 = helpers.root) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.root; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "db/y";
   if (stack1 = helpers.year) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.year; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
@@ -21564,7 +21605,11 @@ function program1(depth0,data) {
   if (stack1 = helpers.title) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.title; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + " <a href=\"/api/";
+    + " <a href=\"";
+  if (stack1 = helpers.root) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.root; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "api/";
   if (stack1 = helpers.part) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.part; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
@@ -21616,7 +21661,11 @@ function program2(depth0,data) {
   if (stack1 = helpers.year) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.year; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + " <a href=\"/api/year/";
+    + " <a href=\"";
+  if (stack1 = helpers.root) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.root; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "api/year/";
   if (stack1 = helpers.year) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.year; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
