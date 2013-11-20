@@ -71,7 +71,9 @@
 		"include_docs":"true"
 	}
 },
+
 {"from":"/db/*","to":"../../*"},
+{"from":"/api/c*","to":"../../c*"},
 {"from":"/law/*","to":"../../*"},
 {"from":"/ltest/*","to":"../../*"},
 {"from": "/", "to": "/index.html"},
