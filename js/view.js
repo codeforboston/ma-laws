@@ -8,7 +8,7 @@ var templates = require('../templates');
 
 var spin = require('spin');
 var Breadcrumb = require('./breadcrumb');
-
+var denodify = require('lie-denodify');
 var View = Backbone.View.extend({
     initialize : function(opts) {
       return this.db = opts.db;
@@ -18,16 +18,13 @@ var View = Backbone.View.extend({
       'click .bodyLink': 'movePage'
     },
     search : function(q) {
-      var opts, path;
-      path = "" + (db.id()) + "_design/laws/_search/sections";
-      opts = {
-        q: q,
-        include_docs: true,
-        limit: 200
-      };
-      return $.ajax(path, {
-        data: opts,
-        dataType: 'json'
+      if(!this.dbSearch){
+        this.dbSearch = denodify(this.db.search);
+      }
+      return this.dbSearch('laws/sections',{
+        q:q,
+        include_docs:true,
+        limit:200
       });
     },
     movePage : function(a) {
@@ -41,50 +38,47 @@ var View = Backbone.View.extend({
     },
     template : templates,
     render : function(loc) {
+      if(!this.fetch){
+        this.fetch=denodify(this.db.get);
+      }
+      if(!this.query){
+        this.query = denodify(this.db.query);
+      }
       var id, opts, type;
+      function stopSpin(){
+        body.spin(false);
+      }
       if ('q' in loc) {
         return this.search(loc.q).then(function(resp) {
           resp.q = loc.q;
-          body.spin(false);
+          stopSpin();
           return body.$el.html(body.template.search(resp));
         });
       } else if ('newStyleName' in loc) {
         id = "c" + loc.c + "s" + loc.s;
-        return this.db.get(id, function(err, doc) {
-          if (err) {
-            body.spin(false);
-          } else {
-            body.spin(false);
+        return this.fetch(id).then(function(doc) {
+            stopSpin();
             body.breadcrumb.render(doc);
             return body.$el.html(body.template.section(doc));
-          }
-        });
+        },stopSpin);
       } else if ('a' in loc) {
         id = "c" + loc.c + "a" + loc.a;
-        return this.db.get(id, function(err, doc) {
-          if (err) {
-            body.spin(false);
-          } else {
-            body.spin(false);
+        return this.fetch(id).then(function(doc) {
+            stopSpin();
             body.breadcrumb.render(doc);
             return body.$el.html(body.template.article(doc));
-          }
-        });
+        },stopSpin);
       } else if ('y' in loc) {
         id = "y" + loc.y + "c" + loc.c;
-        return this.db.get(id, function(err, doc) {
-          if (err) {
-            body.spin(false);
-          } else {
-            body.spin(false);
+        return this.fetch(id).then(function(doc) {
+            stopSpin();
             body.breadcrumb.render({
                 type:'Session',
                 year:doc.year,
                 ychapter:doc.chapter
             });
             return body.$el.html(body.template.session(doc));
-          }
-        });
+        },stopSpin);
       } else if (loc.type && loc.type === 'session') {
         if (loc.year === 'all') {
           opts = {
@@ -92,7 +86,7 @@ var View = Backbone.View.extend({
             endkey: [loc.type, {}],
             group_level: 2
           };
-          return this.db.query("laws/sessions", opts, function(err, resp) {
+          return this.query("laws/sessions", opts).then(function(resp) {
             resp.rows = resp.rows.map(function(row) {
               var out;
               out = {};
@@ -102,7 +96,11 @@ var View = Backbone.View.extend({
             body.breadcrumb.render({
                 type:'Session'
             });
-            body.spin(false);
+            opts.include_docs=true;
+            opts.reduce=false;
+            delete opts.group_level;
+            resp.raw = $.param(opts);
+            stopSpin();
             return body.$el.html(body.template.sess(resp));
           });
         } else {
@@ -112,7 +110,7 @@ var View = Backbone.View.extend({
             reduce: false,
             include_docs: true
           };
-          return this.db.query("laws/sessions", opts, function(err, resp) {
+          return this.query("laws/sessions", opts).then(function(resp) {
             resp.rows.sort(function(a, b) {
               return a.doc.chapter - b.doc.chapter;
             });
@@ -122,21 +120,16 @@ var View = Backbone.View.extend({
                 year:loc.year
             });
             body.spin(false);
-            
             return body.$el.html(body.template.year(resp));
-          });
+          },stopSpin);
         }
       } else if (loc.section !== 'all') {
         id = "c" + loc.chapter + "s" + loc.section;
-        return this.db.get(id, function(err, doc) {
-          if (err) {
-            body.spin(false);
-          } else {
-            body.spin(false);
+        return this.fetch(id).then(function(doc) {
+            stopSpin();
             body.breadcrumb.render(doc);
             return body.$el.html(body.template.section(doc));
-          }
-        });
+        },stopSpin);
       } else if (loc.section === 'all' && loc.chapter !== 'all') {
         if (loc.type = 'GeneralLaws') {
           type = 'general';
@@ -149,7 +142,7 @@ var View = Backbone.View.extend({
           reduce: false,
           include_docs: true
         };
-        return this.db.query("laws/all", opts, function(err, resp) {
+        return this.query("laws/all", opts).then(function(resp) {
           resp.rows = resp.rows.map(function(item) {
             if (item.doc.section) {
               item.doc.sub = item.doc.section;
@@ -162,9 +155,6 @@ var View = Backbone.View.extend({
             }
             return item;
           });
-          resp.chap = loc.chapter;
-          resp.tit = loc.title;
-          resp.pat = loc.part;
           body.spin(false);
           body.breadcrumb.render({
             type:'General',
@@ -172,6 +162,7 @@ var View = Backbone.View.extend({
             title:loc.title,
             part:loc.part
           });
+          resp.chapter = loc.chapter;
           return body.$el.html(body.template.chapter(resp));
         });
       } else if (loc.chapter === 'all' && loc.title !== 'all') {
@@ -185,11 +176,9 @@ var View = Backbone.View.extend({
           endkey: [type, loc.part, loc.title, {}],
           group_level: 4
         };
-        return this.db.query("laws/all", opts, function(err, resp) {
-          var rows;
-          rows = resp.rows.map(function(row) {
-            var out;
-            out = {};
+        return this.query("laws/all", opts).then(function(resp) {
+          var rows = resp.rows.map(function(row) {
+            var out = {};
             out.chapter = row.key.pop();
             out.title = row.key.pop();
             out.part = row.key.pop();
@@ -202,9 +191,9 @@ var View = Backbone.View.extend({
             type:'General'
           });
           return body.$el.html(body.template.title({
-            row: rows,
-            t: loc.title,
-            tp: loc.part
+            rows: rows,
+            title: loc.title,
+            part: loc.part
           }));
         });
       } else if (loc.title === 'all' && loc.part !== 'all') {
@@ -218,7 +207,7 @@ var View = Backbone.View.extend({
           endkey: [type, loc.part, {}],
           group_level: 3
         };
-        return this.db.query("laws/all", opts, function(err, resp) {
+        return this.query("laws/all", opts).then(function(resp) {
           var rows;
           rows = resp.rows.map(function(row) {
             var out;
@@ -233,8 +222,8 @@ var View = Backbone.View.extend({
             type:'General'
           });
           return body.$el.html(body.template.part({
-            rowp: rows,
-            p: loc.part
+            rows: rows,
+            part: loc.part
           }));
         });
       } else {
@@ -244,7 +233,7 @@ var View = Backbone.View.extend({
           endkey: [type, {}],
           group_level: 2
         };
-        return this.db.query("laws/all", opts, function(err, resp) {
+        return this.query("laws/all", opts).then(function(resp) {
           var rows;
           rows = resp.rows.map(function(row) {
             var out;
@@ -256,9 +245,12 @@ var View = Backbone.View.extend({
           body.breadcrumb.render({
             type:'General'
           });
+          opts.include_docs=true;
+          opts.reduce=false;
+          delete opts.group_level;
           return body.$el.html(body.template.general({
-            rowg: rows,
-            g: true
+            rows: rows,
+            raw: $.param(opts)
           }));
         });
       }

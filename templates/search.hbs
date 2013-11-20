@@ -1,5 +1,7 @@
 
-		<h1>"{{q}}"</h1>
+		<h1>"{{q}}"  <a href="/api/search/{{q}}" class="btn btn-primary btn-lg active">
+  <span class="glyphicon glyphicon-download-alt"></span> Raw JSON
+</a></h1>
 		<p>{{total_rows}} results</p><dl>
 		{{#rows}}
 		{{#if doc.section}}<dt>

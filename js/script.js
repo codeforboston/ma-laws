@@ -6,7 +6,7 @@ Backbone.$ = $;
 
 var View = require('./view');
 
-var Pouch = require('pouchdb');
+var Pouch = require('./pouchdb/src/pouch.js');
 
 var spin = require('spin');
 
@@ -30,7 +30,6 @@ var Routes = Backbone.Router.extend({
       '*spat': 'roo'
     },
     roo : function(type, part, title, chapter, section) {
-      console.log(type,part,title,chapter,section);
       var parts;
       if (type == null) {
         type = 'home';
@@ -127,7 +126,7 @@ session : function(path) {
       Backbone.history.start({
         pushState: true,
         hashChange: false,
-        root: '/law/_design/laws/_rewrite/'
+       //root: '/law/_design/laws/_rewrite/'
       });
       $('#searchForm').on('submit', function(e) {
         e.preventDefault();

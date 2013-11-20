@@ -1,4 +1,6 @@
 
-		<h1>Session {{year}} Chapter {{chapter}}</h1>
+		<h1>Session {{year}} Chapter {{chapter}}  <a href="db/y{{year}}c{{chapter}}" class="btn btn-primary btn-lg active">
+  <span class="glyphicon glyphicon-download-alt"></span> Raw JSON
+</a></h1>
 		{{#if desc}}<h4>{{desc}}</h4>{{/if}}
 		{{#if text}}{{{text}}}{{/if}}
