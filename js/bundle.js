@@ -21448,7 +21448,11 @@ function program3(depth0,data) {
   if (stack1 = helpers.section) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.section; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + " <a href=\"db/c";
+    + " <a href=\"";
+  if (stack1 = helpers.root) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.root; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "api/c";
   if (stack1 = helpers.chapter) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.chapter; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
