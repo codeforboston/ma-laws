@@ -2,7 +2,6 @@
 lib
 share
 bin
-bower_components
 laws
 node_modules
 .DS_Store
