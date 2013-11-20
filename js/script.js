@@ -123,15 +123,15 @@ session : function(path) {
       window.routes = new Routes({
         body: window.body
       });
-      var root;
-      if(location.port === "5984"||location.hostname === '127.0.0.1'){
-        root = '/law/_design/laws/_rewrite/';
-      }
-      Backbone.history.start({
+      
+      var opts = {
         pushState: true,
-        hashChange: false,
-        root: root
-      });
+        hashChange: false
+      }
+      if(location.port === "5984"||location.hostname === '127.0.0.1'){
+        opts.root = '/law/_design/laws/_rewrite/';
+      }
+      Backbone.history.start(opts);
       $('#searchForm').on('submit', function(e) {
         e.preventDefault();
         routes.navigate('q/' + $('#searchBox').val(), {

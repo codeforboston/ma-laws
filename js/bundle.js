@@ -16725,15 +16725,15 @@ session : function(path) {
       window.routes = new Routes({
         body: window.body
       });
-      var root;
-      if(location.port === "5984"||location.hostname === '127.0.0.1'){
-        root = '/law/_design/laws/_rewrite/';
-      }
-      Backbone.history.start({
+      
+      var opts = {
         pushState: true,
-        hashChange: false,
-        root: root
-      });
+        hashChange: false
+      }
+      if(location.port === "5984"||location.hostname === '127.0.0.1'){
+        opts.root = '/law/_design/laws/_rewrite/';
+      }
+      Backbone.history.start(opts);
       $('#searchForm').on('submit', function(e) {
         e.preventDefault();
         routes.navigate('q/' + $('#searchBox').val(), {
@@ -22912,11 +22912,11 @@ function program1(depth0,data) {
   if (stack1 = helpers.type) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.type; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "Laws\" id=\"";
+    + "Law\" id=\"";
   if (stack1 = helpers.type) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.type; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "Laws\">";
+    + "Law\">";
   if (stack1 = helpers.type) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.type; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
@@ -22935,7 +22935,7 @@ function program3(depth0,data) {
   if (stack1 = helpers.type) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.type; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "Laws/Year";
+    + "Law/Year";
   if (stack1 = helpers.year) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.year; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
@@ -22943,7 +22943,7 @@ function program3(depth0,data) {
   if (stack1 = helpers.type) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.type; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "Laws/Year";
+    + "Law/Year";
   if (stack1 = helpers.year) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.year; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
