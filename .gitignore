@@ -1,3 +1,7 @@
 *~
+lib
+share
+bin
+laws
 node_modules
 .DS_Store

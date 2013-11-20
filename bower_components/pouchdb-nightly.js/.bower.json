@@ -1,8 +1,8 @@
 {
   "name": "pouchdb-nightly.js",
   "_cacheHeaders": {
-    "Last-Modified": "Sat, 05 Oct 2013 13:53:44 GMT",
-    "Content-Length": "161029",
+    "Last-Modified": "Fri, 15 Nov 2013 17:23:08 GMT",
+    "Content-Length": "167050",
     "Content-Type": "application/x-javascript"
   },
   "main": "index.js",

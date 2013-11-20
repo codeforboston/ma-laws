@@ -1,4 +1,4 @@
-// pouchdb.nightly - 2013-10-05T13:53:08
+// pouchdb.nightly - 2013-11-15T17:22:49
 
 (function() {
  // BEGIN Math.uuid.js
@@ -276,6 +276,31 @@ var Crypto = {};
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = Crypto;
 }
+//Abstracts constructing a Blob object, so it also works in older
+//browsers that don't support the native Blob constructor. (i.e.
+//old QtWebKit versions, at least).
+function createBlob(parts, properties) {
+  parts = parts || [];
+  properties = properties || {};
+  try {
+    return new Blob(parts, properties);
+  } catch (e) {
+    if (e.name !== "TypeError") {
+      throw(e);
+    }
+    var BlobBuilder = window.BlobBuilder || window.MSBlobBuilder || window.MozBlobBuilder || window.WebKitBlobBuilder;
+    var builder = new BlobBuilder();
+    for (var i = 0; i < parts.length; i += 1) {
+      builder.append(parts[i]);
+    }
+    return builder.getBlob(properties.type);
+  }
+};
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = createBlob;
+}
+
 //----------------------------------------------------------------------
 //
 // ECMAScript 5 Polyfills
@@ -522,10 +547,12 @@ if (typeof module !== 'undefined' && module.exports) {
 
 var request;
 var extend;
+var createBlob;
 
 if (typeof module !== 'undefined' && module.exports) {
   request = require('request');
   extend = require('./extend.js');
+  createBlob = require('./blob.js');
 }
 
 var ajax = function ajax(options, callback) {
@@ -637,7 +664,7 @@ var ajax = function ajax(options, callback) {
       if (xhr.status >= 200 && xhr.status < 300) {
         var data;
         if (options.binary) {
-          data = new Blob([xhr.response || ''], {
+          data = createBlob([xhr.response || ''], {
             type: xhr.getResponseHeader('Content-Type')
           });
         } else {
@@ -697,7 +724,7 @@ var ajax = function ajax(options, callback) {
       }
       else {
         if (options.binary) {
-          var data = JSON.parse(data.toString());
+          data = JSON.parse(data.toString());
         }
         data.status = response.statusCode;
         call(callback, data);
@@ -1145,6 +1172,11 @@ Pouch.Errors = {
     status: 400,
     error: 'bad_request',
     reason: 'Document must be a JSON object'
+  },
+  DB_MISSING: {
+    status: 404,
+    error: 'not_found',
+    reason: 'Database not found'
   }
 };
 
@@ -1551,16 +1583,17 @@ if (typeof module !== 'undefined' && module.exports) {
 // We create a basic promise so the caller can cancel the replication possibly
 // before we have actually started listening to changes etc
 var Promise = function() {
+  var that = this;
   this.cancelled = false;
   this.cancel = function() {
-    this.cancelled = true;
+    that.cancelled = true;
   };
 };
 
 // The RequestManager ensures that only one database request is active at
 // at time, it ensures we dont max out simultaneous HTTP requests and makes
 // the replication process easier to reason about
-var RequestManager = function() {
+var RequestManager = function(promise) {
 
   var queue = [];
   var api = {};
@@ -1577,7 +1610,7 @@ var RequestManager = function() {
 
   // Process the next request
   api.process = function() {
-    if (processing || !queue.length) {
+    if (processing || !queue.length || promise.cancelled) {
       return;
     }
     processing = true;
@@ -1620,12 +1653,17 @@ var fetchCheckpoint = function(src, target, id, callback) {
 };
 
 var writeCheckpoint = function(src, target, id, checkpoint, callback) {
-  var check = {
-    _id: id,
-    last_seq: checkpoint
+  var updateCheckpoint = function (db, callback) {
+    db.get(id, function(err, doc) {
+      if (err && err.status === 404) {
+          doc = {_id: id};
+      }
+      doc.last_seq = checkpoint;
+      db.put(doc, callback);
+    });
   };
-  target.put(check, function(err, doc) {
-    src.put(check, function(err, doc) {
+  updateCheckpoint(target, function(err, doc) {
+    updateCheckpoint(src, function(err, doc) {
       callback();
     });
   });
@@ -1633,7 +1671,7 @@ var writeCheckpoint = function(src, target, id, checkpoint, callback) {
 
 function replicate(src, target, opts, promise) {
 
-  var requests = new RequestManager();
+  var requests = new RequestManager(promise);
   var writeQueue = [];
   var repId = genReplicationId(src, target, opts);
   var results = [];
@@ -1778,7 +1816,11 @@ function replicate(src, target, opts, promise) {
     var changes = src.changes(repOpts);
 
     if (opts.continuous) {
-      promise.cancel = changes.cancel;
+      var cancel = promise.cancel;
+      promise.cancel = function() {
+        cancel();
+        changes.cancel();
+      };
     }
   });
 
@@ -1811,7 +1853,17 @@ Pouch.replicate = function(src, target, opts, callback) {
       if (err) {
         return PouchUtils.call(callback, err);
       }
-      replicate(src, target, opts, replicateRet);
+      if (opts.server) {
+        if (typeof src.replicateOnServer !== 'function') {
+          return PouchUtils.call(callback, { error: 'Server replication not supported for ' + src.type() + ' adapter' });
+        }
+        if (src.type() !== target.type()) {
+          return PouchUtils.call(callback, { error: 'Server replication for different adapter types (' + src.type() + ' and ' + target.type() + ') is not supported' });
+        }
+        src.replicateOnServer(target, opts, replicateRet);
+      } else {
+        replicate(src, target, opts, replicateRet);
+      }
     });
   });
   return replicateRet;
@@ -1819,7 +1871,7 @@ Pouch.replicate = function(src, target, opts, callback) {
 
 /*jshint strict: false */
 /*global Buffer: true, escape: true, module, window, Crypto */
-/*global chrome, extend, ajax, btoa, atob, uuid, require, PouchMerge: true */
+/*global chrome, extend, ajax, createBlob, btoa, atob, uuid, require, PouchMerge: true */
 
 var PouchUtils = {};
 
@@ -1827,12 +1879,14 @@ if (typeof module !== 'undefined' && module.exports) {
   PouchMerge = require('./pouch.merge.js');
   PouchUtils.extend = require('./deps/extend');
   PouchUtils.ajax = require('./deps/ajax');
+  PouchUtils.createBlob = require('./deps/blob');
   PouchUtils.uuid = require('./deps/uuid');
   PouchUtils.Crypto = require('./deps/md5.js');
 } else {
   PouchUtils.Crypto = Crypto;
   PouchUtils.extend = extend;
   PouchUtils.ajax = ajax;
+  PouchUtils.createBlob = createBlob;
   PouchUtils.uuid = uuid;
 }
 
@@ -2065,7 +2119,9 @@ PouchUtils.Changes = function() {
   };
 
   api.removeListener = function(db_name, id) {
-    delete listeners[db_name][id];
+    if (listeners[db_name]) {
+      delete listeners[db_name][id];
+    }
   };
 
   api.clearListeners = function(db_name) {
@@ -2119,7 +2175,9 @@ if (typeof window === 'undefined' || !('atob' in window)) {
     return base64.toString('binary');
   };
 } else {
-  PouchUtils.atob = atob.bind(null);
+  PouchUtils.atob = function(str) {
+    return atob(str);
+  };
 }
 
 if (typeof window === 'undefined' || !('btoa' in window)) {
@@ -2127,7 +2185,9 @@ if (typeof window === 'undefined' || !('btoa' in window)) {
     return new Buffer(str, 'binary').toString('base64');
   };
 } else {
-  PouchUtils.btoa = btoa.bind(null);
+  PouchUtils.btoa = function(str) {
+    return btoa(str);
+  };
 }
 
 if (typeof module !== 'undefined' && module.exports) {
@@ -2677,8 +2737,18 @@ PouchAdapter = function(opts, callback) {
 
   api.changes = function(opts) {
     if (!api.taskqueue.ready()) {
-      api.taskqueue.addTask('changes', arguments);
-      return;
+      var task = api.taskqueue.addTask('changes', arguments);
+      return {
+        cancel: function() {
+          if (task.task) {
+            return task.task.cancel();
+          }
+          if (Pouch.DEBUG) {
+            console.log('Cancel Changes Feed');
+          }
+          task.parameters[0].aborted = true;
+        }
+      };
     }
     opts = PouchUtils.extend(true, {}, opts);
 
@@ -2686,11 +2756,25 @@ PouchAdapter = function(opts, callback) {
       opts.since = 0;
     }
     if (opts.since === 'latest') {
+      var changes;
       api.info(function (err, info) {
-        opts.since = info.update_seq  - 1;
-        api.changes(opts);
+        if (!opts.aborted) {
+          opts.since = info.update_seq  - 1;
+          api.changes(opts);
+        }
       });
-      return;
+      // Return a method to cancel this method from processing any more
+      return {
+        cancel: function() {
+          if (changes) {
+            return changes.cancel();
+          }
+          if (Pouch.DEBUG) {
+            console.log('Cancel Changes Feed');
+          }
+          opts.aborted = true;
+        }
+      };
     }
 
     if (!('descending' in opts)) {
@@ -2774,7 +2858,7 @@ PouchAdapter = function(opts, callback) {
   api.taskqueue.execute = function (db) {
     if (taskqueue.ready) {
       taskqueue.queue.forEach(function(d) {
-        db[d.task].apply(null, d.parameters);
+        d.task = db[d.name].apply(null, d.parameters);
       });
     }
   };
@@ -2786,8 +2870,10 @@ PouchAdapter = function(opts, callback) {
     taskqueue.ready = arguments[0];
   };
 
-  api.taskqueue.addTask = function(task, parameters) {
-    taskqueue.queue.push({ task: task, parameters: parameters });
+  api.taskqueue.addTask = function(name, parameters) {
+    var task = { name: name, parameters: parameters };
+    taskqueue.queue.push(task);
+    return task;
   };
 
   api.replicate = {};
@@ -2842,7 +2928,7 @@ if (typeof module !== 'undefined' && module.exports) {
   PouchUtils = require('../pouch.utils.js');
 }
 
-var ajax = PouchUtils.ajax;
+
 
 var HTTP_TIMEOUT = 10000;
 
@@ -2973,7 +3059,7 @@ function genUrl(opts, path) {
 }
 
 // Implements the PouchDB API for dealing with CouchDB instances over HTTP
-var HttpPouch = function(opts, callback) {
+function HttpPouch(opts, callback) {
 
   // Parse the URI given by opts.name into an easy-to-use object
   var host = getHost(opts.name, opts);
@@ -2983,7 +3069,10 @@ var HttpPouch = function(opts, callback) {
 
   // The functions that will be publically available for HttpPouch
   var api = {};
-
+  var ajaxOpts = opts.ajax || {};
+  function ajax(options, callback) {
+    return PouchUtils.ajax(PouchUtils.extend({}, ajaxOpts, options), callback);
+  }
   var uuids = {
     list: [],
     get: function(opts, callback) {
@@ -3524,16 +3613,40 @@ var HttpPouch = function(opts, callback) {
     var CHANGES_LIMIT = 25;
 
     if (!api.taskqueue.ready()) {
-      api.taskqueue.addTask('changes', arguments);
-      return;
+      var task = api.taskqueue.addTask('changes', arguments);
+      return {
+        cancel: function() {
+          if (task.task) {
+            return task.task.cancel();
+          }
+          if (Pouch.DEBUG) {
+            console.log(db_url + ': Cancel Changes Feed');
+          }
+          task.parameters[0].aborted = true;
+        }
+      };
     }
     
     if (opts.since === 'latest') {
+      var changes;
       api.info(function (err, info) {
-        opts.since = info.update_seq - 1;
-        api.changes(opts);
+        if (!opts.aborted) {
+          opts.since = info.update_seq;
+          changes = api.changes(opts);
+        }
       });
-      return;
+      // Return a method to cancel this method from processing any more
+      return {
+        cancel: function() {
+          if (changes) {
+            return changes.cancel();
+          }
+          if (Pouch.DEBUG) {
+            console.log(db_url + ': Cancel Changes Feed');
+          }
+          opts.aborted = true;
+        }
+      };
     }
 
     if (Pouch.DEBUG) {
@@ -3585,11 +3698,15 @@ var HttpPouch = function(opts, callback) {
     var xhr;
     var lastFetchedSeq;
     var remoteLastSeq;
+    var pagingCount;
 
     // Get all the changes starting wtih the one immediately after the
     // sequence number given by since.
     var fetch = function(since, callback) {
       params.since = since;
+      if (!opts.continuous && !pagingCount) {
+        pagingCount = remoteLastSeq;
+      }
       params.limit = (!limit || leftToFetch > CHANGES_LIMIT) ?
         CHANGES_LIMIT : leftToFetch;
 
@@ -3647,8 +3764,11 @@ var HttpPouch = function(opts, callback) {
       }
 
       var resultsLength = res && res.results.length || 0;
+
+      pagingCount -= CHANGES_LIMIT;
+
       var finished = (limit && leftToFetch <= 0) ||
-        (res && !resultsLength) ||
+        (res && !resultsLength && pagingCount <= 0) ||
         (resultsLength && res.last_seq === remoteLastSeq) ||
         (opts.descending && lastFetchedSeq !== 0);
 
@@ -3735,13 +3855,104 @@ var HttpPouch = function(opts, callback) {
     PouchUtils.call(callback, null);
   };
 
+  api.replicateOnServer = function(target, opts, promise) {
+    if (!api.taskqueue.ready()) {
+      api.taskqueue.addTask('replicateOnServer', arguments);
+      return promise;
+    }
+    
+    var targetHost = getHost(target.id());
+    var params = {
+      source: host.db,
+      target: targetHost.protocol === host.protocol && targetHost.authority === host.authority ? targetHost.db : targetHost.source
+    };
+
+    if (opts.continuous) {
+      params.continuous = true;
+    }
+
+    if (opts.create_target) {
+      params.create_target = true;
+    }
+
+    if (opts.doc_ids) {
+      params.doc_ids = opts.doc_ids;
+    }
+
+    if (opts.filter && typeof opts.filter === 'string') {
+      params.filter = opts.filter;
+    }
+
+    if (opts.query_params) {
+      params.query_params = opts.query_params;
+    }
+
+    var result = {};
+    var repOpts = {
+      headers: host.headers,
+      method: 'POST',
+      url: host.protocol + '://' + host.host + (host.port === 80 ? '' : (':' + host.port)) + '/_replicate',
+      body: params
+    };
+    var xhr;
+    promise.cancel = function() {
+      this.cancelled = true;
+      if (xhr && !result.ok) {
+        xhr.abort();
+      }
+      if (result._local_id) {
+        repOpts.body = {
+          replication_id: result._local_id
+        };
+      }
+      repOpts.body.cancel = true;
+      ajax(repOpts, function(err, resp, xhr) {
+        // If the replication cancel request fails, send an error to the callback
+        if (err) {
+          return PouchUtils.call(callback, err);
+        }
+        // Send the replication cancel result to the complete callback
+        PouchUtils.call(opts.complete, null, result, xhr);
+      });
+    };
+
+    if (promise.cancelled) {
+      return;
+    }
+
+    xhr = ajax(repOpts, function(err, resp, xhr) {
+      // If the replication fails, send an error to the callback
+      if (err) {
+        return PouchUtils.call(callback, err);
+      }
+
+      result.ok = true;
+
+      // Provided by CouchDB from 1.2.0 onward to cancel replication
+      if (resp._local_id) {
+        result._local_id = resp._local_id;
+      }
+
+      // Send the replication result to the complete callback
+      PouchUtils.call(opts.complete, null, resp, xhr);
+    });
+  };
+
   return api;
-};
+}
 
 // Delete the HttpPouch specified by the given name.
 HttpPouch.destroy = function(name, opts, callback) {
   var host = getHost(name, opts);
-  ajax({headers: host.headers, method: 'DELETE', url: genDBUrl(host, '')}, callback);
+  opts = opts || {};
+  if (typeof opts === 'function') {
+    callback = opts;
+    opts = {};
+  }
+  opts.headers = host.headers;
+  opts.method = 'DELETE';
+  opts.url = genDBUrl(host, '');
+  PouchUtils.ajax(opts, callback);
 };
 
 // HttpPouch is a valid adapter.
@@ -3882,7 +4093,7 @@ var IdbPouch = function(opts, callback) {
 
       // detect blob support
       try {
-        txn.objectStore(DETECT_BLOB_SUPPORT_STORE).put(new Blob(), "key");
+        txn.objectStore(DETECT_BLOB_SUPPORT_STORE).put(PouchUtils.createBlob(), "key");
         blobSupport = true;
       } catch (err) {
         blobSupport = false;
@@ -3992,7 +4203,7 @@ var IdbPouch = function(opts, callback) {
         if (blobSupport) {
           var type = att.content_type;
           data = fixBinary(data);
-          att.data = new Blob([data], {type: type});
+          att.data = PouchUtils.createBlob([data], {type: type});
         }
         return finish();
       }
@@ -4253,7 +4464,7 @@ var IdbPouch = function(opts, callback) {
           result = data;
         } else {
           data = fixBinary(atob(data));
-          result = new Blob([data], {type: type});
+          result = PouchUtils.createBlob([data], {type: type});
         }
         PouchUtils.call(callback, null, result);
       }
@@ -5283,7 +5494,7 @@ var webSqlPouch = function(opts, callback) {
       if (opts.encode) {
         res = btoa(data);
       } else {
-        res = new Blob([data], {type: type});
+        res = PouchUtils.createBlob([data], {type: type});
       }
       PouchUtils.call(callback, null, res);
     });

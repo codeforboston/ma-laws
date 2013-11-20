@@ -118,7 +118,8 @@ session : function(path) {
     Pouch(location.protocol + "//" + location.host + "/law", function(err, db) {
       window.body = new View({
         db: db,
-        el: $('#mainContent')
+        //el: $('#mainContent')
+			el: $('#lawList')
       });
       window.routes = new Routes({
         body: window.body
