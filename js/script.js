@@ -7,7 +7,7 @@ Backbone.$ = $;
 var View = require('./view');
 
 var Pouch = require('./pouchdb/src/pouch.js');
-
+Pouch.plugin('search',require('pouchdb-search'));
 var spin = require('spin');
 
 require('bootstrap');
@@ -130,7 +130,7 @@ session : function(path) {
       Backbone.history.start({
         pushState: true,
         hashChange: false,
-       root: root
+        root: root
       });
       $('#searchForm').on('submit', function(e) {
         e.preventDefault();
