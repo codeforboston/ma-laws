@@ -9,6 +9,9 @@ var templates = require('../templates');
 var spin = require('spin');
 var Breadcrumb = require('./breadcrumb');
 var denodify = require('lie-denodify');
+function stopSpin(){
+        body.spin(false);
+      }
 var View = Backbone.View.extend({
     initialize : function(opts) {
       return this.db = opts.db;
@@ -38,43 +41,34 @@ var View = Backbone.View.extend({
       return this.$el.spin(a);
     },
     template : templates,
-    render : function(loc) {
-      var root = this.root;
-      if(!this.fetch){
-        this.fetch=denodify(this.db.get);
-      }
-      if(!this.query){
-        this.query = denodify(this.db.query);
-      }
-      var id, opts, type;
-      function stopSpin(){
-        body.spin(false);
-      }
-      if ('q' in loc) {
-        return this.search(loc.q).then(function(resp) {
+    renderQ:function(loc){
+      return this.search(loc.q).then(function(resp) {
           resp.q = loc.q;
           resp.root = root;
           stopSpin();
           return body.$el.html(body.template.search(resp));
         });
-      } else if ('newStyleName' in loc) {
-        id = "c" + loc.c + "s" + loc.s;
+    },
+    renderSection:function(loc, root){
+      var id = "c" + loc.c + "s" + loc.s;
         return this.fetch(id).then(function(doc) {
             stopSpin();
             body.breadcrumb.render(doc);
             doc.root = root;
             return body.$el.html(body.template.section(doc));
         },stopSpin);
-      } else if ('a' in loc) {
-        id = "c" + loc.c + "a" + loc.a;
+    },
+    renderArticle:function(loc,root){
+      var id = "c" + loc.c + "a" + loc.a;
         return this.fetch(id).then(function(doc) {
             stopSpin();
             body.breadcrumb.render(doc);
             doc.root = root;
             return body.$el.html(body.template.article(doc));
         },stopSpin);
-      } else if ('y' in loc) {
-        id = "y" + loc.y + "c" + loc.c;
+    },
+    renderSession:function(loc,root){
+      var id = "y" + loc.y + "c" + loc.c;
         return this.fetch(id).then(function(doc) {
             stopSpin();
             body.breadcrumb.render({
@@ -85,9 +79,9 @@ var View = Backbone.View.extend({
             doc.root = root;
             return body.$el.html(body.template.session(doc));
         },stopSpin);
-      } else if (loc.type && loc.type === 'session') {
-        if (loc.year === 'all') {
-          opts = {
+    },
+    renderSess:function(loc,root){
+      var opts = {
             startkey: [loc.type],
             endkey: [loc.type, {}],
             group_level: 2
@@ -110,8 +104,9 @@ var View = Backbone.View.extend({
             resp.root = root;
             return body.$el.html(body.template.sess(resp));
           });
-        } else {
-          opts = {
+    },
+    renderYear:function(loc,root){
+      var opts = {
             startkey: [loc.type, parseInt(loc.year, 10)],
             endkey: [loc.type, parseInt(loc.year, 10), {}],
             reduce: false,
@@ -130,22 +125,24 @@ var View = Backbone.View.extend({
             resp.root = root;
             return body.$el.html(body.template.year(resp));
           },stopSpin);
-        }
-      } else if (loc.section !== 'all') {
-        id = "c" + loc.chapter + "s" + loc.section;
+    },
+    renderSectionTwo:function(loc,root){
+      var id = "c" + loc.chapter + "s" + loc.section;
         return this.fetch(id).then(function(doc) {
             stopSpin();
             body.breadcrumb.render(doc);
             doc.root = root;
             return body.$el.html(body.template.section(doc));
         },stopSpin);
-      } else if (loc.section === 'all' && loc.chapter !== 'all') {
-        if (loc.type = 'GeneralLaws') {
+    },
+    renderChapter:function(loc,root){
+      var type;
+      if (loc.type = 'GeneralLaws') {
           type = 'general';
         } else {
           type = loc.type;
         }
-        opts = {
+        var opts = {
           startkey: [type, loc.part, loc.title, loc.chapter.toString()],
           endkey: [type, loc.part, loc.title, loc.chapter.toString(), {}],
           reduce: false,
@@ -175,13 +172,15 @@ var View = Backbone.View.extend({
           resp.root = root;
           return body.$el.html(body.template.chapter(resp));
         });
-      } else if (loc.chapter === 'all' && loc.title !== 'all') {
-        if (loc.type = 'GeneralLaws') {
+    },
+    renderTitle:function(loc,root){
+      var type;
+      if (loc.type = 'GeneralLaws') {
           type = 'general';
         } else {
           type = loc.type;
         }
-        opts = {
+        var opts = {
           startkey: [type, loc.part, loc.title],
           endkey: [type, loc.part, loc.title, {}],
           group_level: 4
@@ -207,13 +206,15 @@ var View = Backbone.View.extend({
             root:root
           }));
         });
-      } else if (loc.title === 'all' && loc.part !== 'all') {
-        if (loc.type = 'GeneralLaws') {
+    },
+    renderPart:function(loc,root){
+      var type;
+      if (loc.type = 'GeneralLaws') {
           type = 'general';
         } else {
           type = loc.type;
         }
-        opts = {
+        var opts = {
           startkey: [type, loc.part],
           endkey: [type, loc.part, {}],
           group_level: 3
@@ -238,9 +239,10 @@ var View = Backbone.View.extend({
             root:root
           }));
         });
-      } else {
-        type = 'general';
-        opts = {
+    },
+    renderGeneral:function(loc,root){
+      var type = 'general';
+      var opts = {
           startkey: [type],
           endkey: [type, {}],
           group_level: 2
@@ -266,6 +268,41 @@ var View = Backbone.View.extend({
             root:root
           }));
         });
+    },
+    render : function(loc) {
+      var root = this.root;
+      if(!this.fetch){
+        this.fetch=denodify(this.db.get);
+      }
+      if(!this.query){
+        this.query = denodify(this.db.query);
+      }
+      var id, opts, type;
+      
+      if ('q' in loc) {
+        this.renderQ(loc);
+      } else if ('newStyleName' in loc) {
+        this.renderSection(loc, root);
+      } else if ('a' in loc) {
+        this.renderArticle(loc,root);
+      } else if ('y' in loc) {
+        this.renderSession(loc,root);
+      } else if (loc.type && loc.type === 'session') {
+        if (loc.year === 'all') {
+          this.renderSess(loc,root);
+        } else {
+          this.renderYear(loc,root);
+        }
+      } else if (loc.section !== 'all') {
+        this.renderSectionTwo(loc,root);
+      } else if (loc.section === 'all' && loc.chapter !== 'all') {
+        this.renderChapter(loc,root);
+      } else if (loc.chapter === 'all' && loc.title !== 'all') {
+        this.renderTitle(loc,root);
+      } else if (loc.title === 'all' && loc.part !== 'all') {
+        this.renderPart(loc,root);
+      } else {
+        this.renderGeneral(loc,root);
       }
     }
 
